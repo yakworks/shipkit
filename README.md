@@ -1,0 +1,2 @@
+# shipkit
+build-test-ship
