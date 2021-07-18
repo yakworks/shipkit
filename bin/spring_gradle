@@ -1,0 +1,61 @@
+#!/bin/bash
+# -----------------
+# functions for working with spring, grails and gradle
+# ------------------
+
+# ---
+# for multi-project gradles this will consolidate the test results into the root build
+# this simplifies so we can run circles "store" command on just one dir
+# $1 - the project list, if not passed then defaults to whats in env variable PROJECT_SUBPROJECTS
+# ---
+function merge_test_results {
+  local projList="${1:-$PROJECT_SUBPROJECTS}"
+  for project in $projList; do
+    _copy_test_results "$project" "test-results"
+    _copy_test_results "$project" "reports"
+  done
+}
+
+# $1 - the project name
+# $2 - the build test dir, will either be test-results or reports
+function _copy_test_results {
+  local dir="$1/build/$2/"
+  if [ -d "${dir}" ]; then
+    mkdir -p build/$2/$1
+    cp -r "$dir" build/$2/$1
+  fi
+}
+
+function getGradleProp {
+    PROP_KEY=$1
+    PROP_VALUE=`cat gradle.properties | grep "$PROP_KEY" | cut -d'=' -f2`
+    echo $PROP_VALUE
+}
+
+# build app props from list which will be in form
+#  dataSource.host=mysql
+#  dataSource.dbName=bar
+# turned into -DdataSource.host=mysql -DdataSource.dbName=bar
+# $1 - the string to convert into java props
+# ---
+function transform_to_java_props {
+  local sysProps=""
+  echo "1 $1"
+  while IFS= read -r line; do
+    trimLine=$(trim $line)
+    # if value of $var starts with #, ignore it
+    [[ $trimLine =~ ^#.* ]] && continue
+    # if its empty then move on
+    [[ -z "$trimLine" ]] && continue
+
+    sysProps+="-D$trimLine "
+  done <<< "$1"
+
+  echo "$sysProps"
+}
+
+# --- boiler plate function runner, keep at end of file ------
+# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  source "$(dirname $0)/function_runner.sh"
+fi

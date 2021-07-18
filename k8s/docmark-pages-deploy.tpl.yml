@@ -1,0 +1,102 @@
+# kubernetes deployment for pages generated with docmark. 
+# container uses env variables to download git project, build the docs and then start a nginx webserver
+# sets up ingress-nginx services and uses default tls cert that was setup for it. 
+# use the sed_tpl to process this template for example `kubeApplyTpl build/bin/kube_templates/.tpl.yml`
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${PAGES_APP_KEY} # a name for the deployment
+  namespace: ${PAGES_KUBE_NAMESPACE}
+  labels:
+    pages: ${PAGES_APP_KEY} # tag with the app:grello, labels are kind of like tags
+spec:
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  selector:
+    matchLabels:
+      pages: ${PAGES_APP_KEY} # points to label key in pod template below
+  template: # pod template
+    metadata:
+      name: ${PAGES_APP_KEY}-pod
+      labels:
+        pages: ${PAGES_APP_KEY} # the pod key label, labels are like tags
+    spec: # containers in the pod
+      imagePullSecrets:
+        - name: 9cibot-dockerhub
+      containers:
+      - image: yakworks/docmark-nginx
+        imagePullPolicy: Always
+        name: ${PAGES_APP_KEY}-nginx #just normal docker name
+        # uncomment the LOGGING_CONFIG to enable
+        env:
+          - name: AUTH_USERNAME
+            value: '${PAGES_AUTH_USERNAME}'
+          - name: AUTH_PASSWORD
+            value: '${PAGES_AUTH_PASSWORD}'
+          - name: GITHUB_PROJECT
+            value: '${PROJECT_FULLNAME}'
+          # - name: GITHUB_BRANCH
+          #   value: '${PAGES_GITHUB_BRANCH}'
+          - name: GITHUB_TOKEN
+            value: '${GITHUB_TOKEN}'
+          # custom make target to use to build the docs
+          - name: MAKE_BULD_TARGET
+            value: docmark-nginx-build
+        ports:
+          - containerPort: 80
+            name: server
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${PAGES_APP_KEY} # a name for the service
+  namespace: ${PAGES_KUBE_NAMESPACE}
+  labels:
+    pages: ${PAGES_APP_KEY}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    pages: ${PAGES_APP_KEY} # points to the label key for deployment
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${PAGES_APP_KEY}
+  namespace: ${PAGES_KUBE_NAMESPACE}
+  annotations:
+    # snippet redirects *.9ci.io/docs to *.9ci.io/docs/ with the trailing slash
+    # https://github.com/kubernetes/ingress-nginx/issues/646
+    kubernetes.io/ingress.class: "nginx"
+    # takes second capture group in path and send it on to the service web server
+    # so /foo/bar/ will request bar/ from service
+    # see https://kubernetes.github.io/ingress-nginx/examples/rewrite/
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+    # Rewrite all URLs, not ending with a segment containing . or ?, to have a trailing slash
+    # So basically we are making all folder path names to have a trailing slash.
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^([^.?]*[^/])$ $1/ redirect;
+  labels:
+    pages: ${PAGES_APP_KEY}
+spec:
+  rules:
+  - host: ${PAGES_KUBE_URL}
+    http:
+      paths:
+      - path: /${PAGES_KUBE_PATH}(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: ${PAGES_APP_KEY}
+            port:
+              number: 80        
+  tls:
+  - hosts:
+      - ${PAGES_KUBE_URL}
+

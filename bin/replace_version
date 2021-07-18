@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# updates the version number in README
+# $1 - the new version to replace old one with
+# $2 - the file name to do the replace
+function replace_version {
+  sed -i.bak -e "s|Version: [0-9.]*[-v]*[0-9.]*|Version: ${1}|g" $2 && \
+    rm -- "${2}.bak"
+
+  # updatedContent = updatedContent.replaceFirst(/${p.name}:[\d\.]+[^"]+/, "${p.name}:$version")
+  # update any dependencies for plugin style versions, ie `id "yakworks.gorm-tools" version "1.2.3"`
+  # updatedContent = updatedContent.replaceFirst(/(?i)${p.name}"\sversion\s"[\d\.]+[^\s]+"/, "${p.name}\" version \"$version\"")
+}
+
+# --- boiler plate function runner, keep at end of file ------
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  export -f replace_version
+else
+  replace_version "${@}"
+  exit ${?}
+fi

@@ -1,0 +1,139 @@
+#!/bin/bash
+# ---
+# common logic for publishing a release.
+# ---
+set -e  # Abort script at first error, when a command exits with non-zero status
+
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
+source "${__dir}/init_env"
+source "${__dir}/replace_version" # source it in
+
+# calls the github release endpoint to tag nd mark a release
+# $1 - the current dev version we are releasing
+# $2 - the release branch to push to, should be the active releasable git branch that is checked out such as master
+# $3 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
+# $4 - the GITHUB_TOKEN auth token
+function create_github_release {
+  local api_data=$(printf '{
+    "tag_name": "v%s",
+    "name": "v%s",
+    "body": "Release of version %s",
+    "target_commitish": "%s",
+    "draft": false,
+    "prerelease": false}' $1 $1 $1 $2)
+  # echo $api_data
+  # local rurl="https://api.github.com/repos/$3/releases"
+  curl -X POST \
+    --header 'authorization: Bearer $4' \
+    --data "$api_data"
+    --url "https://api.github.com/repos/$3/releases"
+}
+
+# updates the changelog, does a bunch of git diff work to get changes
+# $1 - the current dev version
+# $2 - the previous published version
+# $3 - the changelog filename
+# $4 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
+function update_changelog {
+  # the GITHUB_LINK_URL such as https://github.com/yakworks/gorm-tools to make anchors in changelog
+  [ "$GITHUB_LINK_URL" ] || GITHUB_LINK_URL="https://github.com/$4"
+  # Repo URL to base links off of
+  local LATEST_TAG="v$1" # example v6.1.12
+  local PREVIOUS_TAG="v$2" # example v6.1.11
+  local changelogName="$3"
+
+  # Get a list of all tags in reverse order
+  # Assumes the tags are in version format like v1.2.3
+  local gitTags=$(git tag -l --sort=-version:refname)
+  local TAGS=($gitTags)
+
+  if [[ ! " ${TAGS[@]} " =~ " ${PREVIOUS_TAG} " ]]; then
+    echo "Error creating changelog - PREVIOUS_TAG $PREVIOUS_TAG does not exists"
+    return 1
+  fi
+
+  # We only get the commit hash so we don't have to deal with a bunch of ugly parsing
+  # See Pretty format placeholders at https://git-scm.com/docs/pretty-formats
+  local COMMITS=$(git log $PREVIOUS_TAG..HEAD --pretty=format:"%H")
+  # echo "COMMITS $COMMITS"
+  # Store our changelog in a variable to be saved to a file at the end
+  local MARKDOWN="#### $LATEST_TAG\n"
+  MARKDOWN+='\n'
+  MARKDOWN+="[Full Changelog]($GITHUB_LINK_URL/compare/$PREVIOUS_TAG...$LATEST_TAG)"
+
+  # Loop over each commit and look for merged pull requests
+  for COMMIT in $COMMITS; do
+    # Get the subject of the current commit
+    local SUBJECT=$(git log -1 ${COMMIT} --pretty=format:"%s")
+    # echo "SUBJECT $SUBJECT"
+    # If the subject contains [ci skip] then skip it
+    local PULL_REQUEST=$( grep -v -Eo "\[ci skip\]" <<< "$SUBJECT" )
+    if [[ $PULL_REQUEST ]]; then
+      # AUTHOR_NAME=$(git log -1 ${COMMIT} --pretty=format:"%an")
+      # AUTHOR_EMAIL=$(git log -1 ${COMMIT} --pretty=format:"%ae")
+
+      # Get the body of the commit
+      # BODY=$(git log -1 ${COMMIT} --pretty=format:"%b")
+      # echo "BODY $BODY"
+
+      MARKDOWN+='\n'
+      MARKDOWN+=" - $SUBJECT [$COMMIT]($GITHUB_LINK_URL/commit/$COMMIT)" # : $BODY"
+    fi
+  done
+  MARKDOWN+='\n'
+  echo -e "$MARKDOWN\n$(cat $changelogName)" > "$changelogName"
+  # Save our markdown to a file
+  #echo -e $MARKDOWN > CHANGELOG.md
+}
+
+# bumps the current version and updates the version.properties
+# $1 - the current dev version that will be moved to publishedVersion, should be the version in the version.props
+function bump_version_props {
+  local publishingVersion="${1}"
+  local newVersion=$( bumpPatchLevel $publishingVersion)
+  updateVersionFile $newVersion $publishingVersion
+}
+
+# Updates version.properties with given version, sets publishedVersion to the $VERSION
+# and sets snapshot to true
+# $1 - the new version
+# $2 - the published version
+function updateVersionFile {
+  if [ -n "$1" ] ; then
+    sed -i.x \
+      -e "s/^version=.*/version=$1/g"  \
+      -e "s/^publishedVersion=.*/publishedVersion=$2/g" \
+      -e "s/^snapshot=.*/snapshot=true/g" \
+      version.properties
+
+    rm -f version.properties.x
+
+  else
+    echo "ERROR: missing version parameter " >&2
+    return 1
+  fi
+}
+
+# ---
+# increments version so 9.8.7 will return 9.8.8 and 9.8.7-RC.1 returns 9.8.7-RC.2
+# $1 - the version to bump
+# ---
+function bumpPatchLevel {
+  local ver="${1}"
+  local dotCount=$(echo "${ver}" | awk -F"." '{print NF-1}')
+  # cuts to the last dot
+  local baseVersion=$(echo $ver | cut -d. -f1-$dotCount)
+  # echo "major_and_minor $major_and_minor"
+  local endPathLoc=$((dotCount+1))
+  # grabs last part of version number
+  local patch=$(echo $ver | cut -d. -f$endPathLoc)
+  # echo "patch $patch"
+  ver=$(printf "%s.%d" $baseVersion $(($patch + 1)))
+  echo $ver
+}
+
+# --- boiler plate function runner, keep at end of file ------
+# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  source "${__dir}/function_runner.sh"
+fi

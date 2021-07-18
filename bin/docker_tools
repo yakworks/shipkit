@@ -1,0 +1,59 @@
+#!/bin/bash
+# ---
+# Common helper functions for running docker images and logging into dockerhub
+# ! DEPRECATED, using compose now, still used in docmark script
+# ---
+
+# ---
+# login to docker hub
+# $1 - docker hub user
+# $2 - docker hub password
+# ---
+function docker_login {
+  echo "$2" | docker login -u "$1" --password-stdin
+}
+
+# removes the docker
+# arg $1 - the docker name
+function docker_stop {
+  if [ "$(docker ps -aq -f name=${1})" ]; then
+    # echo "if this following shows errors 'No such container:' next its fine as its doing a force rm"
+    docker stop ${1} || true
+  fi
+}
+
+# removes the docker
+# arg $1 - the docker name
+function dockerRemove {
+  if [ "$(docker ps -aq -f name=${1})" ]; then
+    # echo "if this following shows errors 'No such container:' next its fine as its doing a force rm"
+    docker stop ${1} || true && docker rm ${1} || true
+  fi
+}
+
+# -----
+# starts a docker (docker run) if its not already running
+# arg $1 - the name of the docker as in --name=${1}
+# arg $2 - the arguments that would normall passed to a docker run
+function dockerStart {
+  if [ ! "$(docker ps -q -f name=${1})" ]; then
+    # just in case it does exist but with status=exited fire a remove
+    dockerRemove ${1}
+		docker run --name=${1} ${@:2}
+  fi
+}
+
+# -----------------------------------
+# create a docker network if it does not exist
+# arg $1 - network name
+function dockerNetworkCreate {
+  if [ ! "$(docker network ls | grep $1)" ]; then \
+	  docker network create $1; \
+	fi
+}
+
+# --- boiler plate function runner, keep at end of file ------
+# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  source "$(dirname $0)/function_runner.sh"
+fi

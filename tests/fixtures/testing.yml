@@ -1,0 +1,70 @@
+---
+person:
+  name: Jonathan
+  age: 99
+  email: jonathan@email.com #inline comments
+
+# A comment just to say: list of persons
+persons:
+  -
+    name: 'Maria'
+    age: '88'
+    email: 'maria@email.com'
+  -
+    name: "João"
+    age: "77"
+    email: "joao@email.com"
+---
+thingList:
+  - foo
+  - bar
+  - bazz
+
+---
+complex_test:
+  simple_obj:
+    attr: "value"
+    other_attr: other "value"
+    http:
+      - http://some.endpoint.com
+    chaos_list:
+      - attr: value1
+        otherv: value1v
+      -
+        attr: value2
+        otherv: "value2v"
+    a_list:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+---
+more_tests:
+  double_dashes: --ok
+  dot_start: .dot
+  some-propertie: some-propertie ok!
+  domain.com: domain.com ok!
+  inline_comment: something #comment
+  hash_commented: #hi
+  comment_with_hash: an#hash #with an comment
+  hash: a#hash
+  single_quotes:
+    hash1: 'a#hash'
+    hash2: 'a   #hash'
+    hash3: '#hi'
+    comment_in_string: 'a string...' #a comment
+  double_quotes:
+    hash1: "a#hash"
+    hash2: "a   #hash"
+    hash3: "#hi"
+    comment_in_string: "a string..." #a comment
+  a-multi-dash-property: result-is=OK
+  a.multi.dot.property: result.is=OK
+  a-property-that-has-quite-a-number-of-dashes: result-is=OK
+  a-property-that-has-dashes.and.dots: result-is.absolutely=fine.and-perfect

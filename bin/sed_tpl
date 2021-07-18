@@ -1,0 +1,27 @@
+#!/bin/bash
+# runs sed on the tpl.yml (kubernetes) template files to update and replace variables with values
+# $1 - the tpl.yml file
+# $2 - the dir for sed to put the processed file
+# echos out the processed tpl build file location
+function sed_tpl {
+  buildSedArgs
+  mkdir -p "$2"
+  # parse just the file name
+  local tplFile=${1##*/}
+  # replace .tpl.yml with .yml is what `/.tpl.yml/.yml` is doing
+  local processedTpl="$2/${tplFile/.tpl.yml/.yml}"
+  sed "$BUILD_VARS_SED_ARGS" "$1" > "$processedTpl"
+	echo "$processedTpl"
+}
+
+
+# just spins through the BUILD_VARS and creates BUILD_VARS_SED_ARGS
+# for sed replace in the form s|\${$SOME_VAR}|the value|g;
+# after this is called then can be ued like ` sed "$BUILD_VARS_SED_ARGS" someFile.yml > processed.yml `
+function buildSedArgs {
+  for varName in $BUILD_VARS; do
+    ESCAPED_VarName=$(printf '%s\n' "${!varName}" | sed -e 's/[\|&]/\\&/g')
+    BUILD_VARS_SED_ARGS+="s|\\\${$varName}|$ESCAPED_VarName|g; "
+  done
+  # echo "$BUILD_VARS_SED_ARGS"
+}

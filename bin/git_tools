@@ -1,0 +1,176 @@
+#!/bin/bash
+# -----------------
+# Github and git helpers.
+# uses the variables set from gradle/build.yml
+# ------------------
+set -e  # Abort script at first error, when a command exits with non-zero status
+
+# defaults, this format says if PAGES_BUILD_DIR is not set then set it to these values
+: "${PAGES_BUILD_DIR:=build/gh-pages}"
+: "${PAGES_BRANCH:=gh-pages}"
+
+# initialize variables for github
+# will try and constuct PROJECT_FULLNAME from git config if not passed in
+# $1 - the PROJECT_FULLNAME in the format of owner/repo, if not passed in then it will constuct it
+function init_github_vars {
+  local ghFullName="${1:-$PROJECT_FULLNAME}"
+  if [ ! "$ghFullName" ]; then
+    echo "PROJECT_FULLNAME not set, trying `git config --get remote.origin.url`"
+    project_fullname_from_git_remote
+    # if it didn't get it then error
+    [ ! "$PROJECT_FULLNAME" ] && echo "PROJECT_FULLNAME did not get setup" && return 1
+    ghFullName="$PROJECT_FULLNAME"
+  fi
+
+  # echo "init_github_vars with PROJECT_FULLNAME $ghFullName"
+  # keeps whats after last /
+  GITHUB_REPO=${ghFullName##*/}
+  GITHUB_LINK_URL="https://github.com/${ghFullName}"
+  GITHUB_BASE_URL="github.com/${ghFullName}.git"
+  GITHUB_URL="https://$GITHUB_BASE_URL"
+  # echo "GITHUB_URL $GITHUB_URL"
+  # For CI the git user token will be set in env var.
+  if [[ $GITHUB_TOKEN ]]; then
+    echo "adding GITHUB_TOKEN token to GITHUB_URL: $GITHUB_URL"
+    # add the token
+    GITHUB_URL="https://dummy:${GITHUB_TOKEN}@$GITHUB_BASE_URL"
+  fi
+
+  #echo "GITHUB_URL $GITHUB_URL"
+  verify_git_user
+
+  return 0
+}
+
+# set the PROJECT_FULLNAME github slug from git config --get remote.origin.url
+# based on whther its https or ssh git
+function project_fullname_from_git_remote {
+  local remoteUrl=$(git config --get remote.origin.url)
+  if  [[ $remoteUrl == git* ]];then
+    PROJECT_FULLNAME=$(echo "$remoteUrl"  | cut -d: -f2 | cut -d. -f1)
+  else
+    PROJECT_FULLNAME=$(echo "$remoteUrl" | cut -d/ -f4,5 | cut -d. -f1)
+  fi
+  # echo $PROJECT_FULLNAME
+}
+
+# checks is a git user is setup, and if not sets up the bot user, used in CI.
+function verify_git_user {
+
+  local hasGitUser=$(git config --global user.email || true)
+  # see https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
+  if [ ! "${hasGitUser}" ] || [ "$CI" ]; then
+    echo "adding BOT_USER"
+    : ${BOT_USER:=9cibot}
+    : ${BOT_EMAIL:=9cibot@9ci.com}
+    # echo "adding git user"
+    config_bot_user $BOT_USER $BOT_EMAIL
+  fi
+}
+
+# shows the current git branch
+function current_git_branch {
+  git rev-parse --abbrev-ref HEAD
+}
+
+# clones gh-pages into the build directory
+# $1 - PAGES_BRANCH the branch, normally gh-pages
+# $2 - PAGES_BUILD_DIR the dir to clone it to, build/gh-pages
+# $3 - PROJECT_FULLNAME the full name
+function git_clone_pages {
+  local pagesBranch="${1:-$PAGES_BRANCH}"
+  local pagesDir="${2:-$PAGES_BUILD_DIR}"
+  [ "$GITHUB_URL" ] || init_github_vars "$3"
+  mkdir -p build
+  rm -rf "$pagesDir"
+  git clone $GITHUB_URL "$pagesDir" -b "$pagesBranch" --single-branch --depth 1
+}
+
+# in build/gh-pages commits and pushes gh pages
+# $1 - PAGES_BRANCH the branch, normally gh-pages
+# $2 - PAGES_BUILD_DIR the dir to clone it to, build/gh-pages
+# $3 - PROJECT_FULLNAME the full name
+function git_push_pages {
+  local pagesBranch="${1:-$PAGES_BRANCH}"
+  local pagesDir="${2:-$PAGES_BUILD_DIR}"
+  [ "$GITHUB_URL" ] || init_github_vars "$3"
+  git -C $pagesDir add -A .
+  git -C $pagesDir commit -a -m "CI Docs published [skip ci]" || true # or true so doesnt blow error if no changes
+  git -C $pagesDir push -q $GITHUB_URL $pagesBranch || true
+}
+
+# sets up thee git user info for commit and push
+# should run only if CI=true. Pass in what you want in github with email
+# matching account in github
+# arg $1 - bot user name
+# arg $2 - bot user email
+function config_bot_user {
+  echo "config_bot_user with $1"
+  git config credential.helper 'cache --timeout=120'
+  git config --global user.email "$2"
+  git config --global user.name "$1"
+}
+
+# initializes a gh-pages branch for the first time
+# run this when setting up a new project's gh-pages
+# ! not fully tests so use it as a guide
+function init_gh_pages {
+  [ "$GITHUB_URL" ] || init_github_vars
+  mkdir -p build
+  cd build
+  rm -rf gh-pages
+  git clone $GITHUB_URL $PAGES_BRANCH
+  cd gh-pages
+  git checkout --orphan $PAGES_BRANCH
+  git rm -rf .
+  echo "github pages site" > README.md
+  push_gh_pages
+}
+
+# creates a git tag
+# arg $1 - the tag nam
+# arg $2 - the commit message
+function git_tag {
+  git add .
+  git commit -m "$2"
+  git tag $1
+}
+
+#Push git tags to github
+function git_push_tags {
+  git push -q --tags $GITHUB_URL master
+}
+
+# ---
+# checks a commit rangs to see if somethign other than docs has changed
+# $1 - the commit range like 911ff1ea1fa5...a883787c2f50
+# returns the list of file changes, empty if nothing
+# ---
+function hasAppChanges {
+  git diff $1 --name-status | grep -v -E "(README\.md|mkdocs\.yml|docs/)" || true
+}
+
+# ---
+# checks a commit rangs to see if docs have changed
+# $1 - the commit range like 911ff1ea1fa5...a883787c2f50
+# returns the list of file changes, empty if nothing
+# ---
+function hasDocChanges {
+  git diff $1 --name-status | grep -E "(README\.md|mkdocs\.yml|version.properties|docs/)" || true
+}
+
+#Just a helper to show variables which can be useful for debugging
+function git_debug {
+  [ "$GITHUB_URL" ] || init_github_vars
+  echo "PROJECT_FULLNAME: $PROJECT_FULLNAME"
+  echo "GITHUB_BASE_URL: $GITHUB_BASE_URL"
+  echo "GITHUB_URL: $GITHUB_URL"
+  echo "BOT_USER: $BOT_USER"
+  echo "BOT_EMAIL: $BOT_EMAIL"
+}
+
+# --- boiler plate function runner, keep at end of file ------
+# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  source "$(dirname $0)/function_runner.sh"
+fi

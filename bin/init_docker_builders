@@ -1,0 +1,54 @@
+#!/bin/bash
+# ---
+# sets up docker build vars
+# ---
+
+# sets up defaults vars for docker ninedb and dock builders
+function init_docker_builders {
+  # default docker builder
+  setVar BUILDER_NAME "${PROJECT_NAME}-builder"
+  setVar BUILDER_URL "yakworks/builder:jdk8"
+
+  # Defaults for builderes
+  setVar USE_DOCKER_DB_BUILDER false
+  # if /.dockerenv this is inside a docker (such as circleCI) already
+  # then we don't want to run docker in dockers, so force to false
+  if [ -f /.dockerenv ] || [ "$CI" == "true" ]; then
+    USE_DOCKER_DB_BUILDER=false
+  fi
+
+  setVar BUILDER_EXEC "docker exec -it ${BUILDER_NAME}"
+}
+
+# setups the env specific variables
+# $1 - the database dbms (mysql,sqlserver,etc)
+function setDbEnv {
+  # arg $1 must always be the database, defaults to mysql if nothing specified
+  setVar DBMS ${1:-mysql}
+  setVar DOCK_DB_BUILD_NAME "$DBMS-build"
+  : "${NINEDB_VERSION:=$VERSIONX}"
+  : "${DOCKER_NINEDB_REPO:=dock9/nine-db}"
+  : "${DB_IMAGE_TAG:=${DBMS}-${NINEDB_VERSION}}"
+  setVar DOCKER_DB_URL "$DOCKER_NINEDB_REPO:$DB_IMAGE_TAG"
+
+  setVar DB_NAME rcm_9ci_${BUILD_ENV}
+
+  # **** DB Vars (MYSQL by default) ****
+  setVar DB_HOST 127.0.0.1
+  setVar DB_PORT 3306
+  # PASS_VAR_NAME is the environment variable name that the docker dbs require. will be different based on vendor
+  setVar PASS_VAR_NAME "MYSQL_ROOT_PASSWORD"
+
+  # DBMS overrides for sqlserver (Oracle in future)
+  if [ "$DBMS" == "sqlserver" ]; then
+    PASS_VAR_NAME="SA_PASSWORD"
+    DB_PORT=1433
+  fi
+  if [ "$USE_DOCKER_DB_BUILDER" = "true" ]; then
+    setVar DockerDbExec "docker exec ${DOCK_DB_BUILD_NAME}"
+  fi
+  # if we are inside the docker builder but not in circleCI force the DB_HOST
+  if [ -f /.dockerenv ] && [ "$CI" != "true" ]; then
+    setVar DB_HOST "${DOCK_DB_BUILD_NAME}"
+  fi
+}

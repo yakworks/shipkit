@@ -1,0 +1,247 @@
+#!/bin/bash
+# ---
+# default functions to setup BUILD_VARS
+# BUILD_VARS are used in the build.sh and a makefile.env is created
+# that is imcluded at the start of the Makefile to share vars
+# ---
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
+source "${__dir}/setVar"
+source "${__dir}/yaml"
+source "${__dir}/git_tools"
+source "${__dir}/utils"
+
+# version.properties should be in root dir
+if [ -e "version.properties" ]; then source version.properties; fi
+
+# initializes the environment
+function init_env {
+  # echo date >> init_env.log
+  [ "$version" ] && init_versions
+
+  # if build/vault/bot.env has been cloned this will import the vars
+  parse_bot_env_file
+
+  # if developer has a local dotenv
+  parse_env_file ".env" true
+
+  # if this is running in circle then this will normailze ENV variables to ours
+  circle_init_env
+
+  init_defaults # call before init_from_build_yml
+
+  # if gradle project then this imports vars from the build.yml
+  init_from_build_yml
+
+  # defaults
+  init_defaults # call again after init_from_build_yml
+
+}
+
+# makes sure defaults are setup
+function init_defaults {
+  # important to remeber that setVar registers the var in BUILD_VARS
+  # but only sets the passed in value if the variable is unset or empty
+  [ ! $PROJECT_FULLNAME ] && project_fullname_from_git_remote
+  add_build_vars PROJECT_FULLNAME
+
+  # defaults the project name to the part after last /, so if fullname is 'foo/bar' then project name will be 'bar'
+  setVar PROJECT_NAME ${PROJECT_FULLNAME##*/}
+  setVar APP_NAME ${PROJECT_NAME}
+  # the dir where the app is, defaults to the root of the project
+  setVar APP_DIR "."
+  setVar APP_KEY ${APP_NAME}
+
+  # default the releasable branch pattern to just master
+  setVar RELEASE_BRANCH_REGEX master
+
+  [ "$ACTIVE_BRANCH" ] && setVar RELEASABLE_BRANCH $(is_releasable_branch "$ACTIVE_BRANCH" "$RELEASE_BRANCH_REGEX")
+
+  # the dir where the app is, defaults to the root of the project
+  setVar APP_DIR "."
+  setVar APP_KEY ${APP_NAME}
+
+  # sets up defaults for PAGES if they are not setup already
+  setVar PAGES_BUILD_DIR "$BUILD_DIR/gh-pages"
+  setVar PAGES_BRANCH "gh-pages"
+
+
+}
+
+# sets up defaults vars for docker ninedb and dock builders
+function init_from_build_yml {
+  # if gradle
+  if [ -e ./build.yml ]; then
+    create_yml_variables "./build.yml"
+
+    local varsToEval="project_fullName project_subprojects "
+    # bot
+    varsToEval+="bot_user bot_email vault_url"
+    # release
+    varsToEval+="release_changelog release_branch_regex "
+    # pages
+    varsToEval+="pages_build_dir pages_branch "
+    # builder
+    varsToEval+="builder_exec builder_name builder_url "
+    # app
+    varsToEval+="app_name app_key app_dir app_jar app_docker_url "
+    # k8s
+    varsToEval+="app_kube_nfs app_kube_namespace app_kube_ingress_url "
+
+    for varName in $varsToEval; do
+      local upperVarName=$(toupper "$varName")
+      [ "${!varName}" ] && evalVar $upperVarName "${!varName}"
+    done
+    # special handling, kubernetes requires all lower case for names so we abide and lower APP_KEY
+    [ "$APP_KEY" ] && APP_KEY=$(tolower "$APP_KEY")
+    [ "$APP_DOCKER_URL" ] && APP_DOCKER_URL=$(tolower "$APP_DOCKER_URL")
+    [ "$APP_KUBE_INGRESS_URL" ] && APP_KUBE_INGRESS_URL=$(tolower "$APP_KUBE_INGRESS_URL")
+  fi
+  return 0 # I don't understand why this is needed
+}
+
+
+# ---
+# sets the version and sets up the other useful variables for that version such as
+# VERX_NO_DOTS and the NINEDB_VERSION
+# ---
+function init_versions {
+  # if nothing passing in the usee the lowercase version that should have come in from version.properties
+  # local ver=${1:-$version}
+  setVar VERSION "$version"
+  setVar PUBLISHED_VERSION "$publishedVersion"
+
+  local dotCount=$(echo "${VERSION}" | awk -F"." '{print NF-1}')
+  # cuts to the last dot
+  local baseVersion=$(echo $VERSION | cut -d. -f1-$dotCount)
+
+  # VERSIONX is used for docker and k8s as we deploy latests minor version
+  # also used to connect to the latest compatible database when that is relevant
+  setVar VERSIONX "$baseVersion.x"
+  #replace dots with - so 10.0.x turns into v10-0-x. k8s can't have dots in names
+  setVar VERX_NO_DOTS "v${VERSIONX//./-}"
+
+  setVar BUILD_VERSION "$VERSION"
+
+  # if its a snapshot then append the SNAPSHOT
+  if [ $(isTruthy $snapshot) ]; then
+    setVar VERSION_POSTFIX "-SNAPSHOT"
+    setVar IS_SNAPSHOT true
+    BUILD_VERSION+="-SNAPSHOT"
+    VERX_NO_DOTS+="-SNAPSHOT"
+  fi
+
+  return 0
+}
+
+# Checks for CIRCLECI and normalizes some ENV vars that are availiable
+function circle_init_env {
+  # if CIRCLE_BRANCH is set then consider it setup
+  if [ "$CIRCLECI" ]; then
+    setVar CI true
+    setVar ACTIVE_BRANCH "$CIRCLE_BRANCH"
+    setVar PROJECT_FULLNAME "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+    # setVar GIT_REPO_URL "$CIRCLE_REPOSITORY_URL"
+  fi
+}
+
+# ---
+# checks if the passed in branch matches whats in the release_branch_regex var
+# $1 - the branch name
+# $2 - the RELEASE_BRANCH_REGEX
+# returns the branch name if it matches, empty if not
+# ---
+function is_releasable_branch {
+  # wraps in the ^(..)$ so it only matches full word not partials
+  local grepRegex="^(${RELEASE_BRANCH_REGEX})$"
+  # returns the branch name if it matches, empty if not
+  echo "$1" | grep -E "$grepRegex" || true
+}
+
+# create build/make_env_db.env for importing into makefile.
+# $1 - BUILD_ENV (test, dev, seed)
+# $2 - DBMS Vendor (sqlserver,mysql, etc) *optional*
+function make_env_file {
+  set_build_env $1 $2
+  # init_env
+  mkdir -p build/make
+  createEnvFile "build/make/makefile.env"
+}
+
+# set build environment
+# $1 - BUILD_ENV (test, dev, seed)
+# $2 - DBMS Vendor (sqlserver,mysql, etc) *optional*
+function set_build_env {
+  setVar BUILD_ENV ${1:-test}
+  [ "$2" ] && setDbEnv $2
+  post_build_env
+}
+
+# dummy place holder, should be overriden in projects build.sh
+function post_build_env { :; }
+
+# create env file from BUILD_VARS for importing into makefile.
+# arg $1 - the file to use
+function createEnvFile {
+  echo "# ----- Generated from build.sh --------" > $1
+  for varName in $BUILD_VARS; do
+      val=${!varName}
+      echo "$varName=$val" >> $1
+  done
+  echo "BUILD_VARS=$BUILD_VARS" >> $1
+  echo "created $1"
+}
+
+# looks for build/vault/bot.env file and loads it in if its there
+# normally the flow for CI would be as an early step to clone the git project with the file there
+# then do the process for "git secret reveal" to decrypt it.
+# this is then called in the normal init_env process from projects build.sh
+# right now the default is to parse bot.env and have its varibale OVERRIDE all others in the environment
+function parse_bot_env_file {
+  local bot_env="build/vault/bot.env"
+  if [ -f $bot_env ]; then
+    #change this once we have it sqaured away so exported env vars always win
+    parse_env_file $bot_env true
+  fi
+}
+
+# looks for .env file in root of project
+function parse_user_env_file {
+  local env_file=".env"
+  if [ -f $bot_env ]; then
+    #change this once we have it sqaured away so exported env vars always win
+    parse_env_file $bot_env true
+  fi
+}
+
+
+# parses the env file, eval and load into BUILD_VARS
+# $1 - the env file to parse
+# $2 - true if we want to override all variables that might already be set
+function parse_env_file {
+  # check if file exists, and return if not
+  if [ ! -f $1 ]; then
+    return 0
+  fi
+
+  local lines=$(cat "$1")
+  local line key
+	while IFS= read -r line; do
+    # trim leading whitespace
+		line=${line#"${line%%[![:space:]]*}"}
+    # trim trailing whitespace
+		line=${line%"${line##*[![:space:]]}"}
+    # move on if its a comment
+		if [[ ! "$line" || "$line" == '#'* ]]; then continue ; fi
+    # echo "line $line"
+    key="${line%%=*}"
+    val="${line#*=}"
+    if [ $(isTruthy $2) ]; then
+      putVar $key "$val"
+    else
+      setVar $key "$val"
+    fi
+	done <<<"$lines"
+  # log-vars
+}
+
+

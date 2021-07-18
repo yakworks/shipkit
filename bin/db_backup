@@ -1,0 +1,52 @@
+#!/bin/bash
+# ------------
+# this is meant to be run from the root project dir inside the docker
+# container running the db as it uses the native tools
+# ------------
+
+# the dbms (mysq, sqlserver etc...)
+DBMS=$1
+# the database name
+DB_NAME=$2
+# fully qualified backup file
+BAK_FILE=$3
+
+set -e
+
+function backup_sqlserver {
+
+  # remove bak file if it exists, otherwise it just keeps adding to it
+  rm -f $BAK_FILE
+
+  # shrink so backups are not so big, for some reason simple log and auto_shrink don't seem to do shit?
+  #/opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U sa -P $SA_PASSWORD -Q "DBCC SHRINKDATABASE ($1);"
+  #/opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U sa -P $SA_PASSWORD -Q "DBCC SHRINKDATABASE ($1, TRUNCATEONLY);"
+
+  echo "$0: Backing up $DB_NAME to $BAK_FILE"
+  RST="BACKUP DATABASE [$DB_NAME] TO DISK = N'$BAK_FILE' "
+  RST+="WITH NOFORMAT, NOINIT, NAME = '$DB_NAME-full', SKIP, NOREWIND, NOUNLOAD, STATS = 10"
+  echo "$0: $RST"
+
+  /opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U sa -P $SA_PASSWORD -Q "$RST"
+}
+
+function backup_mysql {
+  echo "CREATE DATABASE ${DB_NAME};" > $BAK_FILE
+  echo "USE ${DB_NAME};" >> $BAK_FILE
+
+  # if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; fi
+  # MYSQL_ROOT_PASSWORD is the ENV var set during docker start
+  mysqldump --opt --host=127.0.0.1 \
+    --user=root --password=${MYSQL_ROOT_PASSWORD} \
+    --routines=true \
+    --skip-dump-date \
+    ${DB_NAME} >> $BAK_FILE
+
+  #in case we get the goofy mysql warning at top of file might need to dump to temp file and then do this
+  # reminder, >> means append
+  # tail -n +2 "$FILE" removes the first line of the file with the mysql warning junk
+  # tail -n +2 "build/mysql/${DbName}.sql" >> ${initdb_dir}/${DbName}.sql
+}
+
+# call function based on DBMS, arg $2 is the name of the database
+backup_$DBMS $DB_NAME $BAK_FILE

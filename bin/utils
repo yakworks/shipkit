@@ -1,0 +1,98 @@
+#!/bin/bash
+# -----------------
+# some common bash util helpers
+# ------------------
+
+# ---
+# trims leading and trailing spaces from string
+# $1 - the string to trim
+# ---
+function trim {
+    local trimmed="$1"
+
+    # Strip leading spaces.
+    while [[ $trimmed == ' '* ]]; do
+       trimmed="${trimmed## }"
+    done
+    # Strip trailing spaces.
+    while [[ $trimmed == *' ' ]]; do
+        trimmed="${trimmed%% }"
+    done
+
+    echo "$trimmed"
+}
+
+
+# https://github.com/Jeff-Russ/bash-boolean-helpers/blob/master/bool-helpers.sh
+# will echo if its falsy
+# to be falsy a value could be false, "false", 0, "0", unset, empty string
+# usage:
+#   FOO=false
+#   [ $(isFalsy "$FOO") ] && echo "FOO is falsy"
+function isFalsy {
+  local val="$1"
+  if [[ ! $val || $val == false || $val = 0 ]]; then
+    echo "false"
+  fi
+  #[ ! "$1" ] && echo "unsetOrEmpty"; [ "$1" = false ] && echo "isFalse"; [ "$1" = 0 ] && echo "is0"
+}
+
+# will echo if its not falsy
+# usage:
+#   FOO="anything not falsy"
+#   [ $(isTruthy "$FOO") ] && echo "FOO is truthy"
+function isTruthy {
+  if [[ ! $(isFalsy "$1") ]]; then
+    echo "true"
+  fi
+}
+
+# converts to lower case
+# $1 - what to convert
+function tolower {
+  echo "$1" | awk '{print tolower($0)}'
+}
+
+# converts to upper case
+# $1 - what to convert
+function toupper {
+  echo "$1" | awk '{print toupper($0)}'
+}
+
+# lists all the function/methods for the bash script
+function list-functions {
+  shopt -s extdebug
+  funcList=`compgen -A function`
+  # echo $funcList
+  for f in $funcList; do
+    funcParts=`declare -F $f`
+    arr=($funcParts)
+    local file=${arr[2]##*/}
+    printf "%-25s %s:%s\n" ${arr[0]} ${file} ${arr[1]}
+  done
+}
+
+# ---
+# quick and dirty templating. replaces a defined seat of tags in format ${VAR}
+# with env vaiables from the specified source file
+# $1 - the file name to process
+# $2 - the env file to source
+# $3 - the additional vars to pass to the env file
+# ---
+# !DEPRECATED here fror reference only
+function applySedTpl {
+  template=$(cat "${1}" | sed -e "s/\${NAME}/$NAME/g" \
+    -e "s~\${DOCKER_REPO}~$DOCKER_REPO~g" \
+    -e "s/\${IMAGE_TAG}/$IMAGE_TAG/g" \
+    -e "s/\${DB_PORT}/$DB_PORT/g" \
+    -e "s/\${ING_URL}/$ING_URL/g" \
+    -e "s/\${DB_SERVICE_NAME}/$DB_SERVICE_NAME/g" \
+    -e "s/\${DB_IMAGE_TAG}/$DB_IMAGE_TAG/g" \
+    -e "s/\${DB_PASSWORD}/$DB_PASSWORD/g" \
+    -e "s/\${PASS_VAR_NAME}/$PASS_VAR_NAME/g" \
+    -e "s/\${APP_NAME}/$APP_NAME/g" \
+    -e "s/\${APP_IMAGE_TAG}/$APP_IMAGE_TAG/g" \
+    )
+  #echo "$template"
+  echo "$template" | kubectl apply -f -
+}

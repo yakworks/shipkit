@@ -1,0 +1,87 @@
+#!/bin/bash
+# -----------------
+# functions for running the yakworks docmark mkdocs variant
+# depends on bin/github_pages script
+# ------------------
+
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=src/parse_url.sh
+source "${__dir}/replace_version"
+source "${__dir}/docker_tools"
+
+DOCMARK_DOCKER_IMAGE=yakworks/docmark
+DOCMARK_DOCKER_NAME=docmark-server
+
+# Copies readme, updates version and replaces links that went into docs
+# $1 - the version to update
+function cp_readme_index {
+  local index_md=docs/index.md
+  rm -f $index_md
+  cp README.md $index_md
+  [[ "$1" ]] && replace_version "$1" $index_md
+  # replace the (docs/ text in links as they are in same dir now, ex [foo](docs/bar.md) will become [foo](bar.md)
+  sed -i.bak -e "s~(\s*docs\/~(~g" $index_md && rm "${index_md}.bak"
+  return 0
+}
+
+# build the docs, should be run inside the docmark docker
+function docmark_build {
+  cp_readme_index
+  docmark build --site-dir build/site
+}
+
+# builds the groovydocs and copies them into site/api
+function copyGroovydocToApi {
+  cp -r build/docs/groovydoc build/site/api || true
+}
+
+# checks out and then publishes to gh-pages.
+# expects that build was already run and sites exits in build
+function docmark_publish {
+  clone_gh_pages
+  cp -r build/site/. build/gh-pages
+  push_gh_pages
+}
+
+function publishDocs {
+  echo "Running docmark.publishDocs ...."
+  docmark_build
+  copyGroovydocToApi
+  docmark_publish
+}
+
+function docmark_run {
+  dockerStart $DOCMARK_DOCKER_NAME -it \
+    -w /project \
+    -p 8000:8000 \
+	  -v `pwd`:/project:delegated  \
+		$DOCMARK_DOCKER_IMAGE
+}
+
+# use this to open shell and test circle commands
+function docmark_shell {
+  dockerStart $DOCMARK_DOCKER_NAME --rm -it \
+    --entrypoint /bin/bash \
+    -p 8000:8000 \
+	  -v `pwd`:/project:delegated  \
+    -e GITHUB_TOKEN=${GITHUB_TOKEN} \
+		$DOCMARK_DOCKER_IMAGE
+
+  # GITHUB_TOKEN gitub token is passed from local env to docmark so we can test publish
+}
+
+# use this to open shell and test circle commands
+function docmark_remove {
+  dockerRemove $DOCMARK_DOCKER_NAME
+}
+
+# use this to open shell and test circle commands
+function docmark_pull {
+  docker pull $DOCMARK_DOCKER_IMAGE
+}
+
+# --- boiler plate function runner, keep at end of file ------
+# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  source "$(dirname $0)/function_runner.sh"
+fi
