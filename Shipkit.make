@@ -10,14 +10,17 @@ MAKEFLAGS += -rR --no-print-directory
 export SHIPKIT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 export SHIPKIT_BIN := $(SHIPKIT_DIR)/bin
 SHIPKIT_MAKEFILES := $(SHIPKIT_DIR)/makefiles
+
 include $(SHIPKIT_MAKEFILES)/Shipkit-core.make
 # include boilerplate to set BUILD_ENV and DB from targets
 include $(SHIPKIT_MAKEFILES)/env-db.make
 
 # The defult build dir, if we have only one it'll be easier to cleanup
 export BUILD_DIR ?= build
-BUILD_VARS += BUILD_DIR
+# as shipkit installs stuff on demand this is where it should go, should be absolute so when calling in dif dir it works
+export SHIPKIT_INSTALLS ?= $(abspath $(BUILD_DIR)/installs)
 
+BUILD_VARS += BUILD_DIR
 SHELL_EXPORTS := $(foreach v,$(BUILD_VARS), $(v)='$($(v))')
 # calls either th projects build.sh to build the vairables file for make or
 # if no build.sh is specified then makes the call directly to init_env

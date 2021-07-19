@@ -1,6 +1,6 @@
 # for downloading vault and running git-secret
 
-GIT_SECRET_PATH := $(BUILD_DIR)/git-secret
+GIT_SECRET_PATH := $(SHIPKIT_INSTALLS)/git-secret
 GIT_SECRET_SH := $(GIT_SECRET_PATH)/git-secret
 VAULT_DIR ?= $(BUILD_DIR)/vault
 
