@@ -1,5 +1,5 @@
 # -------------
-# targets for release process on git, not
+# targets for release process on git
 # -------------
 
 shipit := $(SHIPKIT_BIN)/ship_it

@@ -9,10 +9,10 @@ MAKEFLAGS += -rR --no-print-directory
 # this grabs the path that this shipkit.make is in.
 export SHIPKIT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 export SHIPKIT_BIN := $(SHIPKIT_DIR)/bin
-SKIT_MAKEFILES := $(SHIPKIT_DIR)/makefiles
-include $(SKIT_MAKEFILES)/Shipkit-core.make
+SHIPKIT_MAKEFILES := $(SHIPKIT_DIR)/makefiles
+include $(SHIPKIT_MAKEFILES)/Shipkit-core.make
 # include boilerplate to set BUILD_ENV and DB from targets
-include $(SKIT_MAKEFILES)/env-db.make
+include $(SHIPKIT_MAKEFILES)/env-db.make
 
 # The defult build dir, if we have only one it'll be easier to cleanup
 export BUILD_DIR ?= build
@@ -38,9 +38,9 @@ export $(BUILD_VARS)
 # export the list too
 export BUILD_VARS
 
-include $(SKIT_MAKEFILES)/release.make
+include $(SHIPKIT_MAKEFILES)/release.make
 
-HELP_AWK := $(SKIT_MAKEFILES)/help.awk
+HELP_AWK := $(SHIPKIT_MAKEFILES)/help.awk
 
 # Useful for forcing targets to build when .PHONY doesn't help, plus it looks a bit cleaner in many cases than .phony
 FORCE:
