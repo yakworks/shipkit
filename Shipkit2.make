@@ -68,7 +68,7 @@ log-make_vars: FORCE
 log-buildsh-vars: FORCE
 	$(build.sh) log-vars
 
-## list all the functions sourced into the build.sh
+# list all the functions sourced into the build.sh
 list-functions: FORCE
 	$(build.sh) list-functions
 
