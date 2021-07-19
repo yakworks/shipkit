@@ -73,6 +73,7 @@ endef
 # OS_CPU will be either x86 (32bit) or amd64 (64bit)
 # OS_ARCH will be either i686 (32bit) or x86_64 (64bit)
 #
+OS ?=
 ifeq (Windows_NT,$(OS))
 OS_NAME := Windows
 OS_CPU  := $(call _lower,$(PROCESSOR_ARCHITECTURE))

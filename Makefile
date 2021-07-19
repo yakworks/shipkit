@@ -13,7 +13,7 @@ docker_tools := $(SHIPKIT_BIN)/docker_tools
 DOCK_SHELL_URL = yakworks/builder:bash-make
 
 ## docker shell for testing
-docker-shell: 
+docker-shell:
 	$(docker_tools) dockerStart shipkit-shell -it \
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
@@ -28,22 +28,23 @@ BATS_URL     := https://github.com/bats-core/bats-core/archive/refs/tags/v$(BATS
 BATS_EXE     := $(BATS_DIR)/bin/bats
 
 test: $(BATS_EXE)
-	$(BATS_EXE) $(BATS_OPTS) $(BATS_TESTS) 
+	$(BATS_EXE) $(BATS_OPTS) $(BATS_TESTS)
 	# $(BATS) $(BATS_OPTS) $(BATS_TESTS)
 .PHONY: test
 
-$(BATS_EXE): 
+$(BATS_EXE):
 	@mkdir -p $(BATS_DIR)
 	$(call download,$(BATS_URL),tar zxf - -C $(BATS_DIR) --strip-components 1)
-	@touch $(BATS_EXE)
+	touch $(BATS_EXE)
 
 clean::
 	rm -rf $(BATS_DIR)
 
-# install-test:
-# 	@if [ ! -d "build/bats-core" ]; then \
-# 	git clone --depth 1 -b v1.3.0 https://github.com/bats-core/bats-core.git build/bats-core; \
-# 	fi
+oneshell-test:
+	@ FOO=bar
+	if [ "$$FOO" ]; then
+		echo $$FOO
+	fi
 
 # test: install-test
 # 	@export PATH="build/bats-core/bin:$$PATH"; \

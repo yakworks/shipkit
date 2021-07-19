@@ -15,25 +15,23 @@ $(dummy_targets):
 	@:
 # ----- setup the specified database based on phony target we pass in
 
-ifeq (sqlserver,$(filter sqlserver,$(MAKECMDGOALS)))
-  DB_VENDOR = sqlserver
-else ifeq (oracle,$(filter oracle,$(MAKECMDGOALS)))
-  DB_VENDOR = oracle
-else ifeq (mysql,$(filter oracle,$(MAKECMDGOALS)))
-  DB_VENDOR = mysql
-else ifeq (h2,$(filter h2,$(MAKECMDGOALS)))
-  DB_VENDOR = h2
-endif
-
+DB_VENDOR ?=
 # we can do `make build dev sqlserver` or `make build dev sqlserver`
 # the main Makefile should specify the default
 ifdef DB
 
- DB_VENDOR ?= mysql
- # dummy targets so we dont get the make[1]: Nothing to be done for `xxx'.
- dummy_db_targets = mysql sqlserver oracle h2
- .PHONY: $(dummy_db_targets)
- $(dummy_db_targets):
+  DB_VENDOR ?= mysql
+  ifeq (sqlserver,$(filter sqlserver,$(MAKECMDGOALS)))
+    DB_VENDOR = sqlserver
+  else ifeq (oracle,$(filter oracle,$(MAKECMDGOALS)))
+    DB_VENDOR = oracle
+  else ifeq (h2,$(filter h2,$(MAKECMDGOALS)))
+    DB_VENDOR = h2
+  endif
+  # dummy targets so we dont get the make[1]: Nothing to be done for `xxx'.
+  dummy_db_targets = mysql sqlserver oracle h2
+  .PHONY: $(dummy_db_targets)
+  $(dummy_db_targets):
 	@:
 
 endif # end DB check

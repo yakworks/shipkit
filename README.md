@@ -95,6 +95,9 @@ WIP for a node and python links
 
 
 # References
+Good make samples that this was taken from
+ideas pulled from https://tech.davis-hansson.com/p/make/
+and https://github.com/martinwalsh/ludicrous-makefiles	
 
 links for using make and docker
 - https://amaysim.engineering/the-3-musketeers-how-make-docker-and-compose-enable-us-to-release-many-times-a-day-e92ca816ef17

@@ -5,7 +5,9 @@ MAKEFILE='
 include ./Shipkit.make
 include makefiles/secrets.make
 
-version-cd-dir: 
+# GPG_PRIVATE_KEY = fizzle
+# BOT_EMAIL = bizzle
+version-cd-dir:
 	cd build && $(GIT_SECRET_SH) --version
 '
 
@@ -22,6 +24,4 @@ version-cd-dir:
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]
-  # [ "${lines[0]}" == "tests/fixtures/bin/curl  \"http://localhost\" | cat -" ]
 }
-

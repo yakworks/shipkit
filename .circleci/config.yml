@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: yakworks/builder:bash-make
+      - image: yakworks/builder:base
     steps:
       - checkout
       - run: make test

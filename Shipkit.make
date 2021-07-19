@@ -1,11 +1,19 @@
 # The "main" utility functions and helpers useful for the common case. Most
 # our makefiles require this file, so it's sensible to `include` it first.
-# ideas pulled from https://github.com/martinwalsh/ludicrous-makefiles	
 # make default shell bash
-SHELL := /bin/bash
-# -r is Do not use the built-in rules specified in the system makefile. 
-# the no-print is for gnu to not show the entering dir noise
-MAKEFLAGS += -rR --no-print-directory
+SHELL := bash
+# SHELL := /bin/bash
+ifeq ($(filter undefine,$(value .FEATURES)),)
+  $(error The build system does not work properly with GNU Make $(MAKE_VERSION). please use GNU Make 3.82 or above. \
+	for mac run `brew install make` and then follow the directions on modifying your path so new `make` works
+  )
+endif
+.ONESHELL:
+.SHELLFLAGS := -eu -o pipefail -c
+# .DELETE_ON_ERROR:
+# MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules --no-print-directory
+
 # this grabs the path that this shipkit.make is in.
 export SHIPKIT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 export SHIPKIT_BIN := $(SHIPKIT_DIR)/bin
@@ -17,26 +25,31 @@ include $(SHIPKIT_MAKEFILES)/env-db.make
 
 # The defult build dir, if we have only one it'll be easier to cleanup
 export BUILD_DIR ?= build
+BUILD_VARS += BUILD_DIR
+
 # as shipkit installs stuff on demand this is where it should go, should be absolute so when calling in dif dir it works
 export SHIPKIT_INSTALLS ?= $(abspath $(BUILD_DIR)/installs)
 
-BUILD_VARS += BUILD_DIR
+#shell doesn't get the exported vars so we need to spin the ones we want, which should be in BUILD_VARS
 SHELL_EXPORTS := $(foreach v,$(BUILD_VARS), $(v)='$($(v))')
-# calls either th projects build.sh to build the vairables file for make or
-# if no build.sh is specified then makes the call directly to init_env
-# need to add the exports we want as they dont seem to get passed through with shell function like they do in targets
+# if no build.sh var is not set then call the the init_env script directly
+# if its set then call build.sh and assume its setting up variables and will call the main init_env where needed
 ifdef build.sh
 shResults := $(shell $(SHELL_EXPORTS) $(build.sh) make_env_file $(BUILD_ENV) $(DB_VENDOR))
-else 
+else
 shResults := $(shell $(SHELL_EXPORTS) $(SHIPKIT_BIN)/init_env init_and_create_env_file $(BUILD_ENV) $(DB_VENDOR))
 endif
+ifneq ($(.SHELLSTATUS),0)
+  $(error error with init_env or build.sh $(shResults))
+endif
+
 # uncomment to debug results
 # $(info shResults=$(shResults))
 
 makefile_env := ./$(BUILD_DIR)/make/makefile.env
 # import/sinclude the variables file to make it availiable to make as well
 sinclude $(makefile_env)
-# now re-export them so for future shell calls, BUILD_VARS is the list of them all	
+# now re-export them so for future shell calls, BUILD_VARS is the list of them all
 export $(BUILD_VARS)
 # export the list too
 export BUILD_VARS
