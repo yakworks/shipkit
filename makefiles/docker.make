@@ -1,4 +1,6 @@
 
+docker_tools := $(SHIPKIT_BIN)/docker_tools
+
 # DOCKER_CMD verbs
 
 # MAKECMDGOALS has the list of all target goals that are passed into make cmd

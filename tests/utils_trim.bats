@@ -1,0 +1,29 @@
+#!/usr/bin/env bats
+
+# converted to bats format from what is here https://github.com/jasperes/bash-yaml
+source "$SHIPKIT_BIN/utils"
+
+@test 'trim with leading spaces' {
+  FOO="  some value"
+  trimmed=$(trim "$FOO")
+  [ "$trimmed" = "some value" ]
+}
+
+@test 'trim with trailing spaces' {
+  FOO="some value   "
+  trimmed=$(trim "$FOO")
+  [ "$trimmed" = "some value" ]
+}
+
+@test 'trim with both trailing and leading spaces' {
+  FOO="    some value    "
+  trimmed=$(trim "$FOO")
+  [ "$trimmed" = "some value" ]
+}
+
+@test 'trim with both trailing and leading spaces and tabs' {
+  FOO=$(echo -e " \t  some value  \t  ")
+  trimmed=$(trim "$FOO")
+  echo "trimmed=$trimmed;"
+  [ "$trimmed" = "some value" ]
+}

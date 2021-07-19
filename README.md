@@ -1,9 +1,15 @@
-# Make rules them all
+# BAM (bash and make) CI/CD Tool
 
-bash scripts and makefiles for a common way to build, test and deploy across projects 
-no matter what the language.
+BAM (bash and make) Bash scripts and makefiles based CI/CD tool. 
+- ship every change to production without hassle. 
+- Automated versioning, generating release notes
+- Documentation builder
+- Automated publishing
+
+For a standardized way to build, test and deploy across projects that stays out of your way, no matter what the language.
 
 ## Why?
+
 From https://github.blog/2015-06-30-scripts-to-rule-them-all/
 
 > We have a lot of software running our products and company. We also have a lot of potential contributing members. Being able to get from git clone to an up-and-running project in a development environment is imperative for fast, reliable contributions. A consistent bootstrapping experience across all our projects reduces friction and encourages contribution.
@@ -16,9 +22,35 @@ With practically every software project, developers need to perform the followin
 - run continuous integration
 - start the app
 
-We have normalized on a set of scripts and `Make` targets for all of our projects that individual contributors will be familiar with the second after they clone a project. 
+We have normalized on a set of `Bash` scripts and `Make` targets for all of our projects that individual contributors will be familiar with the second after they clone a project. 
 
-We call this “Shipkit”.
+## Why Bash?
+
+Yes we need it. Its pretty much every where. And if using a small alpine docker image, adding bash adds about 2.5 mb
+
+| Image                                                        | size    | uncompressed |
+|--------------------------------------------------------------|--------:|-------------:|
+| Base Alpine image                                            | 2.68 MB | 5.6 MB       |
+| Alpine with Bash                                             | 3.46 MB | 7.75 MB      |
+| Alpine with bash, make                                       | 3.56 MB | 7.96 MB      |
+| Alpine with Bash, Make, Curl                                 | 4.56 MB | 10.04 MB     |
+| Alpine with Bash, Make, Curl <br> gnupg, git, openssh-client | 20.6 MB | 46.72 MB     |
+
+## Why Make?
+
+From [The Lost Art of the Makefile](https://www.olioapps.com/blog/the-lost-art-of-the-makefile/)
+
+> Make is a general-purpose build tool that has been improved upon and refined continuously since its introduction over forty years ago. Make is great at expressing build steps concisely and is not specific to (insert language here) projects. It is very good at incremental builds, which can save a lot of time when you rebuild after changing one or two files in a large project.
+
+> Make has been around long enough to have solved problems that newer build tools are only now discovering for themselves.
+
+> ... Make is still widely used. But I think that it is underrepresented in (insert language here) development. You are more likely to see a Makefile in a C or C++ project, for example.
+
+However, as is goes with Make, it is a slippery slope with Makefiles themselves become projects of their own. Thus this project is born, shaving the Makefile Yak so your project does have to. 
+
+## Make as a wrapper
+
+In most cases we dont try to duplicate in Make what another build tool is doing for a language. Gradle, maven, webpack, etc.. are good for their repective languages. But they are not so great when you are trying to remeber the commands for building, testing, starting and deploying. creating NPM scripts as your projects starting point for example has many limitations. And when going to a java or python project, `npm build` or `npm start` wont work unless I have npm. But we can have a standard `make build` and `make test` that works across all projects and calls out to the respective build too commands. 
 
 ## Assumptions about the build environment
 

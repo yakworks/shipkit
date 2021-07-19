@@ -1,5 +1,3 @@
-cd in to this dir
-
-`make` will show help
+Uses bats https://github.com/bats-core/bats-core
 
 `make test` will run the tests

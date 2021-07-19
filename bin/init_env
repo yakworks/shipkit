@@ -157,14 +157,23 @@ function is_releasable_branch {
   echo "$1" | grep -E "$grepRegex" || true
 }
 
+# calls init_env and creates build/make/makefile.envv for importing into makefile.
+# $1 - BUILD_ENV (test, dev, seed)
+# $2 - optional DBMS Vendor (sqlserver,mysql, etc) *optional*
+function init_and_create_env_file {
+  set_build_env $1 $2
+  init_env
+  mkdir -p $BUILD_DIR/make
+  createEnvFile "$BUILD_DIR/make/makefile.env"
+}
+
 # create build/make_env_db.env for importing into makefile.
 # $1 - BUILD_ENV (test, dev, seed)
-# $2 - DBMS Vendor (sqlserver,mysql, etc) *optional*
+# $2 - optional DBMS Vendor (sqlserver,mysql, etc) *optional*
 function make_env_file {
   set_build_env $1 $2
-  # init_env
-  mkdir -p build/make
-  createEnvFile "build/make/makefile.env"
+  mkdir -p $BUILD_DIR/make
+  createEnvFile "$BUILD_DIR/make/makefile.env"
 }
 
 # set build environment
@@ -173,11 +182,11 @@ function make_env_file {
 function set_build_env {
   setVar BUILD_ENV ${1:-test}
   [ "$2" ] && setDbEnv $2
-  post_build_env
+  after_build_env
 }
 
-# dummy place holder, should be overriden in projects build.sh
-function post_build_env { :; }
+# dummy place holder, can be implemented in projects build.sh
+function after_build_env { :; }
 
 # create env file from BUILD_VARS for importing into makefile.
 # arg $1 - the file to use
@@ -213,7 +222,6 @@ function parse_user_env_file {
   fi
 }
 
-
 # parses the env file, eval and load into BUILD_VARS
 # $1 - the env file to parse
 # $2 - true if we want to override all variables that might already be set
@@ -244,4 +252,12 @@ function parse_env_file {
   # log-vars
 }
 
+
+
+
+# --- boiler plate function runner, keep at end of file ------
+# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  source "$(dirname $0)/function_runner.sh"
+fi
 

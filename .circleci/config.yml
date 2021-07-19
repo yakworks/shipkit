@@ -1,0 +1,14 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: yakworks/builder:base
+    steps:
+      - checkout
+      - run: make test
+
+workflows:
+  build-flow:
+    jobs:
+      - build:
+          context: bot-context # context with shared ENV vars

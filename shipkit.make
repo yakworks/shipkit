@@ -3,20 +3,32 @@
 # ideas pulled from https://github.com/martinwalsh/ludicrous-makefiles	
 # make default shell bash
 SHELL := /bin/bash
-# Do not use the built-in rules specified in the  system makefile.
-MAKEFLAGS += -rR
-# Location Variables
-# The defult build dir, if we have only one it'll be easier to cleanup
-export BUILD_DIR ?= build
+# -r is Do not use the built-in rules specified in the system makefile. 
+# the no-print is for gnu to not show the entering dir noise
+MAKEFLAGS += -rR --no-print-directory
 # this grabs the path that this shipkit.make is in.
 export SHIPKIT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 export SHIPKIT_BIN := $(SHIPKIT_DIR)/bin
 SKIT_MAKEFILES := $(SHIPKIT_DIR)/makefiles
+include $(SKIT_MAKEFILES)/Shipkit-core.make
 # include boilerplate to set BUILD_ENV and DB from targets
 include $(SKIT_MAKEFILES)/env-db.make
 
-# calls the build.sh make_env_file to build the vairables file for make, recreates on each make run
-shResults := $(shell $(build.sh) make_env_file $(BUILD_ENV) $(DB_VENDOR))
+# The defult build dir, if we have only one it'll be easier to cleanup
+export BUILD_DIR ?= build
+BUILD_VARS += BUILD_DIR
+
+SHELL_EXPORTS := $(foreach v,$(BUILD_VARS), $(v)='$($(v))')
+# calls either th projects build.sh to build the vairables file for make or
+# if no build.sh is specified then makes the call directly to init_env
+# need to add the exports we want as they dont seem to get passed through with shell function like they do in targets
+ifdef build.sh
+shResults := $(shell $(SHELL_EXPORTS) $(build.sh) make_env_file $(BUILD_ENV) $(DB_VENDOR))
+else 
+shResults := $(shell $(SHELL_EXPORTS) $(SHIPKIT_BIN)/init_env init_and_create_env_file $(BUILD_ENV) $(DB_VENDOR))
+endif
+# uncomment to debug results
+# $(info shResults=$(shResults))
 
 makefile_env := ./$(BUILD_DIR)/make/makefile.env
 # import/sinclude the variables file to make it availiable to make as well
@@ -26,8 +38,6 @@ export $(BUILD_VARS)
 # export the list too
 export BUILD_VARS
 
-# includes for common
-include $(SKIT_MAKEFILES)/shipkit-core.make
 include $(SKIT_MAKEFILES)/release.make
 
 HELP_AWK := $(SKIT_MAKEFILES)/help.awk

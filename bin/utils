@@ -4,22 +4,12 @@
 # ------------------
 
 # ---
-# trims leading and trailing spaces from string
+# trims leading and trailing spaces or tabs from string
 # $1 - the string to trim
 # ---
 function trim {
-    local trimmed="$1"
-
-    # Strip leading spaces.
-    while [[ $trimmed == ' '* ]]; do
-       trimmed="${trimmed## }"
-    done
-    # Strip trailing spaces.
-    while [[ $trimmed == *' ' ]]; do
-        trimmed="${trimmed%% }"
-    done
-
-    echo "$trimmed"
+    # the blank area between brackets [ 	] has both a space and a tab
+    echo "$1" | sed 's/^[ 	]*//' | sed 's/[ 	]*$//g'
 }
 
 

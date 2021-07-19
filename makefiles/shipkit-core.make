@@ -1,7 +1,7 @@
 # functions and targets for logging, downloading and OS detection
 # Imported into core shipkit.make
 
-# ---- Logging ---
+# ---- Logging ----
 # usage example : $(call log, logging message $(SomeVar));
 
 # Provides two callables, `log` and `_log`, to facilitate consistent

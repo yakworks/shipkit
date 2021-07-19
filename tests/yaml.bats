@@ -1,8 +1,6 @@
 #!/usr/bin/env bats
 
-# tconverted to bats format from what is here https://github.com/jasperes/bash-yaml
-
-load _test_base
+# converted to bats format from what is here https://github.com/jasperes/bash-yaml
 source "$SHIPKIT_BIN/yaml"
 
 setup() {
