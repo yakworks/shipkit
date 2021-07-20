@@ -8,6 +8,10 @@
 include Shipkit.make
 include $(SHIPKIT_MAKEFILES)/docker.make
 include $(SHIPKIT_MAKEFILES)/secrets.make
+include $(SHIPKIT_MAKEFILES)/git-tools.make
+
+# -- Variables ---
+export BOT_EMAIL ?= 9cibot@9ci.com
 
 # --- Dockers ---
 docker_tools := $(SHIPKIT_BIN)/docker_tools
