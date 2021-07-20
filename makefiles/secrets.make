@@ -14,8 +14,8 @@ vault-decrypt: import-gpg-key $(GIT_SECRET_SH) | _verify_VAULT_URL _verify_GPG_P
 	cd build/vault && $(GIT_SECRET_SH) reveal -p "$(GPG_PASS)"
 
 import-gpg-key: | _verify_GPG_PRIVATE_KEY _verify_BOT_EMAIL
-	@hasKey=`gpg --list-keys | grep $(BOT_EMAIL)`
-	if [[ ! "$$hasKey" && "$(GPG_PRIVATE_KEY)" ]]; then
+	@if [ "$(GPG_PRIVATE_KEY)"  ]; then
+		echo "importing GPG KEY"
 		echo "$(GPG_PRIVATE_KEY)" | base64 --decode | gpg -v --batch --import
 	fi
 # gpg above --batch doesn't ask for prompt and -v is verbose

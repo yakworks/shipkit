@@ -46,7 +46,9 @@ docmark-build: docmark-build-prep
 # this should be run inside of the docmark docker
 docmark-publish-prep: docmark-build git-clone-pages
 	@cp -r $(DOCKMARK_SITE_DIR)/. $(PAGES_BUILD_DIR)
-	@if [ -d "$(GROOVYDOC_BUILD_DIR)" ]; then cp -r $(GROOVYDOC_BUILD_DIR) $(PAGES_BUILD_DIR)/groovydocs; fi
+	if [ -d "$(GROOVYDOC_BUILD_DIR)" ]; then
+		cp -r $(GROOVYDOC_BUILD_DIR) $(PAGES_BUILD_DIR)/groovydocs
+	fi
 
 docmark-publish: docmark-publish-prep
 	$(MAKE) git-push-pages
@@ -62,11 +64,11 @@ publish-docs:
 ifdef RELEASABLE_BRANCH
 
  publish-docs:
-	@if [ ! "$(IS_SNAPSHOT)" ]; then \
-		echo "not a snapshot, publishing docs"; \
-		$(MAKE) docmark-publish; \
-	else \
-		echo "IS_SNAPSHOT ... NOT publishing docs "; \
-	fi;
+	@if [ ! "$(IS_SNAPSHOT)" ]; then
+		echo "not a snapshot, publishing docs"
+		$(MAKE) docmark-publish
+	else
+		echo "IS_SNAPSHOT ... NOT publishing docs "
+	fi
 
 endif

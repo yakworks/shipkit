@@ -7,6 +7,7 @@
 # core include, creates the makefile.env for the BUILD_VARS that evrything else depends on
 include Shipkit.make
 include $(SHIPKIT_MAKEFILES)/docker.make
+include $(SHIPKIT_MAKEFILES)/secrets.make
 
 # --- Dockers ---
 docker_tools := $(SHIPKIT_BIN)/docker_tools
