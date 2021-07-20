@@ -26,8 +26,9 @@ function create_github_release {
   # local rurl="https://api.github.com/repos/$3/releases"
   curl -X POST \
     --header 'authorization: Bearer $4' \
-    --data "$api_data"
-    --url "https://api.github.com/repos/$3/releases"
+    --url "https://api.github.com/repos/$3/releases" \
+    --data "$api_data" \
+
 }
 
 # --- boiler plate function runner, keep at end of file ------
