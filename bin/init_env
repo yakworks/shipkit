@@ -178,7 +178,7 @@ function make_env_file {
   createEnvFile "$BUILD_DIR/make/makefile.env"
 }
 
-# set build environment
+# set build environment if present
 # $1 - BUILD_ENV (test, dev, seed)
 # $2 - DBMS Vendor (sqlserver,mysql, etc) *optional*
 function set_build_env {

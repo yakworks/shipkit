@@ -6,7 +6,7 @@
 
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=src/parse_url.sh
-source "${__dir}/replace_version"
+source "${__dir}/semver"
 source "${__dir}/docker_tools"
 
 DOCMARK_DOCKER_IMAGE=yakworks/docmark

@@ -19,7 +19,7 @@ docker-shell:
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
 
-# --- Testing ---
+# --- BATS Testing ---
 BATS_VERSION ?= 1.3.0
 # BATS_TESTS   ?= . 3>&1
 # the tests to run under the test dir, dot means all

@@ -2,16 +2,18 @@
 # targets for release process on git
 # -------------
 
-shipit := $(SHIPKIT_BIN)/ship_it
+github_release := $(SHIPKIT_BIN)/github_release
+semver := $(SHIPKIT_BIN)/semver
+changelog := $(SHIPKIT_BIN)/changelog
 
 update-changelog: | _verify_VERSION _verify_PUBLISHED_VERSION _verify_RELEASE_CHANGELOG _verify_PROJECT_FULLNAME
-	$(shipit) update_changelog $(VERSION) $(PUBLISHED_VERSION) $(RELEASE_CHANGELOG) $(PROJECT_FULLNAME)
+	$(changelog) update_changelog $(VERSION) $(PUBLISHED_VERSION) $(RELEASE_CHANGELOG) $(PROJECT_FULLNAME)
 
 update-readme-version: | _verify_VERSION
-	$(shipit) replace_version "$(VERSION)" README.md
+	$(semver) replace_version "$(VERSION)" README.md
 
 bump-version-props: | _verify_VERSION
-	$(shipit) bump_version_props "$(VERSION)"
+	$(semver) bump_version_file "$(VERSION)" version.properties
 
 # updates change log, bumps version, updates the publishingVersion in README
 push-version-bumps: update-changelog update-readme-version bump-version-props
@@ -22,5 +24,5 @@ push-version-bumps: update-changelog update-readme-version bump-version-props
 
 # calls github endpoint to create a release on the RELEASABLE_BRANCH
 create-github-release: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
-	$(shipit) create_github_release $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
+	$(github_release) create_github_release $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
 

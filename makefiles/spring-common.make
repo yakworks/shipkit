@@ -3,6 +3,9 @@
 # For a spring project that has a docker builder, docs,
 # -------------
 # --- helper makefiles ---
+# include boilerplate to set BUILD_ENV and DB from targets
+include $(SHIPKIT_MAKEFILES)/env-db.make
+
 include $(SHIPKIT_MAKEFILES)/secrets.make
 include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/docker.make
@@ -13,3 +16,4 @@ include $(SHIPKIT_MAKEFILES)/spring-gradle.make
 include $(SHIPKIT_MAKEFILES)/spring-docker.make
 include $(SHIPKIT_MAKEFILES)/circle.make
 include $(SHIPKIT_MAKEFILES)/docmark.make
+include $(SHIPKIT_MAKEFILES)/release.make

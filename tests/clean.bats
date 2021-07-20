@@ -28,6 +28,5 @@ teardown() {
   run make --no-print-directory -f <(echo "$MAKEFILE") clean
   __debug "${status}" "${output}" "${lines[@]}"
   [ "$status" -eq 0 ]
-  [ "${lines[0]}" == "rm -rf /tmp/__one__.clean /tmp/__two__.clean" ]
-  [ "${lines[1]}" == "mock-rm -rf /tmp/__one__.clean /tmp/__two__.clean" ]
+  [ "${lines[0]}" == "mock-rm -rf /tmp/__one__.clean /tmp/__two__.clean" ]
 }

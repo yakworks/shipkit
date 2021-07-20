@@ -6,9 +6,27 @@
 # https://hinty.io/ivictbor/publish-and-upload-release-to-github-with-bash-and-curl/
 # https://github.com/terryburton/travis-github-release/blob/master/github-release.sh
 set -e
-__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
-source "${__dir}/init_env"
 
+# calls the github release endpoint to tag nd mark a release
+# $1 - the current dev version we are releasing
+# $2 - the release branch to push to, should be the active releasable git branch that is checked out such as master
+# $3 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
+# $4 - the GITHUB_TOKEN auth token
+function create_github_release {
+  local api_data=$(printf '{
+    "tag_name": "v%s",
+    "name": "v%s",
+    "body": "Release of version %s",
+    "target_commitish": "%s",
+    "draft": false,
+    "prerelease": false}' $1 $1 $1 $2)
+  # echo $api_data
+  # local rurl="https://api.github.com/repos/$3/releases"
+  curl -X POST \
+    --header 'authorization: Bearer $4' \
+    --data "$api_data"
+    --url "https://api.github.com/repos/$3/releases"
+}
 
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
