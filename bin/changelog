@@ -7,6 +7,8 @@ set -euo pipefail # strict mode https://bit.ly/36MvF0T
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
 source "${__dir}/utils"
 
+# examples https://gist.github.com/kingkool68/09a201a35c83e43af08fcbacee5c315a
+#
 # updates the changelog, does a bunch of git diff work to get changes
 # $1 - the current dev version
 # $2 - the previous published version
