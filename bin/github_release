@@ -24,11 +24,23 @@ function create_github_release {
     "prerelease": false}' "$1" "$1" "$body" "$2")
   echo $api_data
   # local rurl="https://api.github.com/repos/$3/releases"
-  curl -X POST \
-    --header 'authorization: Bearer $4' \
+  local curl_result=`curl -X POST \
+    --header 'Authorization: token $4' \
     --url "https://api.github.com/repos/$3/releases" \
-    --data "$api_data" \
+    --data "$api_data"`
 
+  if [ "`echo "$curl_result" | tail -1`" != "201" ]; then
+    echo "FAILED - curl"
+    echo "$curl_result"
+    return 1
+  fi
+  local release_id=`echo "$curl_result" | sed -ne 's/^  "id": \(.*\),$/\1/p'`
+  if [[ -z "$release_id" ]]; then
+    echo "FAILED - release_id"
+    echo "$curl_result"
+    return 1
+  fi
+  echo "SUCCESS - github release id: $release_id"
 }
 
 # --- boiler plate function runner, keep at end of file ------
