@@ -5,8 +5,8 @@ SHELL := bash
 
 .DEFAULT_GOAL := help
 
-# no need for @ with this on, will keep it silent
-.SILENT :
+# no need for @ with this on, will keep it silent, pass something to VERBOSE to show it all
+$(VERBOSE).SILENT:
 
 # the whole target recipe is run, instead of one shell per line
 .ONESHELL:
