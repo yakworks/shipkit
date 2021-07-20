@@ -22,15 +22,16 @@ docker-shell:
 # --- Testing ---
 BATS_VERSION ?= 1.3.0
 # BATS_TESTS   ?= . 3>&1
-BATS_TESTS   ?= tests
+# the tests to run under the test dir, dot means all
+TESTS   	 ?= .
 BATS_OPTS    ?=
 BATS_DIR     ?= $(BUILD_DIR)/bats
 BATS_URL     := https://github.com/bats-core/bats-core/archive/refs/tags/v$(BATS_VERSION).tar.gz
 BATS_EXE     := $(BATS_DIR)/bin/bats
 
 test: $(BATS_EXE)
-	$(BATS_EXE) $(BATS_OPTS) $(BATS_TESTS)
-	# $(BATS) $(BATS_OPTS) $(BATS_TESTS)
+	$(BATS_EXE) $(BATS_OPTS) tests/$(TESTS)
+
 .PHONY: test
 
 $(BATS_EXE):
@@ -39,7 +40,7 @@ $(BATS_EXE):
 	touch $(BATS_EXE)
 
 clean::
-	rm -rf $(BATS_DIR)
+	rm -rf build
 
 oneshell-test:
 	@ FOO=bar

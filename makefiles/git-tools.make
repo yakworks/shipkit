@@ -23,10 +23,11 @@ git-push-pages: | _verify_PAGES_BRANCH _verify_PROJECT_FULLNAME
 	@git -C $(PAGES_BUILD_DIR) push -q $(GITHUB_URL) $(PAGES_BRANCH) || true
 
 
-config-bot-git-user: | _verify_BOT_USER _verify_BOT_EMAIL
+config-bot-git-user: BOT_USER ?= $(shell echo $(BOT_EMAIL) | cut -d "@" -f1)
+config-bot-git-user: | _verify_BOT_EMAIL
 	@hasGitUser=`git config --global user.email`
 	if [ ! "$$hasGitUser" ] || [ "$(CI)" ]; then
-		echo "config_bot_user $(BOT_USER)"
+		echo "config-bot-git-user $(BOT_USER)"
 		git config credential.helper 'cache --timeout=120'
 		git config --global user.name "$(BOT_USER)"
 		git config --global user.email "$(BOT_EMAIL)"

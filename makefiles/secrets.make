@@ -1,7 +1,7 @@
 # for downloading vault and running git-secret
 
 GIT_SECRET_PATH := $(SHIPKIT_INSTALLS)/git-secret
-GIT_SECRET_SH := $(GIT_SECRET_PATH)/git-secret
+GIT_SECRET_SH ?= $(GIT_SECRET_PATH)/git-secret
 VAULT_DIR ?= $(BUILD_DIR)/vault
 
 # on demand clone and install of git-secret
@@ -21,7 +21,7 @@ import-gpg-key: | _verify_GPG_PRIVATE_KEY _verify_BOT_EMAIL
 # gpg above --batch doesn't ask for prompt and -v is verbose
 
 git-secret-version: $(GIT_SECRET_SH)
-	@$(GIT_SECRET_SH) --version
+	$(GIT_SECRET_SH) --version
 
 secrets-encrypt:
 	@$(GIT_SECRET_SH) hide
