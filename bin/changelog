@@ -46,7 +46,8 @@ function update_changelog {
   # We only get the commit hash so we don't have to deal with a bunch of ugly parsing
   # See Pretty format placeholders at https://git-scm.com/docs/pretty-formats
   local COMMITS=$(git log $tagRange --pretty=format:"%H")
-  # echo "COMMITS $COMMITS"
+  echo "git log $tagRange --pretty=format:%H"
+  echo "results: $COMMITS"
   # Store our changelog in a variable to be saved to a file at the end
   local MARKDOWN="#### $LATEST_TAG\n"
   MARKDOWN+='\n'

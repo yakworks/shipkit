@@ -39,12 +39,7 @@ create-github-release: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJE
 	$(github_release) create_github_release $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
 	echo "create-github-release success"
 
-semantic-release:
+semantic-release: update-changelog update-readme-version bump-version-props create-github-release push-version-bumps
 	echo "Releasable ... doing version bump, changelog and tag push"
-	make update-changelog
-	make update-readme-version
-	make bump-version-props
-	make create-github-release
-	make push-version-bumps
 
 endif # end RELEASABLE_BRANCH
