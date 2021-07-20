@@ -22,12 +22,13 @@ function create_github_release {
     "target_commitish": "%s",
     "draft": false,
     "prerelease": false}' "$1" "$1" "$body" "$2")
+
   echo $api_data
   # local rurl="https://api.github.com/repos/$3/releases"
   local curl_result=`curl -X POST \
-    --header 'Authorization: token $4' \
-    --url "https://api.github.com/repos/$3/releases" \
-    --data "$api_data"`
+    -H "Authorization: token $4" \
+    -d "$api_data" \
+    "https://api.github.com/repos/$3/releases"`
 
   if [ "`echo "$curl_result" | tail -1`" != "201" ]; then
     echo "FAILED - curl"
