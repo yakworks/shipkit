@@ -7,43 +7,50 @@
 # core include, creates the makefile.env for the BUILD_VARS that evrything else depends on
 include Shipkit.make
 include $(SHIPKIT_MAKEFILES)/docker.make
+include $(SHIPKIT_MAKEFILES)/secrets.make
+include $(SHIPKIT_MAKEFILES)/git-tools.make
+
+# -- Variables ---
+export BOT_EMAIL ?= 9cibot@9ci.com
 
 # --- Dockers ---
 docker_tools := $(SHIPKIT_BIN)/docker_tools
 DOCK_SHELL_URL = yakworks/builder:bash-make
 
 ## docker shell for testing
-docker-shell: 
+docker-shell:
 	$(docker_tools) dockerStart shipkit-shell -it \
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
 
-# --- Testing ---
+# --- BATS Testing ---
 BATS_VERSION ?= 1.3.0
 # BATS_TESTS   ?= . 3>&1
-BATS_TESTS   ?= tests
+# the tests to run under the test dir, dot means all
+TESTS   	 ?= .
 BATS_OPTS    ?=
 BATS_DIR     ?= $(BUILD_DIR)/bats
 BATS_URL     := https://github.com/bats-core/bats-core/archive/refs/tags/v$(BATS_VERSION).tar.gz
 BATS_EXE     := $(BATS_DIR)/bin/bats
 
 test: $(BATS_EXE)
-	$(BATS_EXE) $(BATS_OPTS) $(BATS_TESTS) 
-	# $(BATS) $(BATS_OPTS) $(BATS_TESTS)
+	$(BATS_EXE) $(BATS_OPTS) tests/$(TESTS)
+
 .PHONY: test
 
-$(BATS_EXE): 
+$(BATS_EXE):
 	@mkdir -p $(BATS_DIR)
 	$(call download,$(BATS_URL),tar zxf - -C $(BATS_DIR) --strip-components 1)
-	@touch $(BATS_EXE)
+	touch $(BATS_EXE)
 
 clean::
-	rm -rf $(BATS_DIR)
+	rm -rf build
 
-# install-test:
-# 	@if [ ! -d "build/bats-core" ]; then \
-# 	git clone --depth 1 -b v1.3.0 https://github.com/bats-core/bats-core.git build/bats-core; \
-# 	fi
+oneshell-test:
+	@ FOO=bar
+	if [ "$$FOO" ]; then
+		echo $$FOO
+	fi
 
 # test: install-test
 # 	@export PATH="build/bats-core/bin:$$PATH"; \

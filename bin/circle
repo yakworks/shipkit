@@ -2,36 +2,9 @@
 # ---
 # working with CI circle and publishing,
 # should be imported into the main build.sh
+# ! not really used now
 # ---
 set -e
-
-# ---
-# for multi-project gradles this
-# cats the props and build.gradle into a single cache-key.tmp file
-# so we can so checksum on that one file to see if there are any changes
-# if any build files change then it will not get cache and gradle will re-download the internet
-# $1 - the project list, if not passed then defaults to whats in env variable PROJECT_SUBPROJECTS
-# ---
-function create_cache_key {
-  cat gradle.properties build.gradle > cache-key.tmp
-  local projList="${1:-$PROJECT_SUBPROJECTS}"
-  for project in $projList; do
-    [ -f $project/build.gradle ] && cat $project/build.gradle >> cache-key.tmp
-    [ -f $project/gradle.properties ] && cat $project/gradle.properties >> cache-key.tmp
-  done
-  return 0 # do this so make doesn't do make: *** [cache_key_file] Error 1
-}
-
-# ---
-# triggers or invoke a circle pipleline job. the CIRCLE_TOKEN env variable should be setup
-# $1 - the repo slug, for example 'yakworks/gorm-tools' to call the build for that one
-# --
-function trigger-circle {
-  curl --location --request POST \
-    "https://circleci.com/api/v2/project/github/${1}/pipeline" \
-    --header 'Content-Type: application/json' \
-    -u "${CIRCLE_TOKEN}:"
-}
 
 # ---
 # circle orb compare-url/reconstruct makes a CIRCLE_COMPARE_URL.txt and this will

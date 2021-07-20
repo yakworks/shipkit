@@ -1,6 +1,6 @@
-# kubernetes deployment for pages generated with docmark. 
+# kubernetes deployment for pages generated with docmark.
 # container uses env variables to download git project, build the docs and then start a nginx webserver
-# sets up ingress-nginx services and uses default tls cert that was setup for it. 
+# sets up ingress-nginx services and uses default tls cert that was setup for it.
 # use the sed_tpl to process this template for example `kubeApplyTpl build/bin/kube_templates/.tpl.yml`
 apiVersion: apps/v1
 kind: Deployment
@@ -40,7 +40,7 @@ spec:
             value: '${GITHUB_TOKEN}'
           # custom make target to use to build the docs
           - name: MAKE_BULD_TARGET
-            value: docmark-nginx-build
+            value: ${PAGES_MAKE_BUILD_TARGET}
         ports:
           - containerPort: 80
             name: server
@@ -95,7 +95,7 @@ spec:
           service:
             name: ${PAGES_APP_KEY}
             port:
-              number: 80        
+              number: 80
   tls:
   - hosts:
       - ${PAGES_KUBE_URL}

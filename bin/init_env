@@ -18,11 +18,14 @@ function init_env {
   # echo date >> init_env.log
   [ "$version" ] && init_versions
 
+  # if a developer has a local dotenv then bring it in
+  parse_env_file ".env"
+
   # if build/vault/bot.env has been cloned this will import the vars
   parse_bot_env_file
 
-  # if developer has a local dotenv
-  parse_env_file ".env" true
+  # check for a build.env
+  parse_env_file "build.env"
 
   # if this is running in circle then this will normailze ENV variables to ours
   circle_init_env
@@ -63,7 +66,6 @@ function init_defaults {
   # sets up defaults for PAGES if they are not setup already
   setVar PAGES_BUILD_DIR "$BUILD_DIR/gh-pages"
   setVar PAGES_BRANCH "gh-pages"
-
 
 }
 
@@ -176,7 +178,7 @@ function make_env_file {
   createEnvFile "$BUILD_DIR/make/makefile.env"
 }
 
-# set build environment
+# set build environment if present
 # $1 - BUILD_ENV (test, dev, seed)
 # $2 - DBMS Vendor (sqlserver,mysql, etc) *optional*
 function set_build_env {

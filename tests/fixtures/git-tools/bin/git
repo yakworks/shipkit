@@ -1,0 +1,9 @@
+#!/bin/bash
+if [[ "$@" = "config --global user.email" ]]; then
+  # make it return nothing so it appears the user is not setup
+  echo ""
+else
+  echo mock-git "$@"
+fi
+
+exit 0

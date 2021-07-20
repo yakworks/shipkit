@@ -24,8 +24,8 @@ teardown() {
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]
-  [ "${lines[0]}" == "tests/fixtures/bin/curl  \"http://localhost\" | cat -" ]
-  [ "${lines[1]}" == "http://localhost" ]
+  # [ "${lines[0]}" == "tests/fixtures/bin/curl  \"http://localhost\" | cat -" ]
+  [ "${lines[0]}" == "mock-curl http://localhost" ]
 }
 
 @test 'download_to callable attempts a download' {
@@ -33,6 +33,6 @@ teardown() {
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]
-  [ "${lines[0]}" == "tests/fixtures/bin/curl --write-out \"%{http_code}\" -o /tmp/nowhere \"http://localhost\"" ]
-  [ "${lines[1]}" == "--write-out %{http_code} -o /tmp/nowhere http://localhost" ]
+  # [ "${lines[0]}" == "tests/fixtures/bin/curl --write-out \"%{http_code}\" -o /tmp/nowhere \"http://localhost\"" ]
+  [ "${lines[0]}" == "mock-curl --write-out %{http_code} -o /tmp/nowhere http://localhost" ]
 }

@@ -67,6 +67,17 @@ resolve-dependencies:
 merge-test-results: FORCE | _verify_PROJECT_SUBPROJECTS
 	$(spring_gradle) merge_test_results "$(PROJECT_SUBPROJECTS)"
 
+# for multi-project gradles this cats the props and build.gradle into a single cache-key.tmp file
+# for CI (such as circle) to checksum on a single file to see if there are any changes
+# if any build files change then it will not get cache and gradle will re-download the internet
+cache-key-file: | _verify_PROJECT_SUBPROJECTS
+	cat gradle.properties build.gradle > cache-key.tmp
+	for project in $(PROJECT_SUBPROJECTS); do
+		[ -f $$project/build.gradle ] && cat $$project/build.gradle >> cache-key.tmp
+		[ -f $$project/gradle.properties ] && cat $$project/gradle.properties >> cache-key.tmp
+	done
+	return 0 # is this needed?
+
 .PHONY: publish-lib
 # empty targets so make doesn't blow up when not a RELEASABLE_BRANCH
 # publish the library jar, gradle publish if a gradle project

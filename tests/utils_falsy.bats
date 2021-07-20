@@ -1,6 +1,4 @@
 #!/usr/bin/env bats
-
-# converted to bats format from what is here https://github.com/jasperes/bash-yaml
 source "$SHIPKIT_BIN/utils"
 
 @test 'isFalsy isTruthy when FOO=any value' {
@@ -26,20 +24,20 @@ source "$SHIPKIT_BIN/utils"
 
 @test 'isFalsy isTruthy when FOO=false or FOO="false"' {
   FOO=false
-  [ $(isFalsy "$FOO") ] 
+  [ $(isFalsy "$FOO") ]
   [ ! $(isTruthy "$FOO") ]
 
   FOO="false"
-  [ $(isFalsy "$FOO") ] 
+  [ $(isFalsy "$FOO") ]
   [ ! $(isTruthy "$FOO") ]
 }
 
 @test 'isFalsy isTruthy when FOO=0 or FOO="0"' {
   FOO=0
-  [ $(isFalsy "$FOO") ] 
+  [ $(isFalsy "$FOO") ]
   [ ! $(isTruthy "$FOO") ]
 
   FOO="0"
-  [ $(isFalsy "$FOO") ] 
+  [ $(isFalsy "$FOO") ]
   [ ! $(isTruthy "$FOO") ]
 }

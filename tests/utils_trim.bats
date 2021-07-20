@@ -1,6 +1,5 @@
 #!/usr/bin/env bats
 
-# converted to bats format from what is here https://github.com/jasperes/bash-yaml
 source "$SHIPKIT_BIN/utils"
 
 @test 'trim with leading spaces' {

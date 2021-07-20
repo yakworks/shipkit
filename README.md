@@ -1,6 +1,6 @@
 # BAM (bash and make) CI/CD Tool
 
-BAM (bash and make) Bash scripts and makefiles based CI/CD tool. 
+BAM (Bash And Make) Bash scripts and makefiles based CI/CD tool. 
 - ship every change to production without hassle. 
 - Automated versioning, generating release notes
 - Documentation builder
@@ -26,7 +26,7 @@ We have normalized on a set of `Bash` scripts and `Make` targets for all of our 
 
 ## Why Bash?
 
-Yes we need it. Its pretty much every where. And if using a small alpine docker image, adding bash adds about 2.5 mb
+Yes we need it. Its pretty much every where. And when using a small alpine docker image, adding bash only adds about 2.5 mb
 
 | Image                                                        | size    | uncompressed |
 |--------------------------------------------------------------|--------:|-------------:|
@@ -50,14 +50,15 @@ However, as is goes with Make, it is a slippery slope with Makefiles themselves 
 
 ## Make as a wrapper
 
-In most cases we dont try to duplicate in Make what another build tool is doing for a language. Gradle, maven, webpack, etc.. are good for their repective languages. But they are not so great when you are trying to remeber the commands for building, testing, starting and deploying. creating NPM scripts as your projects starting point for example has many limitations. And when going to a java or python project, `npm build` or `npm start` wont work unless I have npm. But we can have a standard `make build` and `make test` that works across all projects and calls out to the respective build too commands. 
+In most cases we dont try to duplicate in Make what another build tool is doing for a language. Gradle, maven, gulp, webpack, whatever ... are good for their repective languages. But they are not so great when you are trying to remeber the commands for building, testing, starting and deploying. creating NPM scripts as your projects starting point for example has many limitations. And when going to a java or python project, `npm build` or `npm start` wont work unless I have npm. But we can have a standard `make build` and `make test` that works across all projects and calls out to the respective build too commands. 
 
 ## Assumptions about the build environment
 
 The goal is to keep the dependencies light for base functionality and install whats needed on demand (such as for bats and git-secret). Whether your on your local dev machine or in a docker on a CI much of whats here assumes the following for a base shipkit environment.
 
+Make version: If you are on a mac then you probably have make 3.81 which was released back in 2006, when i had hair. This project needs a 4+ verion. `brew install make` and then follow suggestion on adding PATH so you can use `make` and not 
+`gmake` so yu get the bash_completion
 - `bash` is available. 
-- you have `Make` installed obviously. Its fairly ubiquitous and small but might need to install it
 - `awk`, `grep` and `sed`, attempts are made to keep it compatible across gnu and mac os.
 - `git`
 - `ssh`
@@ -68,7 +69,6 @@ Depending on the project type, languages and what `makes` you include the follow
 - `java` - we use zulu from [Azul](https://www.azul.com/)
 - `python`
 - `node and npm`
-
 
 ## Good reads
 
@@ -96,6 +96,10 @@ WIP for a node and python links
 
 # References
 
+Good make samples that this was taken from
+ideas pulled from https://tech.davis-hansson.com/p/make/
+and https://github.com/martinwalsh/ludicrous-makefiles	
+
 links for using make and docker
 - https://amaysim.engineering/the-3-musketeers-how-make-docker-and-compose-enable-us-to-release-many-times-a-day-e92ca816ef17
 - https://3musketeers.io/about/#what
@@ -107,6 +111,11 @@ links for using make and docker
 - https://github.com/marmelab/make-docker-command/blob/master/Makefile
 - https://github.com/mvanholsteijn/docker-makefile
 - https://itnext.io/docker-makefile-x-ops-sharing-infra-as-code-parts-ea6fa0d22946
+
+## bash
+
+- http://bash3boilerplate.sh
+- http://redsymbol.net/articles/unofficial-bash-strict-mode/
 
 ## versioning example
 

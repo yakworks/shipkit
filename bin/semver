@@ -1,0 +1,78 @@
+#!/bin/bash
+# ---
+# common logic for publishing a release.
+# ---
+set -e  # Abort script at first error, when a command exits with non-zero status
+
+# updates the version number in README
+# $1 - the new version to replace old one with
+# $2 - the file name to do the replace
+function replace_version {
+  sed -i.bak -e "s|Version: [0-9.]*[-v]*[0-9.]*|Version: ${1}|g" $2 && \
+    rm -- "${2}.bak"
+
+  # updatedContent = updatedContent.replaceFirst(/${p.name}:[\d\.]+[^"]+/, "${p.name}:$version")
+  # update any dependencies for plugin style versions, ie `id "yakworks.gorm-tools" version "1.2.3"`
+  # updatedContent = updatedContent.replaceFirst(/(?i)${p.name}"\sversion\s"[\d\.]+[^\s]+"/, "${p.name}\" version \"$version\"")
+}
+
+# bumps the current version and updates the version.properties
+# $1 - the current dev version that will be moved to publishedVersion, should be the version in the version.props
+# $2 - the version file, defaults to version.properties
+function bump_version_file {
+  local publishingVersion="${1}"
+  local newVersion=$( bump_patch $publishingVersion)
+  local versionFile=${2:-version.properties}
+  updateVersionFile $newVersion $publishingVersion $versionFile true
+}
+
+# Updates version.properties with given version, sets publishedVersion to the $VERSION
+# and sets snapshot to true
+# $1 - the new version
+# $2 - the published version
+# $3 - the version file
+# $4 - snapshot value, whether to set snapshot back to true
+function updateVersionFile {
+  local versionFile=${3:-version.properties}
+  if [ -n "$1" ] ; then
+    sed -i.bak \
+      -e "s/^version=.*/version=$1/g"  \
+      -e "s/^publishedVersion=.*/publishedVersion=$2/g" \
+      "$versionFile"
+    # remove the backup
+    rm -f "${versionFile}.bak"
+
+    # if snapshot was passed
+    if [ "$4" ]; then
+      sed -i.bak -e "s/^snapshot=.*/snapshot=$4/g" "$versionFile" && rm "${versionFile}.bak"
+    fi
+
+  else
+    echo "ERROR: missing version parameter " >&2
+    return 1
+  fi
+}
+
+# ---
+# increments version so 9.8.7 will return 9.8.8 and 9.8.7-RC.1 returns 9.8.7-RC.2
+# $1 - the version to bump
+# ---
+function bump_patch {
+  local ver="${1}"
+  local dotCount=$(echo "${ver}" | awk -F"." '{print NF-1}')
+  # cuts to the last dot
+  local baseVersion=$(echo $ver | cut -d. -f1-$dotCount)
+  # echo "major_and_minor $major_and_minor"
+  local endPathLoc=$((dotCount+1))
+  # grabs last part of version number
+  local patch=$(echo $ver | cut -d. -f$endPathLoc)
+  # echo "patch $patch"
+  ver=$(printf "%s.%d" $baseVersion $(($patch + 1)))
+  echo $ver
+}
+
+# --- boiler plate function runner, keep at end of file ------
+# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  source "${__dir}/function_runner.sh"
+fi
