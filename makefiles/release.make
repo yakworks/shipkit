@@ -26,20 +26,20 @@ push-version-bumps:
 	git push -q $(GITHUB_URL) $(RELEASABLE_BRANCH)
 
 
-# these are empty so they are always there for CI to call, will do nothing if not IS_RELEASABLE
+# this is empty so they are always there for CI to call, will do nothing if not IS_RELEASABLE
 semantic-release:
 
-create-github-release:
+# create-github-release:
 
 # -- release --
 ifeq (true,$(IS_RELEASABLE))
 
-  # calls github endpoint to create a release on the RELEASABLE_BRANCH
-  create-github-release: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
+# calls github endpoint to create a release on the RELEASABLE_BRANCH
+create-github-release: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
 	$(github_release) create_github_release $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
 	echo "create-github-release success"
 
-  semantic-release:
+semantic-release:
 	echo "Releasable ... doing version bump, changelog and tag push"
 	make update-changelog
 	make update-readme-version
