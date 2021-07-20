@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ------------
 # this is meant to be run from the root project dir inside the docker
 # container running the db as it uses the native tools

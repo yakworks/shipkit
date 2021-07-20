@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Helper functions to call Githubs release rest endpoint to make a release from a tag
 # TODO See following links for ideas on how to implement
 # https://isabelcastillo.com/script-release-github
 # https://hinty.io/ivictbor/publish-and-upload-release-to-github-with-bash-and-curl/
 # https://github.com/terryburton/travis-github-release/blob/master/github-release.sh
-set -e
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
 
 # calls the github release endpoint to tag nd mark a release
 # $1 - the current dev version we are releasing
@@ -13,14 +13,16 @@ set -e
 # $3 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
 # $4 - the GITHUB_TOKEN auth token
 function create_github_release {
+  # get body from
+  local body=$(cat "$BUILD_DIR/CHANGELOG_CHUNK.md")
   local api_data=$(printf '{
     "tag_name": "v%s",
     "name": "v%s",
-    "body": "Release of version %s",
+    "body": "%s",
     "target_commitish": "%s",
     "draft": false,
-    "prerelease": false}' $1 $1 $1 $2)
-  # echo $api_data
+    "prerelease": false}' "$1" "$1" "$body" "$2")
+  echo $api_data
   # local rurl="https://api.github.com/repos/$3/releases"
   curl -X POST \
     --header 'authorization: Bearer $4' \

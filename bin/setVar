@@ -1,12 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # The original purpose here was to be able to set a variable that will be tracked and can then be
 # eported back out to a file can be created and included into Make
+set -eo pipefail # strict mode https://bit.ly/36MvF0T
 
 # sets the variable value if its not already set and adds it for tracking in BUILD_VARS
 # args $1 - the variable name
 # args $2 - the variable value to set
 function setVar {
+  set +u # allow unbound variables
   varName="$1"
   # varVal="$2"
   # curVal="${!varName}"
@@ -16,6 +18,7 @@ function setVar {
     eval "$varName=\"\$2\""
   fi
   add_build_vars $varName
+  set -u # don't allow unbound variables
 }
 
 # sets the variable value if its not already set and adds it for tracking in BUILD_VARS

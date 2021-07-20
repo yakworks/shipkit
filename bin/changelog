@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---
 # updates a changelog
 # ---
-set -e  # Abort script at first error, when a command exits with non-zero status
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
 
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
+source "${__dir}/utils"
 
 # updates the changelog, does a bunch of git diff work to get changes
 # $1 - the current dev version
@@ -13,7 +14,8 @@ __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is i
 # $4 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
 function update_changelog {
   # the GITHUB_LINK_URL such as https://github.com/yakworks/gorm-tools to make anchors in changelog
-  [ "$GITHUB_LINK_URL" ] || GITHUB_LINK_URL="https://github.com/$4"
+  : "${GITHUB_LINK_URL:=https://github.com/$4}"
+  # [ "$GITHUB_LINK_URL" ] || GITHUB_LINK_URL="https://github.com/$4"
   # Repo URL to base links off of
   local LATEST_TAG="v$1" # example v6.1.12
   local PREVIOUS_TAG="v$2" # example v6.1.11
@@ -22,16 +24,28 @@ function update_changelog {
   # Get a list of all tags in reverse order
   # Assumes the tags are in version format like v1.2.3
   local gitTags=$(git tag -l --sort=-version:refname)
-  local TAGS=($gitTags)
+  # make it into an array
+  TAGS=()
+  if [ "$gitTags" ]; then
+    TAGS=($gitTags)
+  fi
 
-  if [[ ! " ${TAGS[@]} " =~ " ${PREVIOUS_TAG} " ]]; then
-    echo "Error creating changelog - PREVIOUS_TAG $PREVIOUS_TAG does not exists"
-    return 1
+  local tagRange="$PREVIOUS_TAG..HEAD"
+  # if PREVIOUS_TAG is falsy then its an initial release so blank out range to get all of it
+  # if this is not what you want then create a tag that starts with a v
+  # and set publishedVersion to that tag without the v prefix in version.props
+  if [ $(isFalsy "$2") ]; then
+    tagRange=""
+  else
+    if [[ ! " ${TAGS[@]} " =~ " ${PREVIOUS_TAG} " ]]; then
+      echo "Error creating changelog - PREVIOUS_TAG $PREVIOUS_TAG does not exists"
+      return 1
+    fi
   fi
 
   # We only get the commit hash so we don't have to deal with a bunch of ugly parsing
   # See Pretty format placeholders at https://git-scm.com/docs/pretty-formats
-  local COMMITS=$(git log $PREVIOUS_TAG..HEAD --pretty=format:"%H")
+  local COMMITS=$(git log $tagRange --pretty=format:"%H")
   # echo "COMMITS $COMMITS"
   # Store our changelog in a variable to be saved to a file at the end
   local MARKDOWN="#### $LATEST_TAG\n"
@@ -54,10 +68,16 @@ function update_changelog {
       # echo "BODY $BODY"
 
       MARKDOWN+='\n'
-      MARKDOWN+=" - $SUBJECT [$COMMIT]($GITHUB_LINK_URL/commit/$COMMIT)" # : $BODY"
+      MARKDOWN+=" - $SUBJECT [link]($GITHUB_LINK_URL/commit/$COMMIT)" # : $BODY"
     fi
   done
   MARKDOWN+='\n'
+  # put CHANGELOG_CHUNK.md in build dir so it can be used later when creating release in github
+  echo -e "$MARKDOWN" > "$BUILD_DIR/CHANGELOG_CHUNK.md"
+
+  # make sure changelog file exists
+  [ ! -f "$changelogName" ] && touch "$changelogName"
+  # prepend it
   echo -e "$MARKDOWN\n$(cat $changelogName)" > "$changelogName"
   # Save our markdown to a file
   #echo -e $MARKDOWN > CHANGELOG.md

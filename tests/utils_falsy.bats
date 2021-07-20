@@ -9,10 +9,12 @@ source "$SHIPKIT_BIN/utils"
 }
 
 @test 'isFalsy isTruthy when FOO is unset' {
+  set +u # turn off/ allow unbound variable check
   unset FOO
 
   [ $(isFalsy "$FOO") ]
   [ ! $(isTruthy "$FOO") ]
+  set +u # turn it back on
 }
 
 @test 'isFalsy isTruthy when FOO= nothing, empy' {

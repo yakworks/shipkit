@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
+
 # -----------------
 # some common bash util helpers
 # ------------------

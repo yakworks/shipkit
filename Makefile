@@ -9,6 +9,7 @@ include Shipkit.make
 include $(SHIPKIT_MAKEFILES)/docker.make
 include $(SHIPKIT_MAKEFILES)/secrets.make
 include $(SHIPKIT_MAKEFILES)/git-tools.make
+include $(SHIPKIT_MAKEFILES)/release.make
 
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
@@ -46,12 +47,3 @@ $(BATS_EXE):
 clean::
 	rm -rf build
 
-oneshell-test:
-	@ FOO=bar
-	if [ "$$FOO" ]; then
-		echo $$FOO
-	fi
-
-# test: install-test
-# 	@export PATH="build/bats-core/bin:$$PATH"; \
-# 	bats . 3>&1
