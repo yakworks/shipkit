@@ -59,9 +59,10 @@ function update_changelog {
   for COMMIT in $COMMITS; do
     # Get the subject of the current commit
     local SUBJECT=$(git log -1 ${COMMIT} --pretty=format:"%s")
-    # echo "SUBJECT $SUBJECT"
+    echo "SUBJECT $SUBJECT"
     # If the subject contains [ci skip] then skip it
     local PULL_REQUEST=$( grep -v -Eo "\[ci skip\]" <<< "$SUBJECT" )
+    echo "PULL_REQUEST $PULL_REQUEST"
     if [[ $PULL_REQUEST ]]; then
       # AUTHOR_NAME=$(git log -1 ${COMMIT} --pretty=format:"%an")
       # AUTHOR_EMAIL=$(git log -1 ${COMMIT} --pretty=format:"%ae")
@@ -72,6 +73,7 @@ function update_changelog {
 
       MARKDOWN+='\n'
       MARKDOWN+=" - $SUBJECT [link]($GITHUB_LINK_URL/commit/$COMMIT)" # : $BODY"
+      echo "MARKDOWN $MARKDOWN"
     fi
   done
   MARKDOWN+='\n'
