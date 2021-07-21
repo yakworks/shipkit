@@ -7,6 +7,9 @@
 # https://github.com/terryburton/travis-github-release/blob/master/github-release.sh
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
+source "${__dir}/utils"
+
 # calls the github release endpoint to tag nd mark a release
 # $1 - the current dev version we are releasing
 # $2 - the release branch to push to, should be the active releasable git branch that is checked out such as master
@@ -15,17 +18,21 @@ set -euo pipefail # strict mode https://bit.ly/36MvF0T
 function create_github_release {
   # get body from
   local body=$(cat "$BUILD_DIR/CHANGELOG_CHUNK.md")
+  local body_esc=`escape_json_string "$body"`
+
+  # echo $body_esc
   local api_data=$(printf '{
     "tag_name": "v%s",
     "name": "v%s",
     "body": "%s",
     "target_commitish": "%s",
-    "draft": false,
-    "prerelease": false}' "$1" "$1" "$body" "$2")
+    "draft": true,
+    "prerelease": false
+  }' "$1" "$1" "$body_esc" "$2")
 
   echo $api_data
   # local rurl="https://api.github.com/repos/$3/releases"
-  local curl_result=`curl -X POST \
+  local curl_result=`curl -X POST -s -w "\n%{http_code}\n" \
     -H "Authorization: token $4" \
     -d "$api_data" \
     "https://api.github.com/repos/$3/releases"`
