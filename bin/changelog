@@ -48,10 +48,10 @@ function update_changelog {
   # We only get the commit hash so we don't have to deal with a bunch of ugly parsing
   # See Pretty format placeholders at https://git-scm.com/docs/pretty-formats
   local COMMITS=$(git log $tagRange --pretty=format:"%H")
-  echo "git log $tagRange --pretty=format:%H"
-  echo "results: $COMMITS"
+  # echo "git log $tagRange --pretty=format:%H"
+  # echo "results: $COMMITS"
   # Store our changelog in a variable to be saved to a file at the end
-  local MARKDOWN="#### $LATEST_TAG\n"
+  local MARKDOWN="### $LATEST_TAG\n"
   MARKDOWN+='\n'
   MARKDOWN+="[Full Changelog]($GITHUB_LINK_URL/compare/$published_version...$LATEST_TAG)"
 
@@ -59,21 +59,21 @@ function update_changelog {
   for COMMIT in $COMMITS; do
     # Get the subject of the current commit
     local SUBJECT=$(git log -1 ${COMMIT} --pretty=format:"%s")
-    echo "SUBJECT $SUBJECT"
+    # echo "SUBJECT $SUBJECT"
     # If the subject contains [ci skip] then skip it
-    local PULL_REQUEST=$( grep -v -Eo "\[ci skip\]" <<< "$SUBJECT" )
-    echo "PULL_REQUEST $PULL_REQUEST"
-    if [[ $PULL_REQUEST ]]; then
+    local NOT_SKIPPED=$( echo "$SUBJECT" | grep -v -E "\[ci skip\]" )
+    if [[ $NOT_SKIPPED ]]; then
       # AUTHOR_NAME=$(git log -1 ${COMMIT} --pretty=format:"%an")
       # AUTHOR_EMAIL=$(git log -1 ${COMMIT} --pretty=format:"%ae")
 
-      # Get the body of the commit
-      # BODY=$(git log -1 ${COMMIT} --pretty=format:"%b")
-      # echo "BODY $BODY"
-
       MARKDOWN+='\n'
-      MARKDOWN+=" - $SUBJECT [link]($GITHUB_LINK_URL/commit/$COMMIT)" # : $BODY"
-      echo "MARKDOWN $MARKDOWN"
+      MARKDOWN+="- $SUBJECT [link]($GITHUB_LINK_URL/commit/$COMMIT)"
+      # Get the body of the commit
+      local body=$(git log -1 ${COMMIT} --pretty=format:"%b" | sed 's/^/  /')
+      if [ "$body" ]; then
+        MARKDOWN+='\n'
+        MARKDOWN+="$body"
+      fi
     fi
   done
   MARKDOWN+='\n'
