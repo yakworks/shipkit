@@ -11,15 +11,15 @@ VERSION_SET_SNAPSHOT ?= false
 
 update-changelog: | _verify_VERSION _verify_PUBLISHED_VERSION _verify_RELEASE_CHANGELOG _verify_PROJECT_FULLNAME
 	$(changelog) update_changelog "$(VERSION)" "$(PUBLISHED_VERSION)" "$(RELEASE_CHANGELOG)" "$(PROJECT_FULLNAME)"
-	echo "update-changelog success"
+	echo "$@ success"
 
 update-readme-version: | _verify_VERSION
 	$(semver) replace_version "$(VERSION)" README.md
-	echo "update-readme-version success"
+	echo "$@ success"
 
 bump-version-file: | _verify_VERSION
 	$(semver) bump_version_file "$(VERSION)" "$(VERSION_FILENAME)" "$(VERSION_SET_SNAPSHOT)"
-	echo "bump-version-file success on $(VERSION_FILENAME) for v:$(VERSION)"
+	echo "$@ success on $(VERSION_FILENAME) for v:$(VERSION)"
 
 # updates change log, bumps version, updates the publishingVersion in README
 push-version-bumps:
@@ -27,7 +27,7 @@ push-version-bumps:
 	git add README.md version.properties "$(RELEASE_CHANGELOG)"
 	git commit -m "v$(VERSION) changelog, version bump [ci skip]"
 	git push -q $(GITHUB_URL) $(RELEASABLE_BRANCH)
-
+	echo "$@ success"
 
 # this is empty so they are always there for CI to call, will do nothing if not IS_RELEASABLE
 ## If IS_RELEASABLE, does version bump, update changelong and creates tagged release on gitub
@@ -41,9 +41,9 @@ ifeq (true,$(IS_RELEASABLE))
 # calls github endpoint to create a release on the RELEASABLE_BRANCH
 ship-github-create: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
 	$(github_release) create_github_release $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
-	echo "release-github-create success"
+	echo "$@ success"
 
-ship-version: update-changelog update-readme-version bump-version-file release-github-create push-version-bumps
-	echo "Releasable ... doing version bump, changelog and tag push"
+ship-version: update-changelog update-readme-version bump-version-file ship-github-create push-version-bumps
+	echo "$@ success"
 
 endif # end RELEASABLE_BRANCH
