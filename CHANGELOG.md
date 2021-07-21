@@ -1,3 +1,8 @@
+### v1.0.6
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.5...v1.0.6)
+- fix: bad name for k8s-pages-delete-deployment [link](https://github.com/yakworks/shipkit/commit/b2d0d4e191a624ab1b9d2410db379bb88ba42f73)
+
 ### v1.0.5
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.4...v1.0.5)
