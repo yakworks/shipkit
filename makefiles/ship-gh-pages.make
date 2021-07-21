@@ -11,6 +11,7 @@ docmark-publish-prep: docmark-build git-clone-pages
 ## Builds and pushes docmark pages to github pages, CI should call publish-docs which calls this
 gh-pages-deploy: docmark-publish-prep
 	$(MAKE) git-push-pages
+	echo "$@ success"
 
 
 .PHONY: ship-gh-pages

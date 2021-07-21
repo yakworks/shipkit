@@ -7,6 +7,7 @@ k8s-pages-delete-deployment:
 ## apply docmark-pages-deploy.tpl kubectl to deploy site to k8s
 k8s-pages-deploy: pages-delete-deployment
 	@${kube_tools} kubeApplyTpl $(PAGES_DEPLOY_TPL)
+	echo "$@ success"
 
 .PHONY: ship-k8s-pages
 # CI to call this to relase/publish docs. only does work if IS_RELEASABLE
