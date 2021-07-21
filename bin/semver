@@ -28,7 +28,7 @@ function bump_version_file {
   local publishingVersion="${1}"
   local newVersion=$( bump_patch $publishingVersion)
   local versionFile=${2:-version.properties}
-  updateVersionFile $newVersion $publishingVersion $versionFile $3
+  updateVersionFile $newVersion $publishingVersion $versionFile "${3}"
 }
 
 # Updates version.properties with given version, sets publishedVersion to the $VERSION

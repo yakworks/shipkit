@@ -1,5 +1,12 @@
 #!/usr/bin/env bats
 source "$SHIPKIT_BIN/semver"
+load test_helper
+
+setup() {
+  export FIXTURE_DIR="$BATS_TEST_DIRNAME/fixtures/versions"
+  export VERSION_FILENAME=build/semver_tests/version.env
+  export VERSION_SET_SNAPSHOT=true
+}
 
 @test 'bump_patch' {
   version=$(bump_patch "1.2.3 ")
@@ -26,4 +33,25 @@ source "$SHIPKIT_BIN/semver"
   grep "publishedVersion=1.2.5" $semverFile
   grep "snapshot=true" $semverFile
 
+}
+
+@test 'make sure git-secret-version works' {
+
+  semverFile=$VERSION_FILENAME
+  echo "version=1.0.1" > $semverFile
+  echo "publishedVersion=1.0.0" >> $semverFile
+  echo "snapshot=false" >> $semverFile
+
+  grep "version=1.0.1" $semverFile
+  grep "publishedVersion=1.0.0" $semverFile
+  grep "snapshot=false" $semverFile
+
+  run make -f $FIXTURE_DIR/Makefile bump-version-file VERSION=1.0.1
+  __debug "${status}" "${output}" "${lines[@]}"
+
+  [ "$status" -eq 0 ]
+  grep "version=1.0.2" $semverFile
+  grep "publishedVersion=1.0.1" $semverFile
+  grep "snapshot=true" $semverFile
+  # [ "${lines[0]}" == "tests/fixtures/bin/curl  \"http://localhost\" | cat -" ]
 }
