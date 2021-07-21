@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---
 # Common helper functions for running docker images and logging into dockerhub
 # Use compose when possible but these are used for quickly bringing up a docker

@@ -1,31 +1,62 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Helper functions to call Githubs release rest endpoint to make a release from a tag
 # TODO See following links for ideas on how to implement
 # https://isabelcastillo.com/script-release-github
 # https://hinty.io/ivictbor/publish-and-upload-release-to-github-with-bash-and-curl/
 # https://github.com/terryburton/travis-github-release/blob/master/github-release.sh
-set -e
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
 
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
+source "${__dir}/utils"
+
+function create_github_release_ {
+  # get body from
+  local body=$(cat "$BUILD_DIR/CHANGELOG_CHUNK.md")
+  local body_esc=`escape_json_string "$body"`
+  echo "$body_esc"
+}
 # calls the github release endpoint to tag nd mark a release
 # $1 - the current dev version we are releasing
 # $2 - the release branch to push to, should be the active releasable git branch that is checked out such as master
 # $3 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
 # $4 - the GITHUB_TOKEN auth token
 function create_github_release {
-  local api_data=$(printf '{
-    "tag_name": "v%s",
-    "name": "v%s",
-    "body": "Release of version %s",
-    "target_commitish": "%s",
-    "draft": false,
-    "prerelease": false}' $1 $1 $1 $2)
-  # echo $api_data
+  # get body from
+  local body=$(cat "$BUILD_DIR/CHANGELOG_RELEASE.md")
+  local body_esc=`escape_json_string "$body"`
+
+
+local api_data=$(cat <<EOF
+  {
+    "tag_name":         "v$1",
+    "target_commitish": "$2",
+    "name":             "v$1",
+    "draft":            false,
+    "prerelease":       false,
+    "body": "$body_esc"
+  }
+EOF
+)
+  echo "$api_data"
   # local rurl="https://api.github.com/repos/$3/releases"
-  curl -X POST \
-    --header 'authorization: Bearer $4' \
-    --data "$api_data"
-    --url "https://api.github.com/repos/$3/releases"
+  local curl_result=`curl -X POST -s -w "\n%{http_code}\n" \
+    -H "Authorization: token $4" \
+    -d "$api_data" \
+    "https://api.github.com/repos/$3/releases"`
+
+  if [ "`echo "$curl_result" | tail -1`" != "201" ]; then
+    echo "FAILED - curl"
+    echo "$curl_result"
+    return 1
+  fi
+  local release_id=`echo "$curl_result" | sed -ne 's/^  "id": \(.*\),$/\1/p'`
+  if [[ -z "$release_id" ]]; then
+    echo "FAILED - release_id"
+    echo "$curl_result"
+    return 1
+  fi
+  echo "SUCCESS - github release id: $release_id"
 }
 
 # --- boiler plate function runner, keep at end of file ------

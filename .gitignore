@@ -1,2 +1,5 @@
-git-secret
-build
+build/
+.gitsecret/keys/random_seed
+!*.secret
+.env
+bot.env

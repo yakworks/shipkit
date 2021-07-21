@@ -1,8 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---
 # common logic for publishing a release.
 # ---
-set -e  # Abort script at first error, when a command exits with non-zero status
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
+
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
 
 # updates the version number in README
 # $1 - the new version to replace old one with

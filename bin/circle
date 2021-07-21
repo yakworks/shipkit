@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---
 # working with CI circle and publishing,
 # should be imported into the main build.sh

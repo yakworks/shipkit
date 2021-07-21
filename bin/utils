@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
+
 # -----------------
 # some common bash util helpers
 # ------------------
@@ -62,6 +64,21 @@ function list-functions {
   done
 }
 
+# $1 - the sring data
+function escape_json_string {
+  jdata=${1:-}
+  # !! DO NOT INDENT THE LINE FEED BELOW, NEEDED FOR REPLACEMENT
+  #! squinky hack alert coming up
+  jdata=${jdata//
+/~~~} # \n (newline to some squiglys ~~~ first then back to \n with sed below)
+  jdata=${jdata//\\/\\\\} # \
+  jdata=${jdata//\//\\\/} # /
+  jdata=${jdata//\"/\\\"} # "
+  jdata=${jdata//	/\\t} # \t (tab)
+  jdata=${jdata//^M/\\\r} # \r (carriage return)
+  # echo "$jdata"
+  echo "$jdata" | sed 's/~~~/\\n/g'
+}
 # ---
 # quick and dirty templating. replaces a defined seat of tags in format ${VAR}
 # with env vaiables from the specified source file

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -----------------
 # functions for running the yakworks docmark mkdocs variant
 # depends on bin/github_pages script

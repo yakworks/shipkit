@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -----------------
 # Github and git helpers.
 # uses the variables set from gradle/build.yml
 # ------------------
-set -e  # Abort script at first error, when a command exits with non-zero status
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
 
 # defaults, this format says if PAGES_BUILD_DIR is not set then set it to these values
 : "${PAGES_BUILD_DIR:=build/gh-pages}"

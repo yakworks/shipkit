@@ -1,42 +1,60 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---
 # updates a changelog
 # ---
-set -e  # Abort script at first error, when a command exits with non-zero status
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
 
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
+source "${__dir}/utils"
 
+# examples https://gist.github.com/kingkool68/09a201a35c83e43af08fcbacee5c315a
+#
 # updates the changelog, does a bunch of git diff work to get changes
 # $1 - the current dev version
 # $2 - the previous published version
 # $3 - the changelog filename
 # $4 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
 function update_changelog {
+
   # the GITHUB_LINK_URL such as https://github.com/yakworks/gorm-tools to make anchors in changelog
-  [ "$GITHUB_LINK_URL" ] || GITHUB_LINK_URL="https://github.com/$4"
+  : "${GITHUB_LINK_URL:=https://github.com/$4}"
+  # [ "$GITHUB_LINK_URL" ] || GITHUB_LINK_URL="https://github.com/$4"
   # Repo URL to base links off of
   local LATEST_TAG="v$1" # example v6.1.12
-  local PREVIOUS_TAG="v$2" # example v6.1.11
+  local published_version="v$2" # example v6.1.11
   local changelogName="$3"
 
   # Get a list of all tags in reverse order
   # Assumes the tags are in version format like v1.2.3
   local gitTags=$(git tag -l --sort=-version:refname)
-  local TAGS=($gitTags)
-
-  if [[ ! " ${TAGS[@]} " =~ " ${PREVIOUS_TAG} " ]]; then
-    echo "Error creating changelog - PREVIOUS_TAG $PREVIOUS_TAG does not exists"
-    return 1
+  # make it into an array
+  TAGS=()
+  if [ "$gitTags" ]; then
+    TAGS=($gitTags)
   fi
 
-  # We only get the commit hash so we don't have to deal with a bunch of ugly parsing
-  # See Pretty format placeholders at https://git-scm.com/docs/pretty-formats
-  local COMMITS=$(git log $PREVIOUS_TAG..HEAD --pretty=format:"%H")
-  # echo "COMMITS $COMMITS"
-  # Store our changelog in a variable to be saved to a file at the end
-  local MARKDOWN="#### $LATEST_TAG\n"
+  local MARKDOWN="### $LATEST_TAG\n"
   MARKDOWN+='\n'
-  MARKDOWN+="[Full Changelog]($GITHUB_LINK_URL/compare/$PREVIOUS_TAG...$LATEST_TAG)"
+
+  local tagRange="$published_version..HEAD"
+  local COMMITS=""
+  # if published_version is falsy then its an initial release so blank out range to get all of it
+  # if this is not what you want then create a tag that starts with a v
+  # and set publishedVersion to that tag without the v prefix in version.props
+  if [ $(isFalsy "$2") ]; then
+    tagRange=""
+    MARKDOWN+='Initial Release'
+  else
+    if [[ ! " ${TAGS[@]} " =~ " ${published_version} " ]]; then
+      echo "Error creating changelog - publishedVersion $published_version does not exists"
+      return 1
+    fi
+    MARKDOWN+="[Full Changelog]($GITHUB_LINK_URL/compare/$published_version...$LATEST_TAG)"
+
+    # We only get the commit hash so we don't have to deal with a bunch of ugly parsing
+    # See Pretty format placeholders at https://git-scm.com/docs/pretty-formats
+    COMMITS=$(git log $tagRange --pretty=format:"%H")
+  fi
 
   # Loop over each commit and look for merged pull requests
   for COMMIT in $COMMITS; do
@@ -44,20 +62,37 @@ function update_changelog {
     local SUBJECT=$(git log -1 ${COMMIT} --pretty=format:"%s")
     # echo "SUBJECT $SUBJECT"
     # If the subject contains [ci skip] then skip it
-    local PULL_REQUEST=$( grep -v -Eo "\[ci skip\]" <<< "$SUBJECT" )
-    if [[ $PULL_REQUEST ]]; then
+    local NOT_SKIPPED=$( echo "$SUBJECT" | grep -v -E "\[ci skip\]" )
+    if [[ $NOT_SKIPPED ]]; then
       # AUTHOR_NAME=$(git log -1 ${COMMIT} --pretty=format:"%an")
       # AUTHOR_EMAIL=$(git log -1 ${COMMIT} --pretty=format:"%ae")
 
-      # Get the body of the commit
-      # BODY=$(git log -1 ${COMMIT} --pretty=format:"%b")
-      # echo "BODY $BODY"
-
       MARKDOWN+='\n'
-      MARKDOWN+=" - $SUBJECT [$COMMIT]($GITHUB_LINK_URL/commit/$COMMIT)" # : $BODY"
+      MARKDOWN+="- $SUBJECT [link]($GITHUB_LINK_URL/commit/$COMMIT)"
+      # Get the body of the commit
+      local commit_body="$(git log -1 ${COMMIT} --pretty=format:"%b")"
+      # TODO scrambles it up, not sure what kind of line feed CR thingys on in there but
+      # can't figure out the voodoo needed to do this
+      # if [ "$commit_body" ]; then
+      #   echo 'has body'
+      #   git log -1 ${COMMIT} --pretty=format:"%b" | sed '/^[[:space:]]*$/d' > log.txt
+      #   local back_in=$(cat log.txt)
+      #   echo "$back_in"
+      #   # echo "$commit_body" | sed '/^[[:space:]]*$/d'
+      #   local body_esc=`escape_json_string $back_in`
+      #   echo "body_esc: $body_esc"
+      #   MARKDOWN+='\n'
+      #   MARKDOWN+="$body_esc"
+      # fi
     fi
   done
   MARKDOWN+='\n'
+  # put CHANGELOG_CHUNK.md in build dir so it can be used later when creating release in github
+  echo -e "$MARKDOWN" > "$BUILD_DIR/CHANGELOG_RELEASE.md"
+
+  # make sure changelog file exists
+  [ ! -f "$changelogName" ] && touch "$changelogName"
+  # prepend it
   echo -e "$MARKDOWN\n$(cat $changelogName)" > "$changelogName"
   # Save our markdown to a file
   #echo -e $MARKDOWN > CHANGELOG.md

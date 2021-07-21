@@ -83,6 +83,7 @@ Lost art of the makefile
 
 ## style guides we endeveur to follow
 
+https://www.conventionalcommits.org/en/v1.0.0/
 https://style-guides.readthedocs.io/en/latest/makefile.html
 https://google.github.io/styleguide/shellguide.html
 
@@ -96,11 +97,23 @@ WIP for a node and python links
 
 # References
 
+## Semver and Conventional Commits
+https://www.conventionalcommits.org/en/v1.0.0/
+https://github.com/semantic-release/semantic-release
+https://dwmkerr.com/conventional-commits-and-semantic-versioning-for-java/
+
+https://dev.to/craicoverflow/enforcing-conventional-commits-using-git-hooks-1o5p
+
+## related
+
+- https://github.com/semantic-release/semantic-release
+- 
+
 Good make samples that this was taken from
 ideas pulled from https://tech.davis-hansson.com/p/make/
 and https://github.com/martinwalsh/ludicrous-makefiles	
 
-links for using make and docker
+## links for using make and docker
 - https://amaysim.engineering/the-3-musketeers-how-make-docker-and-compose-enable-us-to-release-many-times-a-day-e92ca816ef17
 - https://3musketeers.io/about/#what
 - https://www.freecodecamp.org/news/want-to-know-the-easiest-way-to-save-time-use-make-eec453adf7fe/

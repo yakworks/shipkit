@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # runs sed on the tpl.yml (kubernetes) template files to update and replace variables with values
 # $1 - the tpl.yml file
 # $2 - the dir for sed to put the processed file

@@ -3,6 +3,7 @@ This dir contains optional make files to include and help kickstart common targe
 great resource
 http://wanderinghorse.net/computing/make/book/ManagingProjectsWithGNUMake-3.1.3.pdf
 https://zhjwpku.com/assets/pdf/books/Managing.Projects.With.Gnu.Make.3Rd.Edition.pdf
+https://stackoverflow.com/questions/5584872/complex-conditions-check-in-makefile
 
 # Quick Cheat Sheet and Tips for Makefiles
 
