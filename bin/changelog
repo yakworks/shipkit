@@ -20,7 +20,7 @@ function update_changelog {
   # [ "$GITHUB_LINK_URL" ] || GITHUB_LINK_URL="https://github.com/$4"
   # Repo URL to base links off of
   local LATEST_TAG="v$1" # example v6.1.12
-  local PREVIOUS_TAG="v$2" # example v6.1.11
+  local published_version="v$2" # example v6.1.11
   local changelogName="$3"
 
   # Get a list of all tags in reverse order
@@ -32,15 +32,15 @@ function update_changelog {
     TAGS=($gitTags)
   fi
 
-  local tagRange="$PREVIOUS_TAG..HEAD"
-  # if PREVIOUS_TAG is falsy then its an initial release so blank out range to get all of it
+  local tagRange="$published_version..HEAD"
+  # if published_version is falsy then its an initial release so blank out range to get all of it
   # if this is not what you want then create a tag that starts with a v
   # and set publishedVersion to that tag without the v prefix in version.props
   if [ $(isFalsy "$2") ]; then
     tagRange=""
   else
-    if [[ ! " ${TAGS[@]} " =~ " ${PREVIOUS_TAG} " ]]; then
-      echo "Error creating changelog - PREVIOUS_TAG $PREVIOUS_TAG does not exists"
+    if [[ ! " ${TAGS[@]} " =~ " ${published_version} " ]]; then
+      echo "Error creating changelog - publishedVersion $published_version does not exists"
       return 1
     fi
   fi
@@ -53,7 +53,7 @@ function update_changelog {
   # Store our changelog in a variable to be saved to a file at the end
   local MARKDOWN="#### $LATEST_TAG\n"
   MARKDOWN+='\n'
-  MARKDOWN+="[Full Changelog]($GITHUB_LINK_URL/compare/$PREVIOUS_TAG...$LATEST_TAG)"
+  MARKDOWN+="[Full Changelog]($GITHUB_LINK_URL/compare/$published_version...$LATEST_TAG)"
 
   # Loop over each commit and look for merged pull requests
   for COMMIT in $COMMITS; do
