@@ -26,7 +26,7 @@ ship-k8s-pages:
 # NOT_SNAPSHOT := $(if $(IS_SNAPSHOT),,true)
 # ifneq (,$(and $(RELEASABLE_BRANCH),$(NOT_SNAPSHOT)))
 
-ifdef ifeq (true,$(IS_RELEASABLE))
+ifeq (true,$(IS_RELEASABLE))
 
  ship-k8s-pages:
 	$(MAKE) k8s-pages-deploy

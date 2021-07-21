@@ -55,7 +55,7 @@ gh-pages-deploy: docmark-publish-prep
 	$(MAKE) git-push-pages
 
 
-.PHONY: ship-gh-docs
+.PHONY: ship-gh-pages
 # CI to call this to relase/publish docs. only does work if IS_RELEASABLE
 ship-gh-pages:
 
@@ -63,7 +63,7 @@ ship-gh-pages:
 # NOT_SNAPSHOT := $(if $(IS_SNAPSHOT),,true)
 # ifneq (,$(and $(RELEASABLE_BRANCH),$(NOT_SNAPSHOT)))
 
-ifdef ifeq (true,$(IS_RELEASABLE))
+ifeq (true,$(IS_RELEASABLE))
 
  ship-gh-pages:
 	$(MAKE) gh-pages-deploy
