@@ -1,3 +1,9 @@
+### v1.0.5
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.4...v1.0.5)
+- fix: bad target name for ship-github-create [link](https://github.com/yakworks/shipkit/commit/2661ecbba820633055b1153b9c4bf43bd2255493)
+- feat: bring consitency to main names to call from CI, name them all ship-. [link](https://github.com/yakworks/shipkit/commit/c0ff9beabf848bb20c09950e8217207efeea81b2)
+
 ### v1.0.4
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.3...v1.0.4)
