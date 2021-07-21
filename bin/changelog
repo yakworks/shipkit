@@ -15,6 +15,7 @@ source "${__dir}/utils"
 # $3 - the changelog filename
 # $4 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
 function update_changelog {
+
   # the GITHUB_LINK_URL such as https://github.com/yakworks/gorm-tools to make anchors in changelog
   : "${GITHUB_LINK_URL:=https://github.com/$4}"
   # [ "$GITHUB_LINK_URL" ] || GITHUB_LINK_URL="https://github.com/$4"
@@ -32,28 +33,28 @@ function update_changelog {
     TAGS=($gitTags)
   fi
 
+  local MARKDOWN="### $LATEST_TAG\n"
+  MARKDOWN+='\n'
+
   local tagRange="$published_version..HEAD"
+  local COMMITS=""
   # if published_version is falsy then its an initial release so blank out range to get all of it
   # if this is not what you want then create a tag that starts with a v
   # and set publishedVersion to that tag without the v prefix in version.props
   if [ $(isFalsy "$2") ]; then
     tagRange=""
+    MARKDOWN+='Initial Release'
   else
     if [[ ! " ${TAGS[@]} " =~ " ${published_version} " ]]; then
       echo "Error creating changelog - publishedVersion $published_version does not exists"
       return 1
     fi
-  fi
+    MARKDOWN+="[Full Changelog]($GITHUB_LINK_URL/compare/$published_version...$LATEST_TAG)"
 
-  # We only get the commit hash so we don't have to deal with a bunch of ugly parsing
-  # See Pretty format placeholders at https://git-scm.com/docs/pretty-formats
-  local COMMITS=$(git log $tagRange --pretty=format:"%H")
-  # echo "git log $tagRange --pretty=format:%H"
-  # echo "results: $COMMITS"
-  # Store our changelog in a variable to be saved to a file at the end
-  local MARKDOWN="### $LATEST_TAG\n"
-  MARKDOWN+='\n'
-  MARKDOWN+="[Full Changelog]($GITHUB_LINK_URL/compare/$published_version...$LATEST_TAG)"
+    # We only get the commit hash so we don't have to deal with a bunch of ugly parsing
+    # See Pretty format placeholders at https://git-scm.com/docs/pretty-formats
+    COMMITS=$(git log $tagRange --pretty=format:"%H")
+  fi
 
   # Loop over each commit and look for merged pull requests
   for COMMIT in $COMMITS; do
@@ -69,16 +70,25 @@ function update_changelog {
       MARKDOWN+='\n'
       MARKDOWN+="- $SUBJECT [link]($GITHUB_LINK_URL/commit/$COMMIT)"
       # Get the body of the commit
-      local body=$(git log -1 ${COMMIT} --pretty=format:"%b" | sed 's/^/  /')
-      if [ "$body" ]; then
-        MARKDOWN+='\n'
-        MARKDOWN+="$body"
-      fi
+      local commit_body="$(git log -1 ${COMMIT} --pretty=format:"%b")"
+      # TODO scrambles it up, not sure what kind of line feed CR thingys on in there but
+      # can't figure out the voodoo needed to do this
+      # if [ "$commit_body" ]; then
+      #   echo 'has body'
+      #   git log -1 ${COMMIT} --pretty=format:"%b" | sed '/^[[:space:]]*$/d' > log.txt
+      #   local back_in=$(cat log.txt)
+      #   echo "$back_in"
+      #   # echo "$commit_body" | sed '/^[[:space:]]*$/d'
+      #   local body_esc=`escape_json_string $back_in`
+      #   echo "body_esc: $body_esc"
+      #   MARKDOWN+='\n'
+      #   MARKDOWN+="$body_esc"
+      # fi
     fi
   done
   MARKDOWN+='\n'
   # put CHANGELOG_CHUNK.md in build dir so it can be used later when creating release in github
-  echo -e "$MARKDOWN" > "$BUILD_DIR/CHANGELOG_CHUNK.md"
+  echo -e "$MARKDOWN" > "$BUILD_DIR/CHANGELOG_RELEASE.md"
 
   # make sure changelog file exists
   [ ! -f "$changelogName" ] && touch "$changelogName"
