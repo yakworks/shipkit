@@ -8,7 +8,7 @@ jobs:
       - run: make test
       # test some other stuff
       - run: make config-bot-git-user
-      # if it meets the criteria to be IS_RELEASABLE, this will bump version and tag release
+      # if it meets the criteria to be IS_RELEASABLE, this will bump version and tag release on github
       - run: make ship-version
 
 workflows:
