@@ -50,25 +50,22 @@ docmark-publish-prep: docmark-build git-clone-pages
 		cp -r $(GROOVYDOC_BUILD_DIR) $(PAGES_BUILD_DIR)/groovydocs
 	fi
 
-docmark-publish: docmark-publish-prep
+## Builds and pushes docmark pages to github pages, CI should call publish-docs which calls this
+gh-pages-deploy: docmark-publish-prep
 	$(MAKE) git-push-pages
 
-.PHONY: publish-docs
-# main publisher for docs, empty unless RELEASABLE_BRANCH below
-publish-docs:
+
+.PHONY: ship-gh-docs
+# CI to call this to relase/publish docs. only does work if IS_RELEASABLE
+ship-gh-pages:
 
 # TODO at some point we want to look at publishing snapshot version of docs like we once did?
 # NOT_SNAPSHOT := $(if $(IS_SNAPSHOT),,true)
 # ifneq (,$(and $(RELEASABLE_BRANCH),$(NOT_SNAPSHOT)))
 
-ifdef RELEASABLE_BRANCH
+ifdef ifeq (true,$(IS_RELEASABLE))
 
- publish-docs:
-	@if [ ! "$(IS_SNAPSHOT)" ]; then
-		echo "not a snapshot, publishing docs"
-		$(MAKE) docmark-publish
-	else
-		echo "IS_SNAPSHOT ... NOT publishing docs "
-	fi
+ ship-gh-pages:
+	$(MAKE) gh-pages-deploy
 
 endif

@@ -9,10 +9,6 @@ changelog := $(SHIPKIT_BIN)/changelog
 VERSION_FILENAME ?= version.properties
 VERSION_SET_SNAPSHOT ?= false
 
-shipkit:
-	version:
-		filename:
-
 update-changelog: | _verify_VERSION _verify_PUBLISHED_VERSION _verify_RELEASE_CHANGELOG _verify_PROJECT_FULLNAME
 	$(changelog) update_changelog "$(VERSION)" "$(PUBLISHED_VERSION)" "$(RELEASE_CHANGELOG)" "$(PROJECT_FULLNAME)"
 	echo "update-changelog success"
@@ -34,7 +30,8 @@ push-version-bumps:
 
 
 # this is empty so they are always there for CI to call, will do nothing if not IS_RELEASABLE
-semantic-release:
+## If IS_RELEASABLE, does version bump, update changelong and creates tagged release on gitub
+ship-version:
 
 # create-github-release:
 
@@ -42,11 +39,11 @@ semantic-release:
 ifeq (true,$(IS_RELEASABLE))
 
 # calls github endpoint to create a release on the RELEASABLE_BRANCH
-create-github-release: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
+ship-github-create: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
 	$(github_release) create_github_release $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
-	echo "create-github-release success"
+	echo "release-github-create success"
 
-semantic-release: update-changelog update-readme-version bump-version-file create-github-release push-version-bumps
+ship-version: update-changelog update-readme-version bump-version-file release-github-create push-version-bumps
 	echo "Releasable ... doing version bump, changelog and tag push"
 
 endif # end RELEASABLE_BRANCH
