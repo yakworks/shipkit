@@ -5,7 +5,7 @@ k8s-pages-delete-deployment:
 	@kubectl delete deployment,ingress --selector="pages=$(PAGES_APP_KEY)" --namespace="$(PAGES_KUBE_NAMESPACE)"
 
 ## apply docmark-pages-deploy.tpl kubectl to deploy site to k8s
-k8s-pages-deploy: pages-delete-deployment
+k8s-pages-deploy: k8s-pages-delete-deployment
 	@${kube_tools} kubeApplyTpl $(PAGES_DEPLOY_TPL)
 	echo "$@ success"
 
