@@ -6,6 +6,8 @@ set -euo pipefail # strict mode https://bit.ly/36MvF0T
 
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
 
+source "${__dir}/utils"
+
 # updates the version number in README
 # $1 - the new version to replace old one with
 # $2 - the file name to do the replace
@@ -21,11 +23,12 @@ function replace_version {
 # bumps the current version and updates the version.properties
 # $1 - the current dev version that will be moved to publishedVersion, should be the version in the version.props
 # $2 - the version file, defaults to version.properties
+# $3 - (optional) whether to set snapshot back to true
 function bump_version_file {
   local publishingVersion="${1}"
   local newVersion=$( bump_patch $publishingVersion)
   local versionFile=${2:-version.properties}
-  updateVersionFile $newVersion $publishingVersion $versionFile true
+  updateVersionFile $newVersion $publishingVersion $versionFile $3
 }
 
 # Updates version.properties with given version, sets publishedVersion to the $VERSION
@@ -45,7 +48,7 @@ function updateVersionFile {
     rm -f "${versionFile}.bak"
 
     # if snapshot was passed
-    if [ "$4" ]; then
+    if [ $(isTruthy "$4") ]; then
       sed -i.bak -e "s/^snapshot=.*/snapshot=$4/g" "$versionFile" && rm "${versionFile}.bak"
     fi
 

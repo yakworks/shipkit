@@ -16,9 +16,14 @@ source "$SHIPKIT_BIN/semver"
   echo "publishedVersion=1.0.0" >> $semverFile
   echo "snapshot=false" >> $semverFile
 
-  bump_version_file "1.2.3" $semverFile
+  bump_version_file "1.2.3" $semverFile false
   grep "version=1.2.4" $semverFile
   grep "publishedVersion=1.2.3" $semverFile
+  grep "snapshot=false" $semverFile
+
+  bump_version_file "1.2.5" $semverFile true
+  grep "version=1.2.6" $semverFile
+  grep "publishedVersion=1.2.5" $semverFile
   grep "snapshot=true" $semverFile
 
 }

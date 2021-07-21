@@ -103,6 +103,7 @@ https://github.com/semantic-release/semantic-release
 https://dwmkerr.com/conventional-commits-and-semantic-versioning-for-java/
 
 https://dev.to/craicoverflow/enforcing-conventional-commits-using-git-hooks-1o5p
+https://github.com/craicoverflow/sailr
 
 ## related
 

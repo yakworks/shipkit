@@ -5,6 +5,9 @@ http://wanderinghorse.net/computing/make/book/ManagingProjectsWithGNUMake-3.1.3.
 https://zhjwpku.com/assets/pdf/books/Managing.Projects.With.Gnu.Make.3Rd.Edition.pdf
 https://stackoverflow.com/questions/5584872/complex-conditions-check-in-makefile
 
+trapping errors
+https://stackoverflow.com/questions/28597794/how-can-i-clean-up-after-an-error-in-a-makefile
+
 # Quick Cheat Sheet and Tips for Makefiles
 
 ## Formatting
