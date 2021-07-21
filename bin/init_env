@@ -20,7 +20,7 @@ if [ -e "version.properties" ]; then source version.properties; fi
 # initializes the environment
 function init_env {
   # echo date >> init_env.log
-  [ "$version" ] && init_versions
+  [ "${version:-}" ] && init_versions
 
   # if a developer has a local dotenv then bring it in
   parse_env_file ".env"
