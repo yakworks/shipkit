@@ -1,3 +1,8 @@
+### v1.0.9
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.8...v1.0.9)
+- feat: fix bad spacing sep for vault_url, [link](https://github.com/yakworks/shipkit/commit/3b72df16c2775f5275db10bddc5afb21d8f5b4d2)
+
 ### v1.0.8
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.7...v1.0.8)
