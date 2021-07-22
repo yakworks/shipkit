@@ -12,7 +12,7 @@ source "${__dir}/utils"
 # $1 - the new version to replace old one with
 # $2 - the file name to do the replace
 function replace_version {
-  sed -i.bak -e "s|Version: [0-9.]*[-v]*[0-9.]*|Version: ${1}|g" $2 && \
+  sed -i.bak -e "s|Version: [0-9.]*[-v]*[0-9.]*|Version: ${1}|g" "$2" && \
     rm -- "${2}.bak"
 
   # updatedContent = updatedContent.replaceFirst(/${p.name}:[\d\.]+[^"]+/, "${p.name}:$version")
@@ -26,9 +26,9 @@ function replace_version {
 # $3 - (optional) whether to set snapshot back to true
 function bump_version_file {
   local publishingVersion="${1}"
-  local newVersion=$( bump_patch $publishingVersion)
+  local newVersion=$( bump_patch "$publishingVersion")
   local versionFile=${2:-version.properties}
-  updateVersionFile $newVersion $publishingVersion $versionFile "${3}"
+  updateVersionFile "$newVersion" "$publishingVersion" "$versionFile" "${3}"
 }
 
 # Updates version.properties with given version, sets publishedVersion to the $VERSION
@@ -48,7 +48,7 @@ function updateVersionFile {
     rm -f "${versionFile}.bak"
 
     # if snapshot was passed
-    if [ $(isTruthy "$4") ]; then
+    if [[ $(isTruthy "$4") ]]; then
       sed -i.bak -e "s/^snapshot=.*/snapshot=$4/g" "$versionFile" && rm "${versionFile}.bak"
     fi
 
@@ -66,14 +66,14 @@ function bump_patch {
   local ver="${1}"
   local dotCount=$(echo "${ver}" | awk -F"." '{print NF-1}')
   # cuts to the last dot
-  local baseVersion=$(echo $ver | cut -d. -f1-$dotCount)
+  local baseVersion=$(echo "$ver" | cut -d. -f1-"$dotCount")
   # echo "major_and_minor $major_and_minor"
   local endPathLoc=$((dotCount+1))
   # grabs last part of version number
-  local patch=$(echo $ver | cut -d. -f$endPathLoc)
-  # echo "patch $patch"
-  ver=$(printf "%s.%d" $baseVersion $(($patch + 1)))
-  echo $ver
+  local patch=$(echo "$ver" | cut -d. -f$endPathLoc)
+  patchInc=$((patch + 1))
+  ver=$(printf "%s.%d" "$baseVersion" "$patchInc")
+  echo "$ver"
 }
 
 # --- boiler plate function runner, keep at end of file ------

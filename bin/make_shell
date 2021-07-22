@@ -14,19 +14,19 @@ if [  "$1" == "-c" ] ; then
     shift
 fi
 
+# shellcheck disable=SC2124
 target_cmds="$@"
-
-# if its starts with the @ then thats the quiet thing from make so remove it
-if [  "$target_cmds" = "@*" ] ; then
-  target_cmds="${target_cmds%?}" # removes the first character
-fi
 
 LOGR_DEBUG_ENABLED=${LOGR_DEBUG_ENABLED:-}
 #logr debug "LOGR_DEBUG_ENABLED: ${LOGR_DEBUG_ENABLED:-}"
 if [ "$LOGR_DEBUG_ENABLED" = "true" ]; then
   logr debug "target_commands: $target_cmds"
 fi
-# logr debug "BUILD_VARS: ${BUILD_VARS:-}"
+
+# if its starts with the @ then thats the quiet thing from make so remove it
+# if [  "$target_cmds" = "@*" ] ; then
+#   target_cmds="${target_cmds%?}" # removes the first character
+# fi
 
 # strace -f -o `mktemp $RESULTZ/result_XXXXXXX` -e trace=open,stat64,execve,exit_group,chdir /bin/sh -c "$@"  | awk '{if (match("Process PID=\d+ runs in (64|32) bit",$0) == 0) {print $0}}'
 eval "$target_cmds"

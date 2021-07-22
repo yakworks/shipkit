@@ -39,7 +39,7 @@ logr() {
 
   if [ ! -e "$LOGR_SCRIPT_LOG" ]; then
     mkdir -p "${LOGR_DIR}"
-    touch $LOGR_SCRIPT_LOG
+    touch "$LOGR_SCRIPT_LOG"
   fi
 
   local log_type=$1
@@ -49,8 +49,8 @@ logr() {
   elif [[ $log_type =~ (^-q$|^quiet$) ]]; then
     LOGR_VERBOSE=false
     shift
-  elif [[ $log_type =~ clea[nr] && $LOGR_LOG_NAME != $LOGR_DEFAULT_LOG ]]; then
-		[[ -n $LOGR_SCRIPT_LOG && -f $LOGR_SCRIPT_LOG ]] && echo -n > $LOGR_SCRIPT_LOG
+  elif [[ $log_type =~ clea[nr] && $LOGR_LOG_NAME != "$LOGR_DEFAULT_LOG" ]]; then
+		[[ -n $LOGR_SCRIPT_LOG && -f $LOGR_SCRIPT_LOG ]] && echo -n > "$LOGR_SCRIPT_LOG"
     return 0
 
   fi
@@ -61,6 +61,7 @@ logr() {
 
     if [ "$LOGR_DEBUG_ENABLED" = "true" ]; then
       # debug type shows full function stack
+      # shellcheck disable=SC2141
       function_name=$(IFS="\\"; echo "${FUNCNAME[*]:1}")
       __logr_exec debug "${LOGR_LOG_NAME}:${function_name}" "${*:2}"
     fi
@@ -86,7 +87,7 @@ logr() {
 # param 2: (string) Tag
 # param 3: (string) Message
 __logr_exec() {
-  local cmd
+  # local cmd
   local log_level="${1:-}"
   if [ "$log_level" = "debug" ] && [ ! "$LOGR_DEBUG_ENABLED" = "true" ]; then
     return 0 # exit fast
@@ -94,9 +95,9 @@ __logr_exec() {
 
 	if [[ $LOGR_VERBOSE == true ]]; then
     # The 2>&1says "redirect file descriptor #2 to the same place #1 is going", and then you can pipe both of them at once.
-		logger -p ${LOGR_FACILITY}.$1 -t $2 -s $3 2>&1 | tee -a ${LOGR_SCRIPT_LOG} 1>&2
+		logger -p "${LOGR_FACILITY}.$1" -t "$2" -s "$3" 2>&1 | tee -a "${LOGR_SCRIPT_LOG}" 1>&2
 	else
-		logger -p ${LOGR_FACILITY}.$1 -t $2 -s $3 2>> ${LOGR_SCRIPT_LOG}
+		logger -p "${LOGR_FACILITY}.$1" -t "$2" -s "$3" 2>> "${LOGR_SCRIPT_LOG}"
 	fi
 }
 

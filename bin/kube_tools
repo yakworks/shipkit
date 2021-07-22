@@ -14,7 +14,7 @@ source "${__dir}/sed_tpl"
 function process_tpl {
   # set the variables in BUILD_ENV so we can build the sed replacement for templates
   parse_env_file "build/make/makefile.env"
-  sed_tpl $1 "build/kube"
+  sed_tpl "$1" "build/kube"
 }
 
 # ---
@@ -22,14 +22,14 @@ function process_tpl {
 # $1 - the template file to apply
 # ---
 function kubeApplyTpl {
-  local processedTplFile=$(process_tpl $1 "build/kube")
+  local processedTplFile=$(process_tpl "$1" "build/kube")
   # echo "processedTpl $processedTpl"
-  kubectl apply -f $processedTplFile
+  kubectl apply -f "$processedTplFile"
 }
 
 # creates namespace if it does not exist
 function kubeCreateNamespace {
-  if [ ! "$(kubectl get ns | grep $1 || true)" ]; then
+  if [ ! "$(kubectl get ns | grep "$1" || true)" ]; then
     kubectl create namespace "$1"
   fi
 }
@@ -42,5 +42,5 @@ function kubeApply {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "$(dirname $0)/function_runner.sh"
+  source "$(dirname "$0")/function_runner.sh"
 fi

@@ -8,17 +8,17 @@
 # starts a builder docker with a volume maps to gradle-docker and /project to the local dir
 # maps port 8080 in case running tomcat server
 # arg $1 - name of the docker
-# arg $2 - the docker url, defaults to yakworks/alpine-java:jdk8-builder
+# arg $2 - the docker url, defaults to yakworks/builder:jdk8
 function builderStart {
-  durl=${2:-"yakworks/alpine-jdk:builder8"}
+  durl=${2:-"yakworks/builder:jdk8"}
   # the .gradle-docker volume map is so that it keeps the gradle cache in your home dir
   # so we dont need to down load the internet each new docker instance
-  dockerStart $1 -it \
+  dockerStart "$1" -it -d \
     -w /project \
     -p 8081:8080 \
-	  -v `pwd`:/project:delegated  \
+	  -v "$(pwd)":/project:delegated  \
 		-v ~/.gradle-docker/:/root/.gradle:delegated \
-		-d $2
+		"$durl"
 }
 
 
@@ -31,21 +31,21 @@ function builderStart {
 # example: dock db_start mysql-ndb mysql:5.7 13306:3306 MYSQL_ROOT_PASSWORD=123Foo
 function db_start {
   # ACCEPT_EULA is for sql server, just an env var so won't matter that its set for others
-  dockerStart $1 \
+  dockerStart "$1" \
     --network builder-net \
-    -v `pwd`:/project -w /project \
+    -v "$(pwd)":/project -w /project \
     -e ACCEPT_EULA=Y \
-    -p $3  \
-    -e $4 \
-    -d $2
+    -p "$3"  \
+    -e "$4" \
+    -d "$2"
 }
 
 # helper to start docker db if Make is not an option. uses dev environment
 # arg $1 - optional DB, defaults to mysql
 function db-start {
   # env doesn't matter here so just set it to dev
-  init_env dev ${1:-mysql}
-  db_start ${DOCK_DB_BUILD_NAME} ${DOCKER_DB_URL} ${DB_PORT}:${DB_PORT} ${PASS_VAR_NAME}=${DB_PASSWORD}
+  init_env dev "${1:-mysql}"
+  db_start "${DOCK_DB_BUILD_NAME}" "${DOCKER_DB_URL}" "${DB_PORT}":"${DB_PORT}" "${PASS_VAR_NAME}"="${DB_PASSWORD}"
 }
 
 # -----
@@ -56,7 +56,7 @@ function db-start {
 function wait_for_mysql {
   host=${1:-127.0.0.1}
   echo "wait for mysql ..."
-  while ! mysql -h $host --user=root --password=$2 -e "SELECT 1" >/dev/null 2>&1; do
+  while ! mysql -h "$host" --user=root --password="$2" -e "SELECT 1" >/dev/null 2>&1; do
     sleep 1
   done
 }
@@ -71,7 +71,7 @@ function wait_for_sqlserver {
   #/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'xxxx' -Q 'SELECT Name FROM sys.Databases'
   # sqlcmd -S $host -U SA -P $SA_PASSWORD -Q 'SELECT 1;'
   # for some reason sqlcmd needs to be fully qualified path for it to work on circleci
-  while ! /opt/mssql-tools/bin/sqlcmd -S $host -U SA -P "$2" -Q 'SELECT Name FROM sys.Databases' >/dev/null 2>&1; do
+  while ! /opt/mssql-tools/bin/sqlcmd -S "$host" -U SA -P "$2" -Q 'SELECT Name FROM sys.Databases' >/dev/null 2>&1; do
     sleep 1
   done
 }
@@ -79,5 +79,5 @@ function wait_for_sqlserver {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "$(dirname $0)/function_runner.sh"
+  source "$(dirname "$0")/function_runner.sh"
 fi

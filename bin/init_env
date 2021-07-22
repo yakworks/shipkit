@@ -48,24 +48,25 @@ function init_env {
 function init_defaults {
   # important to remeber that setVar registers the var in BUILD_VARS
   # but only sets the passed in value if the variable is unset or empty
-  : ${PROJECT_FULLNAME:=} # default to empty if not set
+  PROJECT_FULLNAME="${PROJECT_FULLNAME:-}" # default to empty if not set
   [ ! "$PROJECT_FULLNAME" ] && project_fullname_from_git_remote
   add_build_vars PROJECT_FULLNAME
 
   # defaults the project name to the part after last /, so if fullname is 'foo/bar' then project name will be 'bar'
-  setVar PROJECT_NAME ${PROJECT_FULLNAME##*/}
-  setVar APP_NAME ${PROJECT_NAME}
+  setVar PROJECT_NAME "${PROJECT_FULLNAME##*/}"
+  setVar APP_NAME "${PROJECT_NAME}"
   # the dir where the app is, defaults to the root of the project
   setVar APP_DIR "."
-  setVar APP_KEY ${APP_NAME}
+  setVar APP_KEY "${APP_NAME}"
 
   # default the releasable branch pattern and changelog name
   setVar RELEASE_BRANCH_REGEX "master|main|release/.+"
   setVar RELEASE_CHANGELOG "CHANGELOG.md"
 
 
-  [ "${ACTIVE_BRANCH:-}" ] && setVar RELEASABLE_BRANCH $(is_releasable_branch "$ACTIVE_BRANCH" "$RELEASE_BRANCH_REGEX")
+  [ "${ACTIVE_BRANCH:-}" ] && setVar RELEASABLE_BRANCH "$(is_releasable_branch "$ACTIVE_BRANCH" "$RELEASE_BRANCH_REGEX")"
 
+  # shellcheck disable=SC2034
   IS_RELEASABLE=''
   if [[ "${RELEASABLE_BRANCH:-}" && $(isFalsy "${IS_SNAPSHOT:-}") ]]; then
     setVar IS_RELEASABLE true
@@ -73,7 +74,7 @@ function init_defaults {
 
   # the dir where the app is, defaults to the root of the project
   setVar APP_DIR "."
-  setVar APP_KEY ${APP_NAME}
+  setVar APP_KEY "${APP_NAME}"
 
   # sets up defaults for PAGES if they are not setup already
   setVar PAGES_BUILD_DIR "$BUILD_DIR/gh-pages"
@@ -103,7 +104,7 @@ function init_from_build_yml {
 
     for varName in $varsToEval; do
       local upperVarName=$(toupper "$varName")
-      [ "${!varName}" ] && evalVar $upperVarName "${!varName}"
+      [ "${!varName}" ] && evalVar "$upperVarName" "${!varName}"
     done
     # special handling, kubernetes requires all lower case for names so we abide and lower APP_KEY
     [ "$APP_KEY" ] && APP_KEY=$(tolower "$APP_KEY")
@@ -122,11 +123,12 @@ function init_versions {
   # if nothing passing in the usee the lowercase version that should have come in from version.properties
   # local ver=${1:-$version}
   setVar VERSION "$version"
-  setVar PUBLISHED_VERSION "$publishedVersion"
+  setVar PUBLISHED_VERSION "${publishedVersion:-}"
 
+  # shellcheck disable=SC2153
   local dotCount=$(echo "${VERSION}" | awk -F"." '{print NF-1}')
   # cuts to the last dot
-  local baseVersion=$(echo $VERSION | cut -d. -f1-$dotCount)
+  local baseVersion=$(echo "$VERSION" | cut -d. -f1-"$dotCount")
 
   # VERSIONX is used for docker and k8s as we deploy latests minor version
   # also used to connect to the latest compatible database when that is relevant
@@ -137,7 +139,7 @@ function init_versions {
   setVar BUILD_VERSION "$VERSION"
 
   # if its a snapshot then append the SNAPSHOT
-  if [ $(isTruthy $snapshot) ]; then
+  if [[ $(isTruthy "${snapshot:-}") ]]; then
     setVar VERSION_POSTFIX "-SNAPSHOT"
     setVar IS_SNAPSHOT true
     BUILD_VERSION+="-SNAPSHOT"
@@ -149,7 +151,7 @@ function init_versions {
 
 # Checks for CIRCLECI and normalizes some ENV vars that are availiable
 function circle_init_env {
-  : ${CIRCLECI:=} # default to empty
+  CIRCLECI="${CIRCLECI:-}" # default to empty
   # if CIRCLE_BRANCH is set then consider it setup
   if [ "$CIRCLECI" ]; then
     setVar CI true
@@ -176,9 +178,9 @@ function is_releasable_branch {
 # $1 - BUILD_ENV (test, dev, seed)
 # $2 - optional DBMS Vendor (sqlserver,mysql, etc) *optional*
 function init_and_create_env_file {
-  set_build_env ${1:-} ${2:-}
+  set_build_env "${1:-}" "${2:-}"
   init_env
-  mkdir -p $BUILD_DIR/make
+  mkdir -p "$BUILD_DIR"/make
   createEnvFile "$BUILD_DIR/make/makefile.env"
 }
 
@@ -186,8 +188,8 @@ function init_and_create_env_file {
 # $1 - BUILD_ENV (test, dev, seed)
 # $2 - optional DBMS Vendor (sqlserver,mysql, etc) *optional*
 function make_env_file {
-  set_build_env ${1:-} ${2:-}
-  mkdir -p $BUILD_DIR/make
+  set_build_env "${1:-}" "${2:-}"
+  mkdir -p "$BUILD_DIR"/make
   createEnvFile "$BUILD_DIR/make/makefile.env"
 }
 
@@ -195,9 +197,9 @@ function make_env_file {
 # $1 - BUILD_ENV (test, dev, seed)
 # $2 - DBMS Vendor (sqlserver,mysql, etc) *optional*
 function set_build_env {
-  setVar BUILD_ENV ${1:-test}
+  setVar BUILD_ENV "${1:-test}"
   local dbms=${2:-} # default to empty if not passed
-  [ "$dbms" ] && setDbEnv $dbms
+  [ "$dbms" ] && setDbEnv "$dbms"
   after_build_env
 }
 
@@ -207,12 +209,12 @@ function after_build_env { :; }
 # create env file from BUILD_VARS for importing into makefile.
 # arg $1 - the file to use
 function createEnvFile {
-  echo "# ----- Generated from build.sh --------" > $1
+  echo "# ----- Generated from build.sh --------" > "$1"
   for varName in $BUILD_VARS; do
       val=${!varName}
-      echo "$varName=$val" >> $1
+      echo "$varName=$val" >> "$1"
   done
-  echo "BUILD_VARS=$BUILD_VARS" >> $1
+  echo "BUILD_VARS=$BUILD_VARS" >> "$1"
   echo "created $1"
 }
 
@@ -246,7 +248,7 @@ function parse_env_file {
   local overrideVar="${2:-false}"
 
   # check if file exists, and return if not
-  if [ ! -f $env_file ]; then
+  if [ ! -f "$env_file" ]; then
     return 0
   fi
 
@@ -262,10 +264,10 @@ function parse_env_file {
     # echo "line $line"
     key="${line%%=*}"
     val="${line#*=}"
-    if [ $(isTruthy $overrideVar) ]; then
-      putVar $key "$val"
+    if [[ $(isTruthy "$overrideVar") ]]; then
+      putVar "$key" "$val"
     else
-      setVar $key "$val"
+      setVar "$key" "$val"
     fi
 	done <<<"$lines"
   # log-vars
@@ -277,6 +279,6 @@ function parse_env_file {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "$(dirname $0)/function_runner.sh"
+  source "$(dirname "$0")/function_runner.sh"
 fi
 

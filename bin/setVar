@@ -17,7 +17,7 @@ function setVar {
     # echo "curVal is empty, adding"
     eval "$varName=\"\$2\""
   fi
-  add_build_vars $varName
+  add_build_vars "$varName"
   set -u # don't allow unbound variables
 }
 
@@ -28,7 +28,7 @@ function evalVar {
   varName="$1"
   # echo "$varName=\"$2\""
   eval "$varName=\"$2\""
-  add_build_vars $varName
+  add_build_vars "$varName"
 }
 
 # sets the variable value and overwrites what was there before
@@ -36,8 +36,8 @@ function evalVar {
 # args $2 - the variable value to set
 function putVar {
   # declare -g "$1"="$2" # not working in older bash 3 on mac
-  eval $1=\$2
-  add_build_vars $1
+  eval "$1"=\$2
+  add_build_vars "$1"
 }
 
 
@@ -54,7 +54,7 @@ function add_build_vars {
 
 # helper/debug function to log out the build_vars
 function log-vars {
-  sorted=$(printf "%s\n" $BUILD_VARS | sort)
+  sorted=$(printf "%s\n" "$BUILD_VARS" | sort)
   for varName in $sorted; do
     echo "$varName = ${!varName}"
   done

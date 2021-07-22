@@ -6,15 +6,17 @@
 # BUILD_VARS = PROJECT_FULLNAME # need this in order for it to build what vars get passed the $(shell)
 # core include, creates the makefile.env for the BUILD_VARS that evrything else depends on
 include Shipkit.make
+include $(SHIPKIT_MAKEFILES)/base-build.make
 include $(SHIPKIT_MAKEFILES)/docker.make
 include $(SHIPKIT_MAKEFILES)/secrets.make
 include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/ship-version.make
+include $(SHIPKIT_MAKEFILES)/circle.make
 
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
 # can be set here but best to export it in shell so make's $(shell ) function can pick it up
-#export LOGR_DEBUG_ENABLED := true
+export LOGR_DEBUG_ENABLED := true
 
 # --- Dockers ---
 docker_tools := $(SHIPKIT_BIN)/docker_tools
@@ -26,32 +28,43 @@ docker-shell:
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
 
-lint:
-	shellcheck bin/
-
-lint-fix:
-	shellcheck -f diff bin/ | git apply
-
 # --- BATS Testing ---
 BATS_VERSION ?= 1.3.0
 # BATS_TESTS   ?= . 3>&1
 # the tests to run under the test dir, dot means all
 TESTS   	 ?= .
 BATS_OPTS    ?=
-BATS_DIR     ?= $(BUILD_DIR)/bats
 BATS_URL     := https://github.com/bats-core/bats-core/archive/refs/tags/v$(BATS_VERSION).tar.gz
-BATS_EXE     := $(BATS_DIR)/bin/bats
+BATS_EXE     := $(SHIPKIT_INSTALLS)/bats/bin/bats
 
-test: $(BATS_EXE)
+## runs the bat tests
+test-unit:: $(BATS_EXE)
 	$(BATS_EXE) $(BATS_OPTS) tests/$(TESTS)
 
 .PHONY: test
 
 $(BATS_EXE):
-	@mkdir -p $(BATS_DIR)
-	$(call download,$(BATS_URL),tar zxf - -C $(BATS_DIR) --strip-components 1)
+	$(call download_tar,$(BATS_URL),bats)
 	touch $(BATS_EXE)
 
-clean::
-	rm -rf build
+lint::
+	shellcheck bin/*
 
+lint-fix:
+	shellcheck -f diff bin/* | git apply
+
+## Run the lint and tests
+check:: lint test
+
+## removes the BUILD_DIR
+clean::
+	rm -rf $(BUILD_DIR)
+
+## runs all BAT tests
+test:: test-unit
+
+## NA runs integration/e2e tests
+test-e2e::
+
+## NA builds the libs
+build::
