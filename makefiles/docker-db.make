@@ -11,14 +11,14 @@ db-start: builder-network
 
 # runs a wait-for script that blocks until db mysql or sqlcmd succeeds
 db-wait:
-	@$(DockerDbExec) $(build.sh) wait_for_$(DBMS) $(DB_HOST) $(DB_PASSWORD)
+	$(DockerDbExec) $(build.sh) wait_for_$(DBMS) $(DB_HOST) $(DB_PASSWORD)
 
 db-down: ## stop and remove the docker DOCK_DB_BUILD_NAME
-	@$(build.sh) dockerRemove $(DOCK_DB_BUILD_NAME)
+	$(build.sh) dockerRemove $(DOCK_DB_BUILD_NAME)
 
 start-db: ## calls db-start if USE_DB_BUILDER=true
-	@if [ "$(USE_DOCKER_DB_BUILDER)" == "true" ]; then \
-	  $(MAKE) $(DBMS) db-start; \
+	if [ "$(USE_DOCKER_DB_BUILDER)" == "true" ]; then
+	  $(MAKE) $(DBMS) db-start
 	fi;
 
 db-restart: db-down ## restart the db

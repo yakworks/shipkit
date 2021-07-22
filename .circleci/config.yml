@@ -5,7 +5,7 @@ jobs:
       - image: yakworks/builder:bash-make
     steps:
       - checkout
-      - run: make alpine-install-shellcheck
+      - run: make install-shellcheck-alpine
       - run: make check
       # test some other stuff
       - run: make config-bot-git-user

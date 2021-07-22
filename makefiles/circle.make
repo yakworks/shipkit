@@ -15,7 +15,7 @@ SHELLCHECK_VERSION ?= v0.7.2
 SHELLCHECK_TAR = shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz
 SHELLCHECK_URL = https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/$(SHELLCHECK_TAR)
 
-alpine-install-shellcheck:
+install-shellcheck-alpine:
 	$(DOWNLOADER) $(DOWNLOAD_TO_FLAGS) shellcheck.tar.gz "$(SHELLCHECK_URL)"
 	tar xvf shellcheck.tar.gz
 	mv shellcheck-*/shellcheck /usr/bin/

@@ -22,7 +22,7 @@ $(docker_verb_targets):
 
 # verifies the command verb
 _verify-DOCKER_CMD: FORCE
-	@_=$(if $(DOCKER_CMD),,$(error docker target must be followed by the verb such as up, down, shell or pull))
+	_=$(if $(DOCKER_CMD),,$(error docker target must be followed by the verb such as up, down, shell or pull))
 
 # double $$ means esacpe it and send to bash as a single $
 # login to docker hub using whats in the env vars $DOCKERHUB_USER $DOCKERHUB_PASSWORD

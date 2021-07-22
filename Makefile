@@ -69,3 +69,11 @@ test-e2e::
 
 ## NA builds the libs
 build::
+
+define success_msg =
+echo $@ success
+endef
+
+foo:
+	echo foo
+	$(success_msg)
