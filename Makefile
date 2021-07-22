@@ -49,6 +49,7 @@ $(BATS_EXE):
 
 lint::
 	shellcheck bin/*
+	$(call log, shellcheck good)
 
 lint-fix:
 	shellcheck -f diff bin/* | git apply
