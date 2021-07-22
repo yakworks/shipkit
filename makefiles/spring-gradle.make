@@ -43,7 +43,7 @@ publish::
 
 # verifies the snapshot is set
 _verify-snapshot: FORCE
-	@_=$(if $(IS_SNAPSHOT),,$(error set snapshot=true in version properties))
+	_=$(if $(IS_SNAPSHOT),,$(error set snapshot=true in version properties))
 
 ## build snapshot(s) into you local maven
 snapshot:: | _verify-snapshot
@@ -86,7 +86,7 @@ publish-lib:
 ifdef RELEASABLE_BRANCH
 
  publish-lib:
-	@if [ "$(IS_SNAPSHOT)" ]; then echo "publishing SNAPSHOT"; else echo "publishing release"; fi
+	if [ "$(IS_SNAPSHOT)" ]; then echo "publishing SNAPSHOT"; else echo "publishing release"; fi
 	./gradlew publish
 
 endif # end RELEASABLE_BRANCH

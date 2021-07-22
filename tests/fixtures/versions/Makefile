@@ -1,3 +1,3 @@
 include Shipkit.make
-include makefiles/release.make
+include makefiles/ship-version.make
 

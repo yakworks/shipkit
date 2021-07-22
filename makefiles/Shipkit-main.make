@@ -76,7 +76,7 @@ list-functions: FORCE
 # will fail before running the target named `my_target` if the command `awk` is
 # not found on the system path.
 _program_%: FORCE
-	@_=$(or $(shell which $* 2> /dev/null),$(error `$*` command not found. Please install `$*` and try again))
+	_=$(or $(shell which $* 2> /dev/null),$(error `$*` command not found. Please install `$*` and try again))
 
 # Helper target for checking required environment variables.
 #
@@ -85,7 +85,7 @@ _program_%: FORCE
 #
 # will fail before running `my_target` if the variable `FOO` is not declared.
 _verify_%: FORCE
-	@_=$(if $($*),,$(error `$*` is not defined or is empty))
+	_=$(if $($*),,$(error `$*` is not defined or is empty))
 
 # text manipulation helpers
 _awk_case = $(shell echo | awk '{ print $(1)("$(2)") }')
@@ -93,8 +93,12 @@ lc = $(call _awk_case,tolower,$(1))
 uc = $(call _awk_case,toupper,$(1))
 
 # $(info BUILD_DIR=$(BUILD_DIR))
-$(BUILD_DIR):
+$(BUILD_DIR)::
 	mkdir -p $@
+
+## Make it so
+ship-it::
+
 
 # ---- Logging ----
 # usage example : $(call log, logging message $(SomeVar));
@@ -121,19 +125,19 @@ TPUT_YELLOW :=
 endif # end tput check
 
 define _log
-	@$(TPUT_PREFIX) echo "$(if $(LOG_PREFIX),$(LOG_PREFIX) )$(1)"; $(TPUT_SUFFIX)
+	$(TPUT_PREFIX) echo "$(if $(LOG_PREFIX),$(LOG_PREFIX) )$(1)"; $(TPUT_SUFFIX)
 endef
 
 define _warn
-	@$(TPUT_PREFIX) $(TPUT_YELLOW) echo "$(if $(LOG_PREFIX),$(LOG_PREFIX) )$(1)"; $(TPUT_SUFFIX)
+	$(TPUT_PREFIX) $(TPUT_YELLOW) echo "$(if $(LOG_PREFIX),$(LOG_PREFIX) )$(1)"; $(TPUT_SUFFIX)
 endef
 
 define _error
-	@$(TPUT_PREFIX) $(TPUT_RED) echo "$(if $(LOG_PREFIX),$(LOG_PREFIX) )$(1)"; $(TPUT_SUFFIX)
+	$(TPUT_PREFIX) $(TPUT_RED) echo "$(if $(LOG_PREFIX),$(LOG_PREFIX) )$(1)"; $(TPUT_SUFFIX)
 endef
 
 define log
-	@$(_log)
+	$(_log)
 endef
 
 # Provides callables `download` and `download_to`.
@@ -155,6 +159,14 @@ DOWNLOAD_TO_FLAGS := --write-out "%{http_code}" -o
 
 define download
 	$(DOWNLOADER) $(DOWNLOAD_FLAGS) "$(1)" | $(2)
+endef
+
+# downloads a tar.gz and expands it into the specifed dir under SHIPKIT_INSTALLS
+define download_tar
+	$(call log, download and untar to $(2))
+	install_dir=$(SHIPKIT_INSTALLS)/$(2)
+	mkdir -p $$install_dir
+	$(DOWNLOADER) $(DOWNLOAD_FLAGS) "$(1)" | tar zxf - -C $$install_dir --strip-components 1
 endef
 
 define download_to

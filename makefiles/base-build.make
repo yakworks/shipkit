@@ -37,17 +37,17 @@ test-e2e::
 build::
 	@:
 
-## publish the libs
-publish::
-	@:
+# ## publish the libs
+# publish::
+# 	@:
 
-# Full release, version bump, changelog update... usually only CI
-release::
-	@:
+# # Full release, version bump, changelog update... usually only CI
+# release::
+# 	@:
 
-# Deploy the app. dockerize, kubernetes, etc... usually only CI will run this
-deploy::
-	@:
+# # Deploy the app. dockerize, kubernetes, etc... usually only CI will run this
+# deploy::
+# 	@:
 
 .PHONY: clean lint compile check test test-unit test-e2e build publish release deploy
 

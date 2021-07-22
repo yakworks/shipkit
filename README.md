@@ -94,8 +94,10 @@ best best is to take a look at https://github.com/yakworks/gorm-tools for a spri
 
 WIP for a node and python links
 
+## MAKE
 
-# References
+https://github.com/wurosh/cake
+https://gitlab.com/internet-cleanup-foundation/web-security-map/-/blob/master/Makefile
 
 ## Semver and Conventional Commits
 https://www.conventionalcommits.org/en/v1.0.0/

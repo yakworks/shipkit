@@ -11,7 +11,7 @@ deploy_src_dir := $(APP_DIR)/src/deploy
 
 # rm -rf build/docker
 clean-docker-build:
-	@rm -rf $(build_docker_dir)/*
+	rm -rf $(build_docker_dir)/*
 
 $(build_docker_dir):
 	mkdir -p $@
@@ -22,20 +22,20 @@ DEPLOY_SOURCES := $(wildcard $(deploy_src_dir)/*)
 # then 'explodes' or unjars the executable jar so dockerfile can iterate on build changes
 # layering docker see https://blog.jdriven.com/2019/08/layered-spring-boot-docker-images/
 $(BUILD_DIR)/docker/Dockerfile: $(build_docker_dir) $(DEPLOY_SOURCES) | _verify_APP_JAR _verify_APP_DIR
-	@echo "copy Dockerfile"
+	echo "copy Dockerfile"
 	rm -rf $(build_docker_dir)/*
 	cp -r $(deploy_src_dir)/. $(build_docker_dir);
 
 # copies the jar in and explodes it
 $(BUILD_DIR)/docker/app.jar: $(APP_JAR) build/docker/Dockerfile | _verify_APP_JAR _verify_APP_DIR
-	@echo "copy app.jar"
+	echo "copy app.jar"
 	cp $(APP_JAR) $(build_docker_dir)/app.jar
 	cd $(build_docker_dir)
 	jar -xf app.jar
 
 # does the docker build
 $(BUILD_DIR)/docker_built_$(APP_KEY): build/docker/app.jar | _verify_APP_DOCKER_URL
-	@docker build -t $(APP_DOCKER_URL) $(build_docker_dir)/.
+	docker build -t $(APP_DOCKER_URL) $(build_docker_dir)/.
 	touch $(BUILD_DIR)/docker_built_$(APP_KEY)
 
 .PHONY: docker-app-build
@@ -44,7 +44,7 @@ docker-app-build: $(BUILD_DIR)/docker_built_$(APP_KEY)
 
 # stamp to track if it was deployed
 build/docker_push_$(APP_KEY): $(BUILD_DIR)/docker_built_$(APP_KEY) | _verify_APP_DOCKER_URL
-	@docker push ${APP_DOCKER_URL}
+	docker push ${APP_DOCKER_URL}
 	touch $(BUILD_DIR)/docker_push_$(APP_KEY)
 
 .PHONY: docker-app-push

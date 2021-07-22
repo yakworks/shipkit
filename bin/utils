@@ -51,16 +51,28 @@ function toupper {
   echo "$1" | awk '{print toupper($0)}'
 }
 
+# greps the value from a properly formed env or properties file
+# $1 - the prop name
+# $2 - file name
+# example file:
+# FOO=bar
+# `grepValue FOO` = bar
+function grepValue {
+    PROP_KEY=$1
+    PROP_VALUE=`grep "^$PROP_KEY=" "$2" | cut -d'=' -f2`
+    echo "$PROP_VALUE"
+}
+
 # lists all the function/methods for the bash script
 function list-functions {
   shopt -s extdebug
   funcList=`compgen -A function`
   # echo $funcList
   for f in $funcList; do
-    funcParts=`declare -F $f`
-    arr=($funcParts)
+    funcParts=`declare -F "$f"`
+    arr=("$funcParts")
     local file=${arr[2]##*/}
-    printf "%-25s %s:%s\n" ${arr[0]} ${file} ${arr[1]}
+    printf "%-25s %s:%s\n" "${arr[0]}" "${file}" "${arr[1]}"
   done
 }
 
@@ -77,29 +89,7 @@ function escape_json_string {
   jdata=${jdata//	/\\t} # \t (tab)
   jdata=${jdata//^M/\\\r} # \r (carriage return)
   # echo "$jdata"
+  # shellcheck disable=SC2001
   echo "$jdata" | sed 's/~~~/\\n/g'
 }
-# ---
-# quick and dirty templating. replaces a defined seat of tags in format ${VAR}
-# with env vaiables from the specified source file
-# $1 - the file name to process
-# $2 - the env file to source
-# $3 - the additional vars to pass to the env file
-# ---
-# !DEPRECATED here fror reference only
-function applySedTpl {
-  template=$(cat "${1}" | sed -e "s/\${NAME}/$NAME/g" \
-    -e "s~\${DOCKER_REPO}~$DOCKER_REPO~g" \
-    -e "s/\${IMAGE_TAG}/$IMAGE_TAG/g" \
-    -e "s/\${DB_PORT}/$DB_PORT/g" \
-    -e "s/\${ING_URL}/$ING_URL/g" \
-    -e "s/\${DB_SERVICE_NAME}/$DB_SERVICE_NAME/g" \
-    -e "s/\${DB_IMAGE_TAG}/$DB_IMAGE_TAG/g" \
-    -e "s/\${DB_PASSWORD}/$DB_PASSWORD/g" \
-    -e "s/\${PASS_VAR_NAME}/$PASS_VAR_NAME/g" \
-    -e "s/\${APP_NAME}/$APP_NAME/g" \
-    -e "s/\${APP_IMAGE_TAG}/$APP_IMAGE_TAG/g" \
-    )
-  #echo "$template"
-  echo "$template" | kubectl apply -f -
-}
+
