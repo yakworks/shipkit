@@ -1,3 +1,8 @@
+### v1.0.8
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.7...v1.0.8)
+- fix: yaml was failing with set -euo pipefail, fixed and commented out unset_variables for now. added ship- methods for spring gradle publish and docker [link](https://github.com/yakworks/shipkit/commit/43fde24c571b0f8da6e1db107b259ca2dab45cd3)
+
 ### v1.0.7
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.6...v1.0.7)
