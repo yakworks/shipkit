@@ -45,7 +45,7 @@ publish::
 _verify-snapshot: FORCE
 	_=$(if $(IS_SNAPSHOT),,$(error set snapshot=true in version properties))
 
-## build snapshot(s) into you local maven
+## publish snapshot(s) jars into you local maven
 snapshot:: | _verify-snapshot
 	$(gw) snapshot
 
@@ -66,6 +66,7 @@ resolve-dependencies:
 # on multi-project gradles this will merges test results into one spot for a CI build
 merge-test-results: FORCE | _verify_PROJECT_SUBPROJECTS
 	$(spring_gradle) merge_test_results "$(PROJECT_SUBPROJECTS)"
+	echo $@ success
 
 # for multi-project gradles this cats the props and build.gradle into a single cache-key.tmp file
 # for CI (such as circle) to checksum on a single file to see if there are any changes
@@ -76,17 +77,23 @@ cache-key-file: | _verify_PROJECT_SUBPROJECTS
 		[ -f $$project/build.gradle ] && cat $$project/build.gradle >> cache-key.tmp
 		[ -f $$project/gradle.properties ] && cat $$project/gradle.properties >> cache-key.tmp
 	done
-	return 0 # is this needed?
+	echo $@ success
 
-.PHONY: publish-lib
-# empty targets so make doesn't blow up when not a RELEASABLE_BRANCH
-# publish the library jar, gradle publish if a gradle project
-publish-lib:
+## publish the library jar, calls gradle publish
+publish-libs:
+	if [ "$(IS_SNAPSHOT)" ]; then echo "publishing SNAPSHOT"; else echo "publishing release"; fi
+	./gradlew publish
+
+.PHONY: ship-libs publish-lib
 
 ifdef RELEASABLE_BRANCH
 
- publish-lib:
-	if [ "$(IS_SNAPSHOT)" ]; then echo "publishing SNAPSHOT"; else echo "publishing release"; fi
-	./gradlew publish
+# call for CI
+ship-libs:: publish-lib
+	echo $@ success
+else
+
+ship-libs::
+	echo "$@ not a RELEASABLE_BRANCH, nothing to do"
 
 endif # end RELEASABLE_BRANCH

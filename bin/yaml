@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1003
-
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
 # From https://github.com/jasperes/bash-yaml
 # which was Based on https://gist.github.com/pkuczynski/8665367
 
 parse_yaml() {
-    local yaml_file=$1
-    local prefix=$2
+    local yaml_file="$1"
+    local prefix="${2:-}"
     local s
     local w
     local fs
@@ -66,10 +66,11 @@ unset_variables() {
 }
 
 create_yml_variables() {
+    # set +euo pipefail
     local yaml_file="$1"
-    local prefix="$2"
+    local prefix="${2:-}"
     local yaml_string
     yaml_string="$(parse_yaml "$yaml_file" "$prefix")"
-    unset_variables "${yaml_string}"
+    # unset_variables "${yaml_string}"
     eval "${yaml_string}"
 }

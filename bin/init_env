@@ -102,14 +102,18 @@ function init_from_build_yml {
     # k8s
     varsToEval+="app_kube_nfs app_kube_namespace app_kube_ingress_url "
 
+    set +u
     for varName in $varsToEval; do
       local upperVarName=$(toupper "$varName")
-      [ "${!varName}" ] && evalVar "$upperVarName" "${!varName}"
+      local varVal="${!varName}"
+      [ "$varVal" ] && evalVar "$upperVarName" "$varVal"
     done
     # special handling, kubernetes requires all lower case for names so we abide and lower APP_KEY
-    [ "$APP_KEY" ] && APP_KEY=$(tolower "$APP_KEY")
+    # APP_KEY="${APP_KEY:-$(tolower "$APP_KEY")}"
+    [ "$APP_KEY" ] && APP_KEY=$(tolower "${APP_KEY:-}")
     [ "$APP_DOCKER_URL" ] && APP_DOCKER_URL=$(tolower "$APP_DOCKER_URL")
     [ "$APP_KUBE_INGRESS_URL" ] && APP_KUBE_INGRESS_URL=$(tolower "$APP_KUBE_INGRESS_URL")
+    set -u
   fi
   return 0 # I don't understand why this is needed
 }

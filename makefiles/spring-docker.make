@@ -69,3 +69,15 @@ docker-app-down:
 
 docker-app-shell: docker-app-up
 	docker exec -it $(APP_NAME) bash -l
+
+ifdef RELEASABLE_BRANCH
+
+ship-docker:: docker-app-build docker-app-push
+	echo $@ success
+
+else
+
+ship-docker::
+	echo "$@ not on a RELEASABLE_BRANCH, nothing to do"
+
+endif # end RELEASABLE_BRANCH
