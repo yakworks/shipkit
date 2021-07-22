@@ -24,8 +24,8 @@ function init_github_vars {
 
   # echo "init_github_vars with PROJECT_FULLNAME $ghFullName"
   # keeps whats after last /
-  GITHUB_REPO=${ghFullName##*/}
-  GITHUB_LINK_URL="https://github.com/${ghFullName}"
+  # GITHUB_REPO=${ghFullName##*/}
+  # GITHUB_LINK_URL="https://github.com/${ghFullName}"
   GITHUB_BASE_URL="github.com/${ghFullName}.git"
   GITHUB_URL="https://$GITHUB_BASE_URL"
   # echo "GITHUB_URL $GITHUB_URL"
@@ -61,8 +61,8 @@ function verify_git_user {
   # see https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
   if [ ! "${hasGitUser}" ] || [ "$CI" ]; then
     echo "adding BOT_USER"
-    : ${BOT_USER:=9cibot}
-    : ${BOT_EMAIL:=9cibot@9ci.com}
+    : "${BOT_USER:=9cibot}"
+    : "${BOT_EMAIL:=9cibot@9ci.com}"
     # echo "adding git user"
     config_bot_user $BOT_USER $BOT_EMAIL
   fi
@@ -83,7 +83,7 @@ function git_clone_pages {
   [ "$GITHUB_URL" ] || init_github_vars "$3"
   mkdir -p build
   rm -rf "$pagesDir"
-  git clone $GITHUB_URL "$pagesDir" -b "$pagesBranch" --single-branch --depth 1
+  git clone "$GITHUB_URL" "$pagesDir" -b "$pagesBranch" --single-branch --depth 1
 }
 
 # in build/gh-pages commits and pushes gh pages
@@ -94,9 +94,9 @@ function git_push_pages {
   local pagesBranch="${1:-$PAGES_BRANCH}"
   local pagesDir="${2:-$PAGES_BUILD_DIR}"
   [ "$GITHUB_URL" ] || init_github_vars "$3"
-  git -C $pagesDir add -A .
-  git -C $pagesDir commit -a -m "CI Docs published [skip ci]" || true # or true so doesnt blow error if no changes
-  git -C $pagesDir push -q $GITHUB_URL $pagesBranch || true
+  git -C "$pagesDir" add -A .
+  git -C "$pagesDir" commit -a -m "CI Docs published [skip ci]" || true # or true so doesnt blow error if no changes
+  git -C "$pagesDir" push -q "$GITHUB_URL" "$pagesBranch" || true
 }
 
 # sets up thee git user info for commit and push
@@ -119,7 +119,7 @@ function init_gh_pages {
   mkdir -p build
   cd build
   rm -rf gh-pages
-  git clone $GITHUB_URL $PAGES_BRANCH
+  git clone "$GITHUB_URL" $PAGES_BRANCH
   cd gh-pages
   git checkout --orphan $PAGES_BRANCH
   git rm -rf .
@@ -133,12 +133,12 @@ function init_gh_pages {
 function git_tag {
   git add .
   git commit -m "$2"
-  git tag $1
+  git tag "$1"
 }
 
 #Push git tags to github
 function git_push_tags {
-  git push -q --tags $GITHUB_URL master
+  git push -q --tags "$GITHUB_URL" master
 }
 
 # ---
@@ -147,7 +147,7 @@ function git_push_tags {
 # returns the list of file changes, empty if nothing
 # ---
 function hasAppChanges {
-  git diff $1 --name-status | grep -v -E "(README\.md|mkdocs\.yml|docs/)" || true
+  git diff "$1" --name-status | grep -v -E "(README\.md|mkdocs\.yml|docs/)" || true
 }
 
 # ---
@@ -156,7 +156,7 @@ function hasAppChanges {
 # returns the list of file changes, empty if nothing
 # ---
 function hasDocChanges {
-  git diff $1 --name-status | grep -E "(README\.md|mkdocs\.yml|version.properties|docs/)" || true
+  git diff "$1" --name-status | grep -E "(README\.md|mkdocs\.yml|version.properties|docs/)" || true
 }
 
 #Just a helper to show variables which can be useful for debugging
@@ -172,5 +172,5 @@ function git_debug {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "$(dirname $0)/function_runner.sh"
+  source "$(dirname "$0")/function_runner.sh"
 fi

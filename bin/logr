@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Logging utility that simplifies user of bash logger command
+# others to look at
+# https://github.com/Zordrak/bashlog/blob/master/log.sh
+
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
+
 
 # # First source the script
 # source ~/scripts/logr.bash

@@ -26,7 +26,7 @@ docker-dockmark-shell:
 
 # pulls the latest version
 docker-dockmark-pull:
-	@$(docmark.sh) docmark_pull
+	docker pull "$(DOCMARK_DOCKER_IMAGE)"
 
 # --- BUILDS ----
 

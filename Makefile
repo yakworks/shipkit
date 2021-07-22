@@ -26,6 +26,12 @@ docker-shell:
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
 
+lint:
+	shellcheck bin/
+
+lint-fix:
+	shellcheck -f diff bin/ | git apply
+
 # --- BATS Testing ---
 BATS_VERSION ?= 1.3.0
 # BATS_TESTS   ?= . 3>&1

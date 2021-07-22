@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034
 # ---
 # sets up docker build vars
 # ---
@@ -24,14 +25,14 @@ function init_docker_builders {
 # $1 - the database dbms (mysql,sqlserver,etc)
 function setDbEnv {
   # arg $1 must always be the database, defaults to mysql if nothing specified
-  setVar DBMS ${1:-mysql}
+  setVar DBMS "${1:-mysql}"
   setVar DOCK_DB_BUILD_NAME "$DBMS-build"
   : "${NINEDB_VERSION:=$VERSIONX}"
   : "${DOCKER_NINEDB_REPO:=dock9/nine-db}"
   : "${DB_IMAGE_TAG:=${DBMS}-${NINEDB_VERSION}}"
   setVar DOCKER_DB_URL "$DOCKER_NINEDB_REPO:$DB_IMAGE_TAG"
 
-  setVar DB_NAME rcm_9ci_${BUILD_ENV}
+  setVar DB_NAME "rcm_9ci_${BUILD_ENV}"
 
   # **** DB Vars (MYSQL by default) ****
   setVar DB_HOST 127.0.0.1
