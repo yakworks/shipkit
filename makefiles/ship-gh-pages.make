@@ -14,17 +14,21 @@ gh-pages-deploy: docmark-publish-prep
 	echo "$@ success"
 
 
-.PHONY: ship-gh-pages
-# CI to call this to relase/publish docs. only does work if IS_RELEASABLE
-ship-gh-pages:
 
 # TODO at some point we want to look at publishing snapshot version of docs like we once did?
 # NOT_SNAPSHOT := $(if $(IS_SNAPSHOT),,true)
 # ifneq (,$(and $(RELEASABLE_BRANCH),$(NOT_SNAPSHOT)))
 
+.PHONY: ship-gh-pages
+
 ifeq (true,$(IS_RELEASABLE))
 
  ship-gh-pages:
 	$(MAKE) gh-pages-deploy
+	echo "*** $@ success ***"
+else
+
+  ship-gh-pages:
+	echo "*** $@ IS_RELEASABLE=false as this is either a snapshot or its not on a releasable branch ***"
 
 endif

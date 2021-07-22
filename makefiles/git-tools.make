@@ -18,9 +18,9 @@ git-clone-pages: | _verify_PAGES_BRANCH _verify_PAGES_BUILD_DIR
 
 # pushes the docs pages that was cloned into build, normally build/gh-pages for github
 git-push-pages: | _verify_PAGES_BRANCH _verify_PROJECT_FULLNAME
-	@git -C $(PAGES_BUILD_DIR) add -A .
-	@git -C $(PAGES_BUILD_DIR) commit -a -m "CI Docs published [skip ci]" || true # or true so doesnt blow error if no changes
-	@git -C $(PAGES_BUILD_DIR) push -q $(GITHUB_URL) $(PAGES_BRANCH) || true
+	git -C $(PAGES_BUILD_DIR) add -A .
+	git -C $(PAGES_BUILD_DIR) commit -a -m "CI Docs published [skip ci]" || true # or true so doesnt blow error if no changes
+	git -C $(PAGES_BUILD_DIR) push -q $(GITHUB_URL) $(PAGES_BRANCH) || true
 
 
 config-bot-git-user: BOT_USER ?= $(shell echo $(BOT_EMAIL) | cut -d "@" -f1)

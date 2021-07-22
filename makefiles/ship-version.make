@@ -29,11 +29,6 @@ push-version-bumps:
 	git push -q $(GITHUB_URL) $(RELEASABLE_BRANCH)
 	echo "$@ success"
 
-# this is empty so they are always there for CI to call, will do nothing if not IS_RELEASABLE
-## If IS_RELEASABLE, does version bump, update changelong and creates tagged release on gitub
-ship-version:
-
-# create-github-release:
 
 # -- release --
 ifeq (true,$(IS_RELEASABLE))
@@ -43,7 +38,13 @@ ship-github-create: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_
 	$(github_release) create_github_release $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
 	echo "$@ success"
 
+## If IS_RELEASABLE, bump vesion, update changelong and post tagged release on gitub. Should almost always be last ship/release target
 ship-version: update-changelog update-readme-version bump-version-file ship-github-create push-version-bumps
-	echo "$@ success"
+	$(call log, "$@ success")
+
+else # not IS_RELEASABLE, so its a snapshot or its not on a releasable branch
+
+ship-version:
+	$(call log, $@ IS_RELEASABLE=false as this is either a snapshot or its not on a releasable branch )
 
 endif # end RELEASABLE_BRANCH

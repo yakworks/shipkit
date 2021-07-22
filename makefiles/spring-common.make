@@ -14,6 +14,5 @@ include $(SHIPKIT_MAKEFILES)/kube.make
 include $(SHIPKIT_MAKEFILES)/jbuilder-docker.make
 include $(SHIPKIT_MAKEFILES)/spring-gradle.make
 include $(SHIPKIT_MAKEFILES)/spring-docker.make
-include $(SHIPKIT_MAKEFILES)/circle.make
 include $(SHIPKIT_MAKEFILES)/docmark.make
-include $(SHIPKIT_MAKEFILES)/release.make
+include $(SHIPKIT_MAKEFILES)/ship-version.make

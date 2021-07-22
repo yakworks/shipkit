@@ -1,6 +1,6 @@
 # The default options and configs for makefile
 # make it a bash shell for recipes
-SHELL := bash
+SHELL := $(SHIPKIT_BIN)/make_shell
 # SHELL := /bin/bash
 
 .DEFAULT_GOAL := help
@@ -12,7 +12,7 @@ $(VERBOSE).SILENT:
 .ONESHELL:
 
 # best practice settings for bash scripts, http://redsymbol.net/articles/unofficial-bash-strict-mode/
-.SHELLFLAGS := -eu -o pipefail -c
+# .SHELLFLAGS := -eu -o pipefail -c
 
 # if a Make rule fails, it’s target file is deleted. This ensures the next time you run Make,
 # it’ll properly re-run the failed rule, and guards against broken files.

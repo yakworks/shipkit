@@ -2,7 +2,8 @@
 load test_helper
 
 setup() {
-  fixtures git-tools
+  export FIXTURE_DIR="$BATS_TEST_DIRNAME/fixtures/git-tools"
+  export PATH=$FIXTURE_DIR/bin:$PATH
   export GITHUB_TOKEN=s3cr3t
   export BOT_EMAIL=9cibot@9ci.com
 }
@@ -12,14 +13,14 @@ teardown() {
 }
 
 @test 'git-clone-pages' {
-  run make -f $FIXTURES_ROOT/Makefile git-clone-pages
-  __debug "${status}" "${output}" "${lines[@]}"
 
-  [ "$status" -eq 0 ]
+  make -f $FIXTURE_DIR/Makefile git-clone-pages
+
 }
 
 @test 'git-push-pages' {
-  run make -f $FIXTURES_ROOT/Makefile git-push-pages
+  # export PATH=$FIXTURE_DIR/bin:$PATH
+  run make -f $FIXTURE_DIR/Makefile git-push-pages
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]
@@ -29,7 +30,7 @@ teardown() {
 }
 
 @test 'config-bot-git-user' {
-  run make -f $FIXTURES_ROOT/Makefile config-bot-git-user
+  run make -f $FIXTURE_DIR/Makefile config-bot-git-user
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]

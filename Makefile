@@ -9,10 +9,12 @@ include Shipkit.make
 include $(SHIPKIT_MAKEFILES)/docker.make
 include $(SHIPKIT_MAKEFILES)/secrets.make
 include $(SHIPKIT_MAKEFILES)/git-tools.make
-include $(SHIPKIT_MAKEFILES)/release.make
+include $(SHIPKIT_MAKEFILES)/ship-version.make
 
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
+# can be set here but best to export it in shell so make's $(shell ) function can pick it up
+#export LOGR_DEBUG_ENABLED := true
 
 # --- Dockers ---
 docker_tools := $(SHIPKIT_BIN)/docker_tools

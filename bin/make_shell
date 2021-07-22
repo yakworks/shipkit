@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# ---
+# a wrapper around the shell for make targets so we can have certain things sourced. also allows to easily trace and log
+# set in the Makefile like so
+# SHELL := $(SHIPKIT_BIN)/make_shell
+# ---
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
+source "${__dir}/logr"
+source "${__dir}/utils"
+
+# its will usually have the -c passed from make
+if [  "$1" == "-c" ] ; then
+    shift
+fi
+
+target_cmds="$@"
+
+# if its starts with the @ then thats the quiet thing from make so remove it
+if [  "$target_cmds" = "@*" ] ; then
+  target_cmds="${target_cmds%?}" # removes the first character
+fi
+
+LOGR_DEBUG_ENABLED=${LOGR_DEBUG_ENABLED:-}
+#logr debug "LOGR_DEBUG_ENABLED: ${LOGR_DEBUG_ENABLED:-}"
+if [ "$LOGR_DEBUG_ENABLED" = "true" ]; then
+  logr debug "target_commands: $target_cmds"
+fi
+# logr debug "BUILD_VARS: ${BUILD_VARS:-}"
+
+# strace -f -o `mktemp $RESULTZ/result_XXXXXXX` -e trace=open,stat64,execve,exit_group,chdir /bin/sh -c "$@"  | awk '{if (match("Process PID=\d+ runs in (64|32) bit",$0) == 0) {print $0}}'
+eval "$target_cmds"
