@@ -31,7 +31,7 @@ $(BUILD_DIR)/docker/app.jar: $(APP_JAR) build/docker/Dockerfile | _verify_APP_JA
 	echo "copy app.jar"
 	cp $(APP_JAR) $(build_docker_dir)/app.jar
 	cd $(build_docker_dir)
-	jar -xf app.jar
+	"$$JAVA_HOME"/bin/jar -xf app.jar
 
 # does the docker build
 $(BUILD_DIR)/docker_built_$(APP_KEY): build/docker/app.jar | _verify_APP_DOCKER_URL
