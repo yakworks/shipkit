@@ -11,13 +11,13 @@ trigger-circle: | _verify_CIRCLE_TOKEN _verify_SLUG
 		--header 'Content-Type: application/json' \
 		-u "$(CIRCLE_TOKEN):"
 
-SHELLCHECK_VERSION ?= 0.7.2
+SHELLCHECK_VERSION ?= v0.7.2
 SHELLCHECK_TAR = shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz
+SHELLCHECK_URL = https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/$(SHELLCHECK_TAR)
 
 alpine-install-shellcheck:
-	tar=shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz
-	curl -sSL https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/$(SHELLCHECK_TAR) -o shellcheck.tar.gz
-	mkdir -p /usr/src/shellcheck
+	$(DOWNLOADER) $(DOWNLOAD_TO_FLAGS) shellcheck.tar.gz "$(SHELLCHECK_URL)"
 	tar xvf shellcheck.tar.gz
 	mv shellcheck-*/shellcheck /usr/bin/
 	rm -rf shellcheck*
+	ls -laF /usr/bin/shellcheck
