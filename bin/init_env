@@ -141,12 +141,12 @@ function init_versions {
   #replace dots with - so 10.0.x turns into v10-0-x. k8s can't have dots in names
   setVar VERX_NO_DOTS "v${VERSIONX//./-}"
 
-  setVar BUILD_VERSION "$VERSION"
+  putVar BUILD_VERSION "$VERSION"
 
   # if its a snapshot then append the SNAPSHOT
   if [[ $(isTruthy "${snapshot:-}") ]]; then
-    setVar VERSION_POSTFIX "-SNAPSHOT"
-    setVar IS_SNAPSHOT true
+    putVar VERSION_POSTFIX "-SNAPSHOT"
+    putVar IS_SNAPSHOT true
     BUILD_VERSION+="-SNAPSHOT"
     VERX_NO_DOTS+="-SNAPSHOT"
   fi

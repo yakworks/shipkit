@@ -84,12 +84,12 @@ publish-libs:
 	if [ "$(IS_SNAPSHOT)" ]; then echo "publishing SNAPSHOT"; else echo "publishing release"; fi
 	./gradlew publish
 
-.PHONY: ship-libs publish-lib
+.PHONY: ship-libs publish-libs
 
 ifdef RELEASABLE_BRANCH
 
 # call for CI
-ship-libs:: publish-lib
+ship-libs:: publish-libs
 	echo $@ success
 else
 
