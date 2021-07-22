@@ -1,3 +1,8 @@
+### v1.0.11
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.10...v1.0.11)
+- fix: make jar call, $$JAVA_HOME/bin/jar so dont depend on jar exe being on path [link](https://github.com/yakworks/shipkit/commit/9a1dcbd4c222692c022b95f7f0a346f6ea0d2375)
+
 ### v1.0.10
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.9...v1.0.10)
