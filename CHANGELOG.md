@@ -1,3 +1,8 @@
+### v1.0.10
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.9...v1.0.10)
+- fix: ship-libs depended on publish-lib without s, make BUILD_VERSION puVar [link](https://github.com/yakworks/shipkit/commit/c00de9b4c5b31263420494fc7dfd5a09058a8452)
+
 ### v1.0.9
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.8...v1.0.9)
