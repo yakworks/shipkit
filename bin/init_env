@@ -88,19 +88,20 @@ function init_from_build_yml {
   if [ -e ./build.yml ]; then
     create_yml_variables "./build.yml"
 
-    local varsToEval="project_fullName project_subprojects "
+    local varsToEval="project_fullName project_subprojects"
+    # ! spaces separators at begging are important
     # bot
-    varsToEval+="bot_user bot_email vault_url"
+    varsToEval+=" bot_user bot_email vault_url"
     # release
-    varsToEval+="release_changelog release_branch_regex "
+    varsToEval+=" release_changelog release_branch_regex"
     # pages
-    varsToEval+="pages_build_dir pages_branch "
+    varsToEval+=" pages_build_dir pages_branch"
     # builder
-    varsToEval+="builder_exec builder_name builder_url "
+    varsToEval+=" builder_exec builder_name builder_url"
     # app
-    varsToEval+="app_name app_key app_dir app_jar app_docker_url "
+    varsToEval+=" app_name app_key app_dir app_jar app_docker_url"
     # k8s
-    varsToEval+="app_kube_nfs app_kube_namespace app_kube_ingress_url "
+    varsToEval+=" app_kube_nfs app_kube_namespace app_kube_ingress_url"
 
     set +u
     for varName in $varsToEval; do

@@ -14,7 +14,7 @@ vault-decrypt: import-gpg-key $(GIT_SECRET_SH) | _verify_VAULT_URL _verify_GPG_P
 	@[ ! -e $(VAULT_DIR) ] && git clone $(VAULT_URL) $(VAULT_DIR) || :;
 	cd build/vault && $(GIT_SECRET_SH) reveal -p "$(GPG_PASS)"
 
-import-gpg-key: | _verify_GPG_PRIVATE_KEY _verify_BOT_EMAIL
+import-gpg-key: | _verify_BOT_EMAIL
 	@if [ "$(GPG_PRIVATE_KEY)"  ]; then
 		echo "importing GPG KEY"
 		echo "$(GPG_PRIVATE_KEY)" | base64 --decode | gpg -v --batch --import
