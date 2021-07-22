@@ -1,6 +1,11 @@
 ### v1.0.7
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.6...v1.0.7)
+- feat: shellcheck, added logr, renamed release.make to ship-version, everything runs through the make_shell now (#5) [link](https://github.com/yakworks/shipkit/commit/dee01e81d66553c21b035ce53b7f1410d50d89dc)
+
+### v1.0.7
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.6...v1.0.7)
 - feat: added logr, renamed release.make to ship-version, everything runs through the make_shell now [link](https://github.com/yakworks/shipkit/commit/78be6d96f8e3a1ecc14f50306b82b5cb759b15b9)
 
 ### v1.0.7
