@@ -5,6 +5,8 @@ export SHIPKIT_MAKEFILES := $(SHIPKIT_DIR)/makefiles
 # Default opinionated config & flags for make
 include $(SHIPKIT_MAKEFILES)/Shipkit-flags.make
 # the juice
+include $(SHIPKIT_MAKEFILES)/env-goals.make
+# the juice
 include $(SHIPKIT_MAKEFILES)/Shipkit-main.make
 
 

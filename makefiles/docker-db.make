@@ -7,7 +7,7 @@
 
 ## starts the DOCK_DB_BUILD_NAME db if its not started yet, unless USE_DOCKER_DB_BUILDER=false
 db-start: builder-network
-	$(build.sh) db-start $(DB_VENDOR)
+	$(build.sh) db-start $(DBMS)
 
 # runs a wait-for script that blocks until db mysql or sqlcmd succeeds
 db-wait:

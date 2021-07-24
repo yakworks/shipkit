@@ -1,6 +1,8 @@
 ---
 person:
-  name: Jonathan
+  name: Jon athan
+  # multi line is not supported yet, use \n
+  comments: like \n this
   age: 99
   email: jonathan@email.com #inline comments
 

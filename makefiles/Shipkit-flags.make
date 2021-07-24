@@ -22,7 +22,7 @@ MAKEFLAGS += --no-builtin-rules --no-print-directory
 
 # verify its not an arcane mac version of make
 ifeq ($(filter undefine,$(value .FEATURES)),)
-  $(error The build system does not work properly with GNU Make $(MAKE_VERSION). please use GNU Make 3.82 or above. \
-	for mac run `brew install make` and then follow the directions on modifying your path so new `make` works
-  )
+  $(error The build system does not work properly with the old GNU Make $(MAKE_VERSION). please use GNU Make 4 or above. \
+	On mac OS: `brew install make` and then find and follow brews directions in the console to modify your PATH \
+	so you can use `make` instead of `gmake`)
 endif

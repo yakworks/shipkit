@@ -2,22 +2,22 @@
 
 # The defult build dir, if we have only one it'll be easier to cleanup
 export BUILD_DIR ?= build
-BUILD_VARS += BUILD_DIR
+export MAKE_ENV_FILE = $(BUILD_DIR)/make/makefile.env
+BUILD_VARS += BUILD_DIR MAKE_ENV_FILE
 
 #shell doesn't get the exported vars so we need to spin the ones we want, which should be in BUILD_VARS
 SHELL_EXPORTS := $(foreach v,$(BUILD_VARS), $(v)='$($(v))')
-# if no build.sh var is not set then call the the init_env script directly
-# if its set then call build.sh and assume its setting up variables and will call the main init_env where needed
-ifdef build.sh
-shResults := $(shell $(SHELL_EXPORTS) $(build.sh) make_env_file $(BUILD_ENV) $(DB_VENDOR))
-else
-shResults := $(shell $(SHELL_EXPORTS) $(SHIPKIT_BIN)/init_env init_and_create_env_file $(BUILD_ENV) $(DB_VENDOR))
-endif
+# if no build.sh var is not set then use the the init_env script directly
+# if its set then call build.sh and assume it sourced in /init_env and will
+# be setting up variables and/or potentially overriding make_env
+build.sh ?= $(SHIPKIT_BIN)/init_env
+shResults := $(shell $(SHELL_EXPORTS) $(build.sh) make_env $(BUILD_ENV))
 ifneq ($(.SHELLSTATUS),0)
   $(error error with init_env or build.sh $(shResults))
 endif
+# $(info init_env results $(shResults))
 
-makefile_env := ./$(BUILD_DIR)/make/makefile.env
+makefile_env := $(MAKE_ENV_FILE)
 # import/sinclude the variables file to make it availiable to make as well
 sinclude $(makefile_env)
 # now re-export them so for future shell calls, BUILD_VARS is the list of them all

@@ -1,4 +1,8 @@
 #!/bin/bash
+# Load dependencies.
+load "build/installs/bats-support/load.bash"
+load "build/installs/bats-assert/load.bash"
+
 export OLD_PATH=$PATH
 
 unset_term() {
