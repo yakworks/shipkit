@@ -65,7 +65,9 @@ function init_defaults {
   setVar RELEASE_CHANGELOG "CHANGELOG.md"
 
 
-  [ "${ACTIVE_BRANCH:-}" ] && setVar RELEASABLE_BRANCH "$(is_releasable_branch "$ACTIVE_BRANCH" "$RELEASE_BRANCH_REGEX")"
+  if [[ "${ACTIVE_BRANCH:-}" && "${ACTIVE_BRANCH}" =~ ^(${RELEASE_BRANCH_REGEX})$ ]]; then
+    RELEASABLE_BRANCH="${ACTIVE_BRANCH}"
+  fi
 
   # shellcheck disable=SC2034
   IS_RELEASABLE=''
@@ -90,7 +92,7 @@ function init_from_build_yml {
     BUILD_YAML_
     # creates the variables from build.yml, exclude certain keys that are for gradle only
     load_yaml_variables "./build.yml" true "" "MAVEN|CODENARC|SPOTLESS"
-    BUILD_VARS+=" ${YML_VARS[*]}"
+    BUILD_VARS+=" ${YML_VARS[*]} "
 
     set +u
     # special handling, kubernetes requires all lower case for names so we abide and lower APP_KEY
