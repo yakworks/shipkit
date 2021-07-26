@@ -26,3 +26,8 @@ ifeq ($(filter undefine,$(value .FEATURES)),)
 	On mac OS: `brew install make` and then find and follow brews directions in the console to modify your PATH \
 	so you can use `make` instead of `gmake`)
 endif
+
+define setVar
+$(eval BUILD_VARS += $(1))
+$(2)
+endef

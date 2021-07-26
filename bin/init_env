@@ -6,13 +6,28 @@
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 
-__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
-source "${__dir}/setVar"
-source "${__dir}/logr"; # start verbose 'init_env' will make it kick to console
-source "${__dir}/yaml"
-source "${__dir}/git_tools"
-source "${__dir}/utils"
-source "${__dir}/init_db_env"
+source "$(dirname ${BASH_SOURCE[0]})/bash/core"
+core.import_path "setVar"
+core.import_path "logr"; # start verbose 'init_env' will make it kick to console
+core.import_path "yaml"
+core.import_path "git_tools"
+core.import_path "utils"
+core.import_path "init_db_env"
+
+# core.import setVar
+# core.import logr
+# core.import yaml
+# core.import git_tools
+# core.import utils
+# core.import init_db_env
+
+# __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
+# source "${__dir}/setVar"
+# source "${__dir}/logr"; # start verbose 'init_env' will make it kick to console
+# source "${__dir}/yaml"
+# source "${__dir}/git_tools"
+# source "${__dir}/utils"
+# source "${__dir}/init_db_env"
 
 # version.properties should be in root dir
 if [ -e "version.properties" ]; then source version.properties; fi
@@ -63,15 +78,13 @@ function init_defaults {
   # default the releasable branch pattern and changelog name
   setVar RELEASE_BRANCH_REGEX "master|main|release/.+"
   setVar RELEASE_CHANGELOG "CHANGELOG.md"
-
-
   if [[ "${ACTIVE_BRANCH:-}" && "${ACTIVE_BRANCH}" =~ ^(${RELEASE_BRANCH_REGEX})$ ]]; then
-    RELEASABLE_BRANCH="${ACTIVE_BRANCH}"
+    setVar RELEASABLE_BRANCH "$ACTIVE_BRANCH"
   fi
 
   # shellcheck disable=SC2034
   IS_RELEASABLE=''
-  if [[ "${RELEASABLE_BRANCH:-}" && $(isFalsy "${IS_SNAPSHOT:-}") ]]; then
+  if [[ "${RELEASABLE_BRANCH:-}" && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
     setVar IS_RELEASABLE true
   fi
 
@@ -108,7 +121,7 @@ function init_from_build_yml {
 
 # ---
 # sets the version and sets up the other useful variables for that version such as
-# VERX_NO_DOTS and the NINEDB_VERSION
+# VERSIONX_DOTLESS and the NINEDB_VERSION
 # ---
 function init_versions {
   # if nothing passing in the usee the lowercase version that should have come in from version.properties
@@ -116,25 +129,23 @@ function init_versions {
   setVar VERSION "$version"
   setVar PUBLISHED_VERSION "${publishedVersion:-}"
 
-  # shellcheck disable=SC2153
-  local dotCount=$(echo "${VERSION}" | awk -F"." '{print NF-1}')
   # cuts to the last dot
-  local baseVersion=$(echo "$VERSION" | cut -d. -f1-"$dotCount")
+  local baseVersion="${VERSION%.*}"
 
   # VERSIONX is used for docker and k8s as we deploy latests minor version
   # also used to connect to the latest compatible database when that is relevant
   setVar VERSIONX "$baseVersion.x"
   #replace dots with - so 10.0.x turns into v10-0-x. k8s can't have dots in names
-  setVar VERX_NO_DOTS "v${VERSIONX//./-}"
+  setVar VERSIONX_DOTLESS "v${VERSIONX//./-}"
 
   putVar BUILD_VERSION "$VERSION"
 
   # if its a snapshot then append the SNAPSHOT
-  if [[ $(isTruthy "${snapshot:-}") ]]; then
+  if truthy "${snapshot:-}"; then
     putVar VERSION_POSTFIX "-SNAPSHOT"
     putVar IS_SNAPSHOT true
     BUILD_VERSION+="-SNAPSHOT"
-    VERX_NO_DOTS+="-SNAPSHOT"
+    VERSIONX_DOTLESS+="-SNAPSHOT"
   fi
 
   return 0
@@ -150,19 +161,6 @@ function circle_init_env {
     setVar PROJECT_FULLNAME "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
     # setVar GIT_REPO_URL "$CIRCLE_REPOSITORY_URL"
   fi
-}
-
-# ---
-# checks if the passed in branch matches whats in the release_branch_regex var
-# $1 - the branch name
-# $2 - the RELEASE_BRANCH_REGEX
-# returns the branch name if it matches, empty if not
-# ---
-function is_releasable_branch {
-  # wraps in the ^(..)$ so it only matches full word not partials
-  local grepRegex="^(${RELEASE_BRANCH_REGEX})$"
-  # returns the branch name if it matches, empty if not
-  echo "$1" | grep -E "$grepRegex" || true
 }
 
 # main make env, this is called early shipkit or can be overriden in build.sh.
@@ -241,7 +239,7 @@ function parse_env_file {
     # echo "line $line"
     key="${line%%=*}"
     val="${line#*=}"
-    if [[ $(isTruthy "$overrideVar") ]]; then
+    if truthy "$overrideVar" ; then
       putVar "$key" "$val"
     else
       setVar "$key" "$val"

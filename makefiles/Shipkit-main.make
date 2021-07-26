@@ -15,7 +15,7 @@ shResults := $(shell $(SHELL_EXPORTS) $(build.sh) make_env $(BUILD_ENV))
 ifneq ($(.SHELLSTATUS),0)
   $(error error with init_env or build.sh $(shResults))
 endif
-# $(info init_env results $(shResults))
+$(info make_env results $(shResults))
 
 makefile_env := $(MAKE_ENV_FILE)
 # import/sinclude the variables file to make it availiable to make as well
@@ -162,11 +162,22 @@ define download
 endef
 
 # downloads a tar.gz and expands it into the specifed dir under SHIPKIT_INSTALLS
+# $1 - the url to the tar.gz
+# $2 - where to put it
 define download_tar
 	$(call log, download and untar to $(2))
 	install_dir=$(SHIPKIT_INSTALLS)/$(2)
 	mkdir -p $$install_dir
 	$(DOWNLOADER) $(DOWNLOAD_FLAGS) "$(1)" | tar zxf - -C $$install_dir --strip-components 1
+endef
+
+# when need to git clone will put under SHIPKIT_INSTALLS
+# $1 - the clone url
+# $2 - where to put it
+define download_git
+	$(call log, git clone to $(SHIPKIT_INSTALLS)/$(2))
+	install_dir=$(SHIPKIT_INSTALLS)/$(2)
+	git clone $(1) $(SHIPKIT_INSTALLS)/$(2)
 endef
 
 define download_to

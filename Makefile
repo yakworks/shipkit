@@ -12,6 +12,7 @@ include $(SHIPKIT_MAKEFILES)/secrets.make
 include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/ship-version.make
 include $(SHIPKIT_MAKEFILES)/circle.make
+include $(SHIPKIT_MAKEFILES)/bats-testing.make
 
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
@@ -28,25 +29,6 @@ docker-shell:
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
 
-# --- BATS Testing ---
-BATS_VERSION ?= 1.3.0
-# BATS_TESTS   ?= . 3>&1
-# the tests to run under the test dir, dot means all
-TESTS   	 ?= .
-BATS_OPTS    ?=
-BATS_URL     := https://github.com/bats-core/bats-core/archive/refs/tags/v$(BATS_VERSION).tar.gz
-BATS_EXE     := $(SHIPKIT_INSTALLS)/bats/bin/bats
-
-## runs the bat tests
-test-unit:: $(BATS_EXE)
-	$(BATS_EXE) $(BATS_OPTS) tests/$(TESTS)
-
-.PHONY: test
-
-$(BATS_EXE):
-	$(call download_tar,$(BATS_URL),bats)
-	touch $(BATS_EXE)
-
 lint::
 	shellcheck bin/*
 	$(call log, shellcheck good)
@@ -62,7 +44,10 @@ clean::
 	rm -rf $(BUILD_DIR)
 
 ## runs all BAT tests
-test:: test-unit
+test-unit:: test-bats
+
+## runs all BAT tests
+test:: test-bats
 
 ## NA runs integration/e2e tests
 test-e2e::

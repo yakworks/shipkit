@@ -6,7 +6,7 @@ SeCreT: should not get imported
 # bash converts to upper and dots to underscore. for example app.name will be APP_NAME
 app:
   name: some-name
-  # key: ${APP_NAME}-${VERX_NO_DOTS}
+  # key: ${APP_NAME}-${VERSIONX_DOTLESS}
   key: "${APP_NAME}-key"
   some_var: ${SOME_ENV_VAR}
   kube:

@@ -1,0 +1,242 @@
+#!/usr/bin/env bash
+set +u #allow undefined
+if [ ${#core_imported_modules[@]} -ne 0 ]; then
+    # load core only once
+    return 0
+fi
+set -u #disallow undefined
+
+shopt -s expand_aliases
+
+core_is_main() {
+    [[ "${BASH_SOURCE[1]}" = "$0" ]]
+}
+alias core.is_main="core_is_main"
+
+# $1 - path to make absolute
+# stdout - the abd path
+core_abs_path() {
+    local path="$1"
+    if [ -d "$path" ]; then
+        local abs_path_dir
+        abs_path_dir="$(cd "$path" && pwd)"
+        echo "${abs_path_dir}"
+    else
+        local file_name
+        local abs_path_dir
+        file_name="$(basename "$path")"
+        path=$(dirname "$path")
+        abs_path_dir="$(cd "$path" && pwd)"
+        echo "${abs_path_dir}/${file_name}"
+    fi
+}
+alias core.abs_path="core_abs_path"
+
+# Computes relative path from $1 to $2.
+# $1 - starting path
+# $2 - the path to navigate to
+# out - the string relative path
+core_rel_path() {
+
+    # both $1 and $2 are absolute paths beginning with /
+    # returns relative path to $2/$target from $1/$source
+    local source="$1"
+    local target="$2"
+    if [[ "$source" == "$target" ]]; then
+        echo "."
+        return
+    fi
+
+    local common_part="$source" # for now
+    local result="" # for now
+
+    while [[ "${target#$common_part}" == "${target}" ]]; do
+        # no match, means that candidate common part is not correct
+        # go up one level (reduce common part)
+        common_part="$(dirname "$common_part")"
+        # and record that we went back, with correct / handling
+        if [[ -z $result ]]; then
+            result=".."
+        else
+            result="../$result"
+        fi
+    done
+
+    if [[ $common_part == "/" ]]; then
+        # special case for root (no common path)
+        result="$result/"
+    fi
+
+    # since we now have identified the common part,
+    # compute the non-common part
+    local forward_part="${target#$common_part}"
+
+    # and now stick all parts together
+    if [[ -n $result ]] && [[ -n $forward_part ]]; then
+        result="$result$forward_part"
+    elif [[ -n $forward_part ]]; then
+        # extra slash removal
+        result="${forward_part:1}"
+    fi
+    echo "$result"
+}
+alias core.rel_path="core_rel_path"
+
+CORE_PATH="$(core_abs_path "${BASH_SOURCE[0]}")"
+CALLER_PATH="$(core_abs_path "${BASH_SOURCE[1]}")"
+echo "CORE_PATH $CORE_PATH"
+echo "CALLER_PATH $CALLER_PATH"
+
+core_imported_modules=("$CORE_PATH")
+core_imported_modules+=("$CALLER_PATH")
+core_declarations_before=""
+
+core:import_path() {
+  local module_path="$(core_abs_path "${CALLER_PATH}/$1")"
+  local loaded_module
+  for loaded_module in "${core_imported_modules[@]}"; do
+    if [[ "$loaded_module" == "$module_path" ]];then
+      return 0
+    fi
+  done
+  source "$module_path"
+  if [ $? = 1 ]; then
+    core_log critical "Failed to source $module_path" && exit 1
+  fi
+  core_imported_modules+=("$module_path")
+}
+alias core.import_path="core:import_path"
+
+core_log() {
+    if type -t logging_log > /dev/null; then
+        logging_log "$@"
+    else
+        local level=$1
+        shift
+        echo "$level": "$@"
+    fi
+}
+
+# Tests if variable is empty (undefined variables are not empty)
+# $1 - variable name
+core_is_empty() {
+    local variable_name="$1"
+    core_is_defined "$variable_name" || return 1
+    [ -z "${!variable_name}" ] || return 1
+}
+alias core.is_empty="core_is_empty"
+
+# Tests if variable is defined (can also be empty)
+core_is_defined() {
+    (
+    set +o nounset
+    if ((BASH_VERSINFO[0] >= 4)) && ((BASH_VERSINFO[1] >= 3)) \
+            && [ -z "${core__bash_version_test:-}" ]; then
+        [[ -v "${1:-}" ]] || exit 1
+    else # for bash < 4.3
+        # Note: ${varname:-foo} expands to foo if varname is unset or set to the
+        # empty string; ${varname-foo} only expands to foo if varname is unset.
+        # shellcheck disable=SC2016
+        eval '! [[ "${'"${1}"'-this_variable_is_undefined_!!!}"' \
+            ' == "this_variable_is_undefined_!!!" ]]'
+        exit $?
+    fi
+    )
+}
+alias core.is_defined="core_is_defined"
+
+# prints out all declared variables and function in the current scope.
+# stdout - the list
+core_get_all_declared_names() {
+    local only_functions="${1:-}"
+    [ -z "$only_functions" ] && only_functions=false
+    {
+    declare -F | cut --delimiter ' ' --fields 3
+    $only_functions || declare -p | grep '^declare' \
+        | cut --delimiter ' ' --fields 3 - | cut --delimiter '=' --fields 1
+    } | sort --unique
+}
+alias core.get_all_declared_names="core_get_all_declared_names"
+
+# prints out all defined aliases in the current scope.
+core_get_all_aliases() {
+    alias | grep '^alias' \
+        | cut --delimiter ' ' --fields 2 - | cut --delimiter '=' --fields 1
+}
+
+# Sources a script and checks variable definitions before and after sourcing.
+core_source_with_namespace_check() {
+    # TODO make sure sourcing a file does not change the value of already
+    # defined variables.
+    local module_path="$1"
+    local namespace="$2"
+    # shellcheck disable=1090
+    source "$module_path"
+    if [ $? = 1 ]; then
+      core_log critical "Failed to source $module_path" && exit 1
+    fi
+}
+
+# import instead of source, checks if its already been done
+# Do not use core.import inside functions -> aliases do not work
+core_import() {
+
+    local module="$1"
+
+    local module_path=""
+    local path
+
+    path="$(core_abs_path "$(dirname "${BASH_SOURCE[0]}")")"
+    echo "path $path"
+    local caller_path
+    caller_path="$(core_abs_path "$(dirname "${BASH_SOURCE[1]}")")"
+    echo "caller_path $caller_path"
+    # try absolute
+    if [[ $module == /* ]] && [[ -e "$module" ]];then
+        module_path="$module"
+    fi
+    # try relative
+    if [[ -f "${caller_path}/${module}" ]]; then
+        module_path="${caller_path}/${module}"
+    fi
+    # try rebash modules
+    if [[ -f "${path}/${module%.sh}.sh" ]]; then
+        module_path="${path}/${module%.sh}.sh"
+    fi
+
+    if [ "$module_path" == "" ]; then
+        core_log critical "failed to import \"$module\""
+        return 1
+    fi
+
+    module="$(basename "$module_path")"
+
+    # normalize module_path
+    module_path="$(core.abs_path "$module_path")"
+    # check if module already loaded
+    local loaded_module
+    # for loaded_module in "${core_imported_modules[@]}"; do
+    #     if [[ "$loaded_module" == "$module_path" ]];then
+    #         return 0
+    #     fi
+    # done
+
+    core_imported_modules+=("$module_path")
+    # shellcheck disable=1090
+    source "$module_path"
+    if [ $? = 1 ]; then
+      core_log critical "Failed to source $module_path" && exit 1
+    fi
+    # core_source_with_namespace_check "$module_path" "${module%.sh}"
+    # echo "mods ${core_imported_modules[@]}"
+}
+alias core.import="core_import"
+
+# make array unique
+# $@ - the array to make unique
+# output - the unique items
+core_unique() {
+    printf "%s\n" $@ | sort | uniq
+}
+alias core.unique="core_unique"
+

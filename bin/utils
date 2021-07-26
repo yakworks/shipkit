@@ -15,40 +15,100 @@ function trim {
 }
 
 
-# https://github.com/Jeff-Russ/bash-boolean-helpers/blob/master/bool-helpers.sh
-# will echo if its falsy
-# to be falsy a value could be false, "false", 0, "0", unset, empty string
-# usage:
-#   FOO=false
-#   [ $(isFalsy "$FOO") ] && echo "FOO is falsy"
-function isFalsy {
-  local val="$1"
-  if [[ ! $val || $val == false || $val = 0 ]]; then
+# standardizes any value to echo either "false" or "true"
+# anything that is false, "false", "False", 0, "0", unset, or empty string will be "false"
+# so the following would be true
+# [ $(bool "0") = "false" ]
+#
+# $1 - the value to convert
+function bool {
+  local val="${1:-}"
+  if falsy "$val"; then
     echo "false"
+  else
+    echo "true"
   fi
-  #[ ! "$1" ] && echo "unsetOrEmpty"; [ "$1" = false ] && echo "isFalse"; [ "$1" = 0 ] && echo "is0"
 }
 
-# will echo if its not falsy
+# see falsy
+# if its falsy then it echos "false"
+# else doesn't return error code and just does nothing if its truthy
+function isFalsy {
+  local val="${1:-}"
+  if falsy "$val"; then
+    echo "false"
+  fi
+}
+
+# normal return code of 0 if its falsy, return code of 1 (which is an error in bash land)
+# to be falsy a value could be false, "false", "False", 0, "0", unset, empty string
 # usage:
-#   FOO="anything not falsy"
-#   [ $(isTruthy "$FOO") ] && echo "FOO is truthy"
-function isTruthy {
-  if [[ ! $(isFalsy "$1") ]]; then
-    echo "true"
+#   FOO=false # or 0 or empty
+#   # if you leave off the `|| true` and -e is set then will stop if its truthy as this would return error code 1
+#   # so this will only echo if isFalsy, otherwise it just moves on
+#   isFalsy "$FOO" && echo "FOO is falsy" || true
+function falsy {
+  local val="${1:-}"
+  if [[ ! $val || $val = false || $val = 0  || $val = False ]]; then
+    return 0
+  else
+    # its something that is "truthy" so return error code
+    return 1
+  fi
+}
+
+# normal return code of 0 if its not a falsy, return code of 1 (which is an error in bash land) if it is falsy
+function truthy {
+  if falsy "${1:-}"; then
+    return 1 # return error code
+  else
+    return 0 # return success
   fi
 }
 
 # converts to lower case
 # $1 - what to convert
 function tolower {
-  echo "$1" | awk '{print tolower($0)}'
+  echo "$1" | tr [A-Z] [a-z]
 }
 
 # converts to upper case
 # $1 - what to convert
 function toupper {
-  echo "$1" | awk '{print toupper($0)}'
+  echo "$1" | tr [a-z] [A-Z]
+}
+
+# check if array contains an item
+# $1 - the item to search for
+# $2 - the array
+# returns 0 if found and 1 if not
+function array_contains {
+  # the array is second arg for a reason as passing arrays is tricky because your not acutuall passing them
+  local e match="$1"
+  shift # removes first arg off
+  for e in "$@"; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
+
+# check if array contains an item
+# $1 - the item to search for
+# $2 - the array
+# returns 0 if found and 1 if not
+function array_indexOf {
+  local value="$1"
+  shift
+  local array=("$@")
+  local -i index=-1
+  local i
+  for i in "${!array[@]}"; do
+    if [[ "${array[$i]}" == "${value}" ]]; then
+      local index="${i}"
+    fi
+  done
+  echo "$index"
+  if (( index == -1 )); then
+    return 1
+  fi
 }
 
 # greps the value from a properly formed env or properties file

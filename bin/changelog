@@ -42,11 +42,11 @@ function update_changelog {
   # if published_version is falsy then its an initial release so blank out range to get all of it
   # if this is not what you want then create a tag that starts with a v
   # and set publishedVersion to that tag without the v prefix in version.props
-  if [[ $(isFalsy "$2") ]]; then
+  if falsy "$2"; then
     tagRange=""
     MARKDOWN+='Initial Release'
   else
-    if [[ ! "${TAGS[*]}"  =~ ${published_version}  ]]; then
+    if [[ ! " ${TAGS[@]} "  =~ " ${published_version} " ]]; then
       echo "Error creating changelog - publishedVersion $published_version does not exists"
       return 1
     fi

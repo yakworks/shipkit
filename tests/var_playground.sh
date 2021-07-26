@@ -23,8 +23,8 @@ echo "-- When FOO is unset --"
 [ "${!VarName}" ] && echo "** should not show"
 [ ${!VarName+set} ] && echo "** should not show"
 # truthy falsy
-[ $(isFalsy "$FOO") ] && echo "FOO is falsy 6"
-[ $(isTruthy "$FOO") ] && echo "** should not show"
+falsy "$FOO" && echo "FOO is falsy 6"
+truthy "$FOO" && echo "** should not show"
 
 [[ "${FOO:-}" = "BOO" ]] && echo "** should not show"
 [[ "$FOO" = "" ]] && echo "** should not show"
@@ -56,7 +56,7 @@ FOO=""
 
 # truthy falsy
 [ $(isFalsy "$FOO") ] && echo "FOO is falsy 6"
-[ $(isTruthy "$FOO") ] && echo "** should not show"
+[ ! "$(isFalsy "$FOO")" ] && echo "** should not show"
 
 [[ "$FOO" = "" ]] && echo "** should not show"
 [[ "${FOO:-}" = "" ]] && echo "** should not show"
@@ -85,7 +85,7 @@ FOO="bar"
 
 # truthy falsy
 [ $(isFalsy "$FOO") ] && echo "** should not show"
-[ $(isTruthy "$FOO") ] && echo "FOO is truthy 8"
+truthy "$FOO" && echo "FOO is truthy 8"
 
 [[ "$FOO" = "bar" ]] && echo "good eq check"
 [[ "${FOO:-}" = "bar" ]] && echo "good eq check"
@@ -120,62 +120,19 @@ FOO="bar ls bazz"
 [ ${!VarName+x} ] && echo "good \${!VarName+x} 7"
 # truthy falsy
 [ $(isFalsy "$FOO") ] && echo "** should not show"
-[ $(isTruthy "$FOO") ] && echo "FOO is truthy 8"
+truthy "$FOO" && echo "FOO is truthy 8"
 echo
 
 # ------ playground ------
 
-# things get tricky now with "falsy" and truthy in bash
-# to be falsy a value could be false, "false", 0, "0", unset, empty string or commands with non-zero
-# so we came up with isFalsy function
-# https://github.com/Jeff-Russ/bash-boolean-helpers/blob/master/bool-helpers.sh
-# https://velenux.wordpress.com/2012/06/18/how-to-use-a-bash-function-in-an-if-statement/
+echo;
 
-echo -e "\nFalsy FOO=any value"; FOO="any value"
-
-[ $(isFalsy "$FOO") ] && echo "** should not show"
-[ ! $(isFalsy "$FOO") ] && echo "Foo not isFalsy"
-[ $(isTruthy "$FOO") ] && echo "Foo isTruthy"
-
-echo -e "\nFalsy FOO is unset"; unset FOO
-
-[ $(isFalsy "$FOO") ] && echo "FOO is Falsy"
-[ ! $(isFalsy "$FOO") ] && echo "** should not show"
-[ $(isTruthy "$FOO") ] && echo "** should not show"
-
-echo -e "\nFalsy FOO="; FOO=
-[ $(isFalsy "$FOO") ] && echo "FOO is Falsy"
-[ ! $(isFalsy "$FOO") ] && echo "** should not show"
-[ $(isTruthy "$FOO") ] && echo "** should not show"
-
-echo -e "\nFalsy FOO=false"; FOO=false
-[ $(isFalsy "$FOO") ] && echo "FOO is Falsy"
-[ ! $(isFalsy "$FOO") ] && echo "** should not show"
-[ $(isTruthy "$FOO") ] && echo "** should not show"
-
-echo -e "\nFalsy FOO=\"false\""; FOO="false"
-[ $(isFalsy "$FOO") ] && echo "FOO is Falsy"
-[ ! $(isFalsy "$FOO") ] && echo "** should not show"
-[ $(isTruthy "$FOO") ] && echo "** should not show"
-
-echo -e "\nFalsy FOO=0"; FOO=0
-[ $(isFalsy "$FOO") ] && echo "FOO is Falsy"
-[ ! $(isFalsy "$FOO") ] && echo "** should not show"
-[ $(isTruthy "$FOO") ] && echo "** should not show"
-
-echo -e "\nFalsy FOO=\"0\""; FOO="0"
-[ $(isFalsy "$FOO") ] && echo "FOO is Falsy"
-[ ! $(isFalsy "$FOO") ] && echo "** should not show"
-[ $(isTruthy "$FOO") ] && echo "** should not show"
-
-echo; echo
-
-echo -e "\nCombo Falsy FOO=false and BAR=42"; FOO="0"; BAR=42
+echo -e "\nCombo falsy FOO=false and BAR=42"; FOO="0"; BAR=42
 # double brackets allow use to have && ||
-[[ $(isFalsy "$FOO") && $(isTruthy "$BAR") ]] && echo "FOO is Falsy && BAR is truthy 1"
-[[ $(isFalsy "$FOO") && $BAR = 42 ]] && echo "FOO is Falsy && BAR is 42 2"
-[[ $(isFalsy "$FOO") && (($BAR > 40)) ]] && echo "FOO is Falsy && ((BAR > 40)) 3"
+[[ $(isFalsy "$FOO") && ! $(isFalsy "$BAR") ]] && echo "FOO is falsy && BAR is truthy 1"
+[[ $(isFalsy "$FOO") && $BAR = 42 ]] && echo "FOO is falsy && BAR is 42 2"
+[[ $(isFalsy "$FOO") && (($BAR > 40)) ]] && echo "FOO is falsy && ((BAR > 40)) 3"
 [[ ! $(isFalsy "$FOO") && $BAR = 42 ]] && echo "** should not show"
-[[ $(isTruthy "$FOO") && $BAR = 42 ]] && echo "** should not show"
+[[ truthy "$FOO" && $BAR = 42 ]] && echo "** should not show"
 
 echo; echo
