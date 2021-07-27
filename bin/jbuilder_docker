@@ -15,7 +15,7 @@ function builderStart {
   durl=${2:-"yakworks/builder:jdk8"}
   # the .gradle-docker volume map is so that it keeps the gradle cache in your home dir
   # so we dont need to down load the internet each new docker instance
-  dockerStart "$1" -it -d \
+  docker.start "$1" -it -d \
     -w /project \
     -p 8081:8080 \
 	  -v "$(pwd)":/project:delegated  \
@@ -33,7 +33,7 @@ function builderStart {
 # example: dock db_start mysql-ndb mysql:5.7 13306:3306 MYSQL_ROOT_PASSWORD=123Foo
 function db_start {
   # ACCEPT_EULA is for sql server, just an env var so won't matter that its set for others
-  dockerStart "$1" \
+  docker.start "$1" \
     --network builder-net \
     -v "$(pwd)":/project -w /project \
     -e ACCEPT_EULA=Y \

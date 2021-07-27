@@ -25,7 +25,7 @@ DOCK_SHELL_URL = yakworks/builder:bash-make
 
 ## docker shell for testing
 docker-shell:
-	$(docker_tools) dockerStart shipkit-shell -it \
+	$(docker_tools) docker.start shipkit-shell -it \
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
 
@@ -50,17 +50,17 @@ clean::
 	rm -rf $(BUILD_DIR)
 
 ## runs the bashify tests
-test-bashify: $(BATS_EXE)
+test.bashify: $(BATS_EXE)
 	$(BATS_EXE) $(BATS_OPTS) -f $(TESTS) $(BATS_TEST_DIR)/bashify
 
 ## runs all BAT tests
-test-unit:: test-bats test-bashify
+test.unit:: test-bats test-bashify
 
 ## runs all BAT tests
 test:: test-bats
 
 ## NA runs integration/e2e tests
-test-e2e::
+test.e2e::
 
 ## NA builds the libs
 build::

@@ -8,7 +8,7 @@ JBUILDER_COMPOSE_FILE ?= ./jbuilder-compose.yml
 JBUILDER_COMPOSE_CMD := JBUILDER_NAME=$(JBUILDER_NAME) docker compose -p $(JBUILDER_NAME)_servers -f $(JBUILDER_COMPOSE_FILE)
 
 ## docker compose for jbuilder-compose.yml, follow with the docker cmd such as up, down, shell or pull
-docker-jbuilder: | _verify-DOCKER_CMD
+docker.jbuilder: | _verify-DOCKER_CMD
 	$(MAKE) jbuilder-$(DOCKER_CMD)
 
 # docker compose up on jbuilder-compose.yml

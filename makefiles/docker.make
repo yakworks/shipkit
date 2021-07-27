@@ -26,5 +26,5 @@ _verify-DOCKER_CMD: FORCE
 
 # double $$ means esacpe it and send to bash as a single $
 # login to docker hub using whats in the env vars $DOCKERHUB_USER $DOCKERHUB_PASSWORD
-dockerhub-login: FORCE
+dockerhub.login: FORCE
 	echo "$(DOCKERHUB_PASSWORD)" | docker login -u "$(DOCKERHUB_USER)" --password-stdin

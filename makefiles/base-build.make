@@ -26,11 +26,11 @@ test::
 	@:
 
 ## runs unit tests
-test-unit::
+test.unit::
 	@:
 
 ## runs integration/e2e tests
-test-e2e::
+test.e2e::
 	@:
 
 ## builds the libs

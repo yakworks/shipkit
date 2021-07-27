@@ -59,16 +59,8 @@ log-vars: FORCE
 	$(foreach v, $(sort $(BUILD_VARS)), $(info $(v) = $($(v))))
 
 # logs all the make variables, get ready for some noise
-log-make-vars: FORCE
+print-make-vars: FORCE
 	$(foreach v, $(.VARIABLES), $(info $(v) = $($(v))))
-
-# for debugging, calls the build.sh log-vars to sanity check
-log-buildsh-vars: FORCE
-	$(build.sh) log-vars
-
-# list all the functions sourced into the build.sh
-list-functions: FORCE
-	$(build.sh) list-functions
 
 # Helper target for declaring an external executable as a recipe dependency.
 # For example,

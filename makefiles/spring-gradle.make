@@ -30,16 +30,12 @@ test::
 	$(gw) test integrationTest
 
 ## unit tests with gradle test, tests=PartialTestName will pass --tests *PartialTestName*
-test-unit::
+test.unit::
 	$(gw) test $(testArg)
 
 ## integration and functional tests, tests=PartialTestName will pass --tests *PartialTestName*
-test-e2e::
+test.e2e::
 	$(gw) integrationTest $(testArg)
-
-## publish the libs
-publish::
-	$(gw) publish
 
 # verifies the snapshot is set
 _verify-snapshot: FORCE
@@ -54,7 +50,7 @@ $(APP_JAR):
 	$(gw) assemble
 
 ## java runs the APP_JAR
-start-jar: $(APP_JAR)
+start.jar: $(APP_JAR)
 	java -server -Xmx3048m -XX:MaxMetaspaceSize=256m -jar $(APP_JAR)
 
 .PHONY: resolve-dependencies merge-test-results
@@ -80,20 +76,20 @@ cache-key-file: | _verify_PROJECT_SUBPROJECTS
 	echo $@ success
 
 ## publish the library jar, calls gradle publish
-publish-libs:
+publish.libs:
 	if [ "$(IS_SNAPSHOT)" ]; then echo "publishing SNAPSHOT"; else echo "publishing release"; fi
 	./gradlew publish
 
-.PHONY: ship-libs publish-libs
+.PHONY: ship.libs publish.libs
 
 ifdef RELEASABLE_BRANCH
 
 # call for CI
-ship-libs:: publish-libs
+ship.libs:: publish.libs
 	echo $@ success
 else
 
-ship-libs::
+ship.libs::
 	echo "$@ not a RELEASABLE_BRANCH, nothing to do"
 
 endif # end RELEASABLE_BRANCH

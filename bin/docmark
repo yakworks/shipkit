@@ -14,7 +14,7 @@ DOCMARK_DOCKER_NAME=docmark-server
 
 # Copies readme, updates version and replaces links that went into docs
 # $1 - the version to update
-function cp_readme_index {
+function docmark.copy_readme {
   local index_md=docs/index.md
   rm -f "$index_md"
   cp README.md "$index_md"
@@ -25,12 +25,12 @@ function cp_readme_index {
 }
 
 # builds the groovydocs and copies them into site/api
-function copyGroovydocToApi {
+function docmark.copy_groovydoc_to_api {
   cp -r build/docs/groovydoc build/site/api || true
 }
 
-function docmark_run {
-  dockerStart "$DOCMARK_DOCKER_NAME" -it \
+function docmark.run {
+  docker.start "$DOCMARK_DOCKER_NAME" -it \
     -w /project \
     -p 8000:8000 \
 	  -v "$(pwd)":/project:delegated  \
@@ -38,8 +38,8 @@ function docmark_run {
 }
 
 # use this to open shell and test circle commands
-function docmark_shell {
-  dockerStart "$DOCMARK_DOCKER_NAME" --rm -it \
+function docmark.shell {
+  docker.start "$DOCMARK_DOCKER_NAME" --rm -it \
     --entrypoint /bin/bash \
     -p 8000:8000 \
 	  -v "$(pwd)":/project:delegated  \

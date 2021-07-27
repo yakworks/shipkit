@@ -12,15 +12,15 @@ teardown() {
   PATH=$OLD_PATH
 }
 
-@test 'git-clone-pages' {
+@test 'git.clone-pages' {
 
-  make -f $FIXTURE_DIR/Makefile git-clone-pages
+  make -f $FIXTURE_DIR/Makefile git.clone-pages
 
 }
 
-@test 'git-push-pages' {
+@test 'git.push-pages' {
   # export PATH=$FIXTURE_DIR/bin:$PATH
-  run make -f $FIXTURE_DIR/Makefile git-push-pages
+  run make -f $FIXTURE_DIR/Makefile git.push-pages
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]
@@ -29,8 +29,8 @@ teardown() {
   [ "${lines[2]}" == "mock-git -C build/gh-pages push -q https://dummy:s3cr3t@github.com/yakworks/shipkit.git gh-pages" ]
 }
 
-@test 'config-bot-git-user' {
-  run make -f $FIXTURE_DIR/Makefile config-bot-git-user
+@test 'git.config-bot-user' {
+  run make -f $FIXTURE_DIR/Makefile git.config-bot-user
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]

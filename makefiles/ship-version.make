@@ -34,17 +34,17 @@ push-version-bumps:
 ifeq (true,$(IS_RELEASABLE))
 
 # calls github endpoint to create a release on the RELEASABLE_BRANCH
-ship-github-create: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
+ship.github-create: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
 	$(github_release) create_github_release $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
 	echo $@ success
 
 ## If IS_RELEASABLE, bump vesion, update changelong and post tagged release on gitub. Should almost always be last ship/release target
-ship-version: update-changelog update-readme-version bump-version-file ship-github-create push-version-bumps
+ship.version: update-changelog update-readme-version bump-version-file ship-github-create push-version-bumps
 	echo $@ success
 
 else # not IS_RELEASABLE, so its a snapshot or its not on a releasable branch
 
-ship-version:
+ship.version:
 	echo "$@ IS_RELEASABLE=false as this is either a snapshot or its not on a releasable branch"
 
 endif # end RELEASABLE_BRANCH
