@@ -26,9 +26,9 @@ teardown() {
   [ "$status" -eq 0 ]
 }
 
-@test 'import-gpg-key' {
+@test 'secrets.import-gpg-key' {
   PATH=$FIXTURE_DIR/bin:$PATH
-  run make -f $FIXTURE_DIR/Makefile import-gpg-key
+  run make -f $FIXTURE_DIR/Makefile secrets.import-gpg-key
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]
