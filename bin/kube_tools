@@ -42,5 +42,5 @@ function kubeApply {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "$(dirname "$0")/function_runner.sh"
+  source "${BASHIFY_PATH}/function_runner.sh"
 fi

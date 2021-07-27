@@ -5,6 +5,7 @@
 # docmark makes heavy use of this
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
+source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
 
 # ---
 # login to docker hub
@@ -49,13 +50,13 @@ function dockerStart {
 # create a docker network if it does not exist
 # arg $1 - network name
 function dockerNetworkCreate {
-  if [ ! "$( docker network ls | grep "$1" )" ]; then \
-	  docker network create "$1"; \
+  if [ ! "$( docker network ls | grep "$1" )" ]; then
+	  docker network create "$1"
 	fi
 }
 
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "$(dirname "$0")/function_runner.sh"
+  source "${BASHIFY_PATH}/function_runner.sh"
 fi

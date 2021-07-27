@@ -4,6 +4,7 @@
 # uses the variables set from gradle/build.yml
 # ------------------
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
+source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
 
 # defaults, this format says if PAGES_BUILD_DIR is not set then set it to these values
 : "${PAGES_BUILD_DIR:=build/gh-pages}"
@@ -172,5 +173,5 @@ function git_debug {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "$(dirname "$0")/function_runner.sh"
+  source "${BASHIFY_PATH}/function_runner.sh"
 fi

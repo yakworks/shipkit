@@ -132,6 +132,8 @@ and https://github.com/martinwalsh/ludicrous-makefiles
 
 - http://bash3boilerplate.sh
 - http://redsymbol.net/articles/unofficial-bash-strict-mode/
+- http://rus.har.mn/blog/2010-07-05/subshells/
+- https://github.com/dylanaraps/pure-bash-bible
 
 ## versioning example
 
