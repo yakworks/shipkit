@@ -52,6 +52,7 @@ function dockerStart {
 function dockerNetworkCreate {
   if [ ! "$( docker network ls | grep "$1" )" ]; then
 	  docker network create "$1"
+    echo "$1 network created"
 	fi
 }
 

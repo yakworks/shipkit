@@ -12,7 +12,7 @@ db.start: db.create-network
 	# ACCEPT_EULA is for sql server, just an env var so won't matter that its set for others
 	$(docker_tools) dockerStart "$(DOCK_DB_BUILD_NAME)" -d \
 		--network builder-net \
-		-v "$(pwd)":/project \
+		-v "`pwd`":/project \
 		-w /project \
 		-e ACCEPT_EULA=Y \
 		-p "$(DB_PORT)":"$(DB_PORT)"  \

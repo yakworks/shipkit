@@ -27,6 +27,7 @@ ifdef DB
   else ifeq (h2,$(filter h2,$(MAKECMDGOALS)))
     DBMS = h2
   endif
+  BUILD_VARS += DBMS
 
   # dummy targets so we dont get the make[1]: Nothing to be done for `xxx'.
   dummy_db_targets = mysql sqlserver postgres h2
