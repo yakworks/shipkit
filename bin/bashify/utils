@@ -69,13 +69,13 @@ function truthy {
 # converts to lower case
 # $1 - what to convert
 function tolower {
-  echo "$1" | tr [A-Z] [a-z]
+  tr '[:upper:]' '[:lower:]' <<< "$1"
 }
 
 # converts to upper case
 # $1 - what to convert
 function toupper {
-  echo "$1" | tr [a-z] [A-Z]
+  tr '[:lower:]' '[:upper:]' <<< "$1"
 }
 
 # check if array contains an item

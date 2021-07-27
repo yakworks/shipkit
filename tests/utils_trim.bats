@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-source "$SHIPKIT_BIN/utils"
+source "$SHIPKIT_BIN/bashify/utils"
 
 @test 'trim with leading spaces' {
   FOO="  some value"

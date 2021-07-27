@@ -1,7 +1,7 @@
 # https://github.com/koalaman/shellcheck/wiki
 shell=bash
 disable=SC2006  # Use $(...) notation instead of legacy backticked
-# disable=SC1090 # non-constant sources
+disable=SC1090 # can't follow non-constant source.
 disable=SC1091 # Not following
 # disable=SC2015 # inline condition warning
 # disable=SC2034 # unused vars

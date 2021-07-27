@@ -3,6 +3,8 @@
 load "build/installs/bats-support/load.bash"
 load "build/installs/bats-assert/load.bash"
 
+source "$SHIPKIT_BIN/bashify/core"
+
 export OLD_PATH=$PATH
 
 unset_term() {

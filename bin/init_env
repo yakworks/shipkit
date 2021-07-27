@@ -5,29 +5,21 @@
 # that is imcluded at the start of the Makefile to share vars
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
-
-source "$(dirname ${BASH_SOURCE[0]})/bash/core"
-core.import_path "setVar"
-core.import_path "logr"; # start verbose 'init_env' will make it kick to console
-core.import_path "yaml"
-core.import_path "git_tools"
-core.import_path "utils"
-core.import_path "init_db_env"
-
-# core.import setVar
-# core.import logr
-# core.import yaml
-# core.import git_tools
-# core.import utils
-# core.import init_db_env
+source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+core.import "logr"
+core.import "utils"
+core.import "yaml"
+core.import "init_db_env"
+core.import "git_tools"
+core.import "setVar"
 
 # __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
-# source "${__dir}/setVar"
-# source "${__dir}/logr"; # start verbose 'init_env' will make it kick to console
-# source "${__dir}/yaml"
-# source "${__dir}/git_tools"
-# source "${__dir}/utils"
-# source "${__dir}/init_db_env"
+# source "${_dir}/setVar"
+# source "${_dir}/logr"; # start verbose 'init_env' will make it kick to console
+# source "${_dir}/yaml"
+# source "${_dir}/git_tools"
+# source "${_dir}/utils"
+# source "${_dir}/init_db_env"
 
 # version.properties should be in root dir
 if [ -e "version.properties" ]; then source version.properties; fi
@@ -129,6 +121,7 @@ function init_versions {
   setVar VERSION "$version"
   setVar PUBLISHED_VERSION "${publishedVersion:-}"
 
+  # shellcheck disable=SC2153 # Possible misspelling
   # cuts to the last dot
   local baseVersion="${VERSION%.*}"
 
@@ -254,6 +247,6 @@ function parse_env_file {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "$(dirname "$0")/function_runner.sh"
+  source "$(dirname "$0")/bashify/function_runner.sh"
 fi
 

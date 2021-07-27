@@ -46,7 +46,8 @@ function update_changelog {
     tagRange=""
     MARKDOWN+='Initial Release'
   else
-    if [[ ! " ${TAGS[@]} "  =~ " ${published_version} " ]]; then
+    # shellcheck disable=SC2076 # Remove quotes from right-hand side
+    if [[ ! " ${TAGS[*]} "  =~ " ${published_version} " ]]; then
       echo "Error creating changelog - publishedVersion $published_version does not exists"
       return 1
     fi

@@ -15,7 +15,7 @@ shResults := $(shell $(SHELL_EXPORTS) $(build.sh) make_env $(BUILD_ENV))
 ifneq ($(.SHELLSTATUS),0)
   $(error error with init_env or build.sh $(shResults))
 endif
-$(info make_env results $(shResults))
+# $(info make_env results $(shResults))
 
 makefile_env := $(MAKE_ENV_FILE)
 # import/sinclude the variables file to make it availiable to make as well

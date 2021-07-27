@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-source "$SHIPKIT_BIN/utils"
+source "$SHIPKIT_BIN/bashify/utils"
 load test_helper
 
 @test 'truthy when someVal=any value' {

@@ -16,7 +16,9 @@ BATS_EXE         := $(SHIPKIT_INSTALLS)/bats/bin/bats
 
 ## runs the bat tests
 test-bats: $(BATS_EXE)
-	$(BATS_EXE) $(BATS_OPTS) $(BATS_TEST_DIR)/$(TESTS)
+	$(BATS_EXE) $(BATS_OPTS) -f $(TESTS) $(BATS_TEST_DIR)
+	# echo "--- bashify tests ---"
+	$(BATS_EXE) $(BATS_OPTS) -f $(TESTS) $(BATS_TEST_DIR)/bashify
 
 .PHONY: test-bats
 

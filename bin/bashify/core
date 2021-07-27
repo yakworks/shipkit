@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set +u #allow undefined
-if [ ${#core_imported_modules[@]} -ne 0 ]; then
+if [ ${#CORE_IMPORTED_MODULES[@]} -ne 0 ]; then
     # load core only once
     return 0
 fi
@@ -82,30 +82,57 @@ core_rel_path() {
 }
 alias core.rel_path="core_rel_path"
 
-CORE_PATH="$(core_abs_path "${BASH_SOURCE[0]}")"
-CALLER_PATH="$(core_abs_path "${BASH_SOURCE[1]}")"
-echo "CORE_PATH $CORE_PATH"
-echo "CALLER_PATH $CALLER_PATH"
+BASHIFY_PATH="$(core_abs_path "$(dirname "${BASH_SOURCE[0]}")")"
+BIN_PATH="$(core_abs_path "$(dirname "${BASH_SOURCE[0]}")/..")"
+# echo "BASHIFY_PATH $BASHIFY_PATH"
+# echo "BIN_PATH $BIN_PATH"
+# CORE_IMPORTED_MODULES=("$CORE_PATH")
+# CORE_IMPORTED_MODULES+=("$CALLER_PATH")
 
-core_imported_modules=("$CORE_PATH")
-core_imported_modules+=("$CALLER_PATH")
-core_declarations_before=""
+# _dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
+# CORE_PATH="$(core_abs_path "$(dirname "${BASH_SOURCE[0]}")")"
+# CALLER_PATH="$(core_abs_path "$(dirname "${BASH_SOURCE[1]}")")"
+# echo "CORE_PATH $CORE_PATH"
+# echo "CALLER_PATH $CALLER_PATH"
 
-core:import_path() {
-  local module_path="$(core_abs_path "${CALLER_PATH}/$1")"
+CORE_IMPORTED_MODULES=()
+# CORE_IMPORTED_MODULES+=("$CALLER_PATH")
+
+core:import() {
+  local mod_name=${1}
+  local module_path
+
+  if [[ ${mod_name} == /* ]]; then
+    module_path="${mod_name}"
+  else
+    # try bin
+    if [[ -f "${BIN_PATH}/${mod_name}" ]]; then
+      module_path="${BIN_PATH}/${mod_name}"
+    #try bashify
+    elif [[ -f "${BASHIFY_PATH}/${mod_name}" ]]; then
+      module_path="${BASHIFY_PATH}/${mod_name}"
+    else
+      local caller_dir="$(dirname "${BASH_SOURCE[1]}")"
+      module_path="$(core_abs_path "${caller_dir}/${mod_name}" )"
+    fi
+  fi
+  # echo "module_path $module_path"
+
   local loaded_module
-  for loaded_module in "${core_imported_modules[@]}"; do
+  for loaded_module in "${CORE_IMPORTED_MODULES[@]}"; do
     if [[ "$loaded_module" == "$module_path" ]];then
       return 0
     fi
   done
+
+  # shellcheck disable=SC2076 # Remove quotes from right-hand side
   source "$module_path"
   if [ $? = 1 ]; then
     core_log critical "Failed to source $module_path" && exit 1
   fi
-  core_imported_modules+=("$module_path")
+  CORE_IMPORTED_MODULES+=("$module_path")
 }
-alias core.import_path="core:import_path"
+alias core.import="core:import"
 
 core_log() {
     if type -t logging_log > /dev/null; then
@@ -169,7 +196,7 @@ core_source_with_namespace_check() {
     # TODO make sure sourcing a file does not change the value of already
     # defined variables.
     local module_path="$1"
-    local namespace="$2"
+    # local namespace="$2"
     # shellcheck disable=1090
     source "$module_path"
     if [ $? = 1 ]; then
@@ -179,7 +206,7 @@ core_source_with_namespace_check() {
 
 # import instead of source, checks if its already been done
 # Do not use core.import inside functions -> aliases do not work
-core_import() {
+core_import_orig() {
 
     local module="$1"
 
@@ -215,28 +242,20 @@ core_import() {
     module_path="$(core.abs_path "$module_path")"
     # check if module already loaded
     local loaded_module
-    # for loaded_module in "${core_imported_modules[@]}"; do
+    # for loaded_module in "${CORE_IMPORTED_MODULES[@]}"; do
     #     if [[ "$loaded_module" == "$module_path" ]];then
     #         return 0
     #     fi
     # done
 
-    core_imported_modules+=("$module_path")
+    CORE_IMPORTED_MODULES+=("$module_path")
     # shellcheck disable=1090
     source "$module_path"
     if [ $? = 1 ]; then
       core_log critical "Failed to source $module_path" && exit 1
     fi
     # core_source_with_namespace_check "$module_path" "${module%.sh}"
-    # echo "mods ${core_imported_modules[@]}"
+    # echo "mods ${CORE_IMPORTED_MODULES[@]}"
 }
-alias core.import="core_import"
-
-# make array unique
-# $@ - the array to make unique
-# output - the unique items
-core_unique() {
-    printf "%s\n" $@ | sort | uniq
-}
-alias core.unique="core_unique"
+alias core.import_orig="core_import_orig"
 

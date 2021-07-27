@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-source "$SHIPKIT_BIN/utils"
+source "$SHIPKIT_BIN/bashify/utils"
 
 @test 'escapes the main chars for json' {
   string="tab:	"

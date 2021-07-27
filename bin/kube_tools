@@ -3,9 +3,9 @@
 # functions to help with kubernetes
 # ------------------
 set -e
-__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
-source "${__dir}/init_env"
-source "${__dir}/sed_tpl"
+source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+core.import "init_env"
+core.import "sed_tpl"
 
 # ---
 # runs sed on the kubernetes tpl.yml and puts in build dir

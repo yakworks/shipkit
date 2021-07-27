@@ -29,8 +29,14 @@ docker-shell:
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
 
+shellcheck_paths ?= bin
 lint::
-	shellcheck bin/*
+	scheck_targets=()
+	while IFS=  read -r -d $$'\0'; do
+		scheck_targets+=("$$REPLY")
+	done < <(find $(shellcheck_paths) -type f -print0)
+
+	shellcheck "$${scheck_targets[@]}"
 	$(call log, shellcheck good)
 
 lint-fix:
@@ -43,8 +49,12 @@ check:: lint test
 clean::
 	rm -rf $(BUILD_DIR)
 
+## runs the bashify tests
+test-bashify: $(BATS_EXE)
+	$(BATS_EXE) $(BATS_OPTS) -f $(TESTS) $(BATS_TEST_DIR)/bashify
+
 ## runs all BAT tests
-test-unit:: test-bats
+test-unit:: test-bats test-bashify
 
 ## runs all BAT tests
 test:: test-bats

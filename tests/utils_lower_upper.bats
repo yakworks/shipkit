@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-source "$SHIPKIT_BIN/utils"
+source "$SHIPKIT_BIN/bashify/utils"
 
 @test 'tolower' {
   FOO="MaKe LoWeR"
