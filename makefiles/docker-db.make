@@ -20,9 +20,7 @@ db.start: db.create-network
 		"$(DOCKER_DB_URL)"
 
 ## alias for db.start
-start.db: $(APP_JAR)
-	java -server -Xmx3048m -XX:MaxMetaspaceSize=256m -jar $(APP_JAR)
-
+start.db: db.start
 
 db.create-network:
 	$(docker_tools) docker.create_network $(APP_NAME)
@@ -32,12 +30,15 @@ db.wait:
 	# TODO not working
 	$(DockerDbExec) $(build.sh) wait_for_$(DBMS) $(DB_HOST) $(DB_PASSWORD)
 
-db.down: ## stop and remove the docker DOCK_DB_BUILD_NAME
+## stop and remove the docker DOCK_DB_BUILD_NAME
+db.down:
 	$(docker_tools) docker.remove $(DOCK_DB_BUILD_NAME)
 
-db.restart: db.down ## restart the db
-	$(MAKE) $(DBMS) db.start
+## restart the db
+db.restart: db.down
+	$(MAKE) $(DBMS) "db.start"
 
+## stop and remove the docker DOCK_DB_BUILD_NAME
 db.pull: db.down ## pulls latest nine-db from dock9 docker hub
 	docker pull $(DOCKER_DB_URL)
 

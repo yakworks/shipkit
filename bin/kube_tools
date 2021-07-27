@@ -13,7 +13,7 @@ core.import "sed_tpl"
 # ---
 function process_tpl {
   # set the variables in BUILD_ENV so we can build the sed replacement for templates
-  parse_env_file "build/make/makefile.env"
+  parse_env_file "build/make/makefile${MAKELEVEL}.env"
   sed_tpl "$1" "build/kube"
 }
 

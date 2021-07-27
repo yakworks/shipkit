@@ -2,11 +2,13 @@
 
 # The defult build dir, if we have only one it'll be easier to cleanup
 export BUILD_DIR ?= build
-export MAKE_ENV_FILE = $(BUILD_DIR)/make/makefile.env
-BUILD_VARS += BUILD_DIR MAKE_ENV_FILE
+# make a unique makefile using MAKELEVEL, which is incrmented for each make subprocess.
+# so if make calls a make target it doesn't collide, they can be different based on whats passed for DBMS for example
+export MAKE_ENV_FILE = $(BUILD_DIR)/make/makefile$(MAKELEVEL).env
+SHELL_VARS += BUILD_DIR MAKE_ENV_FILE
 
 #shell doesn't get the exported vars so we need to spin the ones we want, which should be in BUILD_VARS
-SHELL_EXPORTS := $(foreach v,$(BUILD_VARS), $(v)='$($(v))')
+SHELL_EXPORTS := $(foreach v,$(SHELL_VARS), $(v)="$($(v))")
 # if no build.sh var is not set then use the the init_env script directly
 # if its set then call build.sh and assume it sourced in /init_env and will
 # be setting up variables and/or potentially overriding make_env
