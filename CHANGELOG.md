@@ -1,3 +1,7 @@
+### v1.0.12
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.11...v1.0.12)
+
 ### v1.0.11
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.10...v1.0.11)
