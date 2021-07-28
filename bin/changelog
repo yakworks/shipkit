@@ -21,7 +21,7 @@ function update_changelog {
   # Repo URL to base links off of
   local LATEST_TAG="v$1" # example v6.1.12
   local published_version="v$2" # example v6.1.11
-  local changelogName="$3"
+  local changelogName=$3
 
   # Get a list of all tags in reverse order
   # Assumes the tags are in version format like v1.2.3
@@ -101,7 +101,7 @@ function update_changelog {
   #echo -e $MARKDOWN > CHANGELOG.md
 }
 
-# --- boiler plate function runner, keep at end of file ------
+# --- boiler plate function runner if not source, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
   source "${BASHIFY_PATH}/function_runner.sh"

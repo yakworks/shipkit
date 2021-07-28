@@ -2,6 +2,7 @@
 load test_helper
 #fixtures_bin
 # export PATH=fixtures/bin:$PATH
+setup_file() { echo_test_name; }
 
 MAKEFILE="
 include Shipkit.make

@@ -1,4 +1,6 @@
 #!/usr/bin/env bats
+load test_helper
+setup_file() { echo_test_name; }
 
 source "$SHIPKIT_BIN/bashify/utils"
 

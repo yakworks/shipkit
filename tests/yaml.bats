@@ -1,8 +1,8 @@
 #!/usr/bin/env bats
-
 # converted to bats format from what is here https://github.com/jasperes/bash-yaml
 source "$SHIPKIT_BIN/bashify/yaml"
 load test_helper
+setup_file() { echo_test_name; }
 
 setup() {
   echo "BATS_TMPDIR ${BATS_TMPDIR}"
@@ -11,7 +11,7 @@ setup() {
 
 @test 'check with caps and excludes pattern' {
   SOME_ENV_VAR="go go go"
-  load_yaml_variables "${BATS_TEST_DIRNAME}/fixtures/build.yml" true "" "MAVEN|CODENARC|SECRET"
+  yaml.load "${BATS_TEST_DIRNAME}/fixtures/build.yml" true "" "MAVEN|CODENARC|SECRET"
   # size should be 7 because of what we excluded
   assert_equal "${#YAML_VARS[@]}" 8
   assert_equal "$TITLE" "Project Title"
@@ -23,7 +23,7 @@ setup() {
 }
 
 @test 'the big verify' {
-  load_yaml_variables "${BATS_TEST_DIRNAME}/fixtures/testing.yml"
+  yaml.load "${BATS_TEST_DIRNAME}/fixtures/testing.yml"
 
   [ "$person_name" = "Jon athan" ] &&
   [ "$person_age" = "99" ] &&

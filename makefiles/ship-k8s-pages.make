@@ -6,7 +6,7 @@ pages.delete-k8s-deployment:
 
 ## apply docmark-pages-deploy.tpl kubectl to deploy site to k8s
 pages.deploy-k8s: pages.delete-k8s-deployment
-	${kube_tools} kubeApplyTpl $(PAGES_DEPLOY_TPL)
+	${kube_tools} apply_tpl $(PAGES_DEPLOY_TPL)
 
 
 # TODO at some point we want to look at publishing snapshot version of docs like we once did?

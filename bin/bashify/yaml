@@ -12,18 +12,16 @@ set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core
 core.import "utils"
 
-
-
 # pares yaml file and and creates shell variables
 # all loaded variable will be in the array YAML_VARS on completeion
 # $1 - the yaml file
 # $2 - whether to capitalize them all
 # $3 - if specified, all vars will have this prefix
 # $4 - the prefixes to exclude in the form "foo|bar|baz"
-load_yaml_variables() {
+yaml.load() {
     local yaml_string
-    yaml_string="$(parse_yaml "$1" "${2:-}" "${3:-}")"
-    set_variables "${yaml_string}" "${4:-}"
+    yaml_string="$(yaml.parse "$1" "${2:-}" "${3:-}")"
+    yaml.set_variables "${yaml_string}" "${4:-}"
     # echo "YML_VARIABLES: ${YML_VARIABLES[*]}"
     # eval "${yaml_string}"
 }
@@ -32,7 +30,7 @@ load_yaml_variables() {
 # $1 - the yaml file
 # $2 - whether to capitalize them all
 # $3 - the prefix to add to the vars
-parse_yaml() {
+yaml.parse() {
     local yaml_file="$1"
     local to_upper="${2}"
     local prefix="${3}"
@@ -81,7 +79,7 @@ parse_yaml() {
 
 # $1 - the lines to eval in form var_name=(xxx) or var_name+=(xxx)
 # $2 - the regex exclude pattern for keys such as "foo|bar|baz"
-set_variables() {
+yaml.set_variables() {
   local origIFS="$IFS"
   IFS=$'\n'
   # shellcheck disable=SC2206 #Quote to prevent word splitting/globbing,

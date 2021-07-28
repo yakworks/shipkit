@@ -6,10 +6,7 @@ circle.sh := $(SHIPKIT_BIN)/circle
 
 ## Triggers circle to build project call with SLUG passed in, ex: make circle.trigger SLUG=yakworks/gorm-tools
 circle.trigger: | _verify_CIRCLE_TOKEN _verify_SLUG
-	curl --location --request POST \
-		"https://circleci.com/api/v2/project/github/$(SLUG)/pipeline" \
-		--header 'Content-Type: application/json' \
-		-u "$(CIRCLE_TOKEN):"
+	$(circle.sh) trigger $(SLUG) $(CIRCLE_TOKEN)
 
 SHELLCHECK_VERSION ?= v0.7.2
 SHELLCHECK_TAR = shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz

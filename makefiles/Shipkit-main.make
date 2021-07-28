@@ -1,5 +1,8 @@
 # --- init_env and the makefile.env generation and BUILD_VARS-----
 
+# path to bashify scripts
+export BASHIFY_PATH ?= $(SHIPKIT_BIN)/bashify
+
 # The defult build dir, if we have only one it'll be easier to cleanup
 export BUILD_DIR ?= build
 # make a unique makefile using MAKELEVEL, which is incrmented for each make subprocess.

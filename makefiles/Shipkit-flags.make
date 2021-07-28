@@ -1,7 +1,6 @@
 # The default options and configs for makefile
 # make it a bash shell for recipes
 SHELL := $(SHIPKIT_BIN)/make_shell
-SHIPKIT_BASHIFY := $(SHIPKIT_BIN)/bashify
 # SHELL := /bin/bash
 
 .DEFAULT_GOAL := help

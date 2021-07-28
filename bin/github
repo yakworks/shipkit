@@ -9,23 +9,18 @@ set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
 core.import "utils"
 
-function create_github_release_ {
-  # get body from
-  local body=$(cat "$BUILD_DIR/CHANGELOG_CHUNK.md")
-  local body_esc=`escape_json_string "$body"`
-  echo "$body_esc"
-}
+
 # calls the github release endpoint to tag nd mark a release
 # $1 - the current dev version we are releasing
 # $2 - the release branch to push to, should be the active releasable git branch that is checked out such as master
 # $3 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
 # $4 - the GITHUB_TOKEN auth token
-function create_github_release {
+function github.create_release {
   # get body from
   local body=$(cat "$BUILD_DIR/CHANGELOG_RELEASE.md")
   local body_esc=`escape_json_string "$body"`
 
-
+## LEAVE THIS INDENT, her docs needs to to look this way
 local api_data=$(cat <<EOF
   {
     "tag_name":         "v$1",
@@ -61,5 +56,6 @@ EOF
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "${BASHIFY_PATH}/function_runner.sh"
+  export fn_namespace='github' && source "${BASHIFY_PATH}/function_runner_ns.sh"
 fi
+

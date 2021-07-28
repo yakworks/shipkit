@@ -11,36 +11,37 @@ core.import "sed_tpl"
 # runs sed on the kubernetes tpl.yml and puts in build dir
 # $1 - the template file to apply
 # ---
-function process_tpl {
+function kube.process_tpl {
   # set the variables in BUILD_ENV so we can build the sed replacement for templates
   parse_env_file "build/make/makefile${MAKELEVEL}.env"
   sed_tpl "$1" "build/kube"
 }
 
-# ---
+###
 # runs sed on the kubernetes tpl.yml template files to update and replace variables with values
+#
 # $1 - the template file to apply
-# ---
-function kubeApplyTpl {
+#
+function kube.apply_tpl {
   local processedTplFile=$(process_tpl "$1" "build/kube")
   # echo "processedTpl $processedTpl"
   kubectl apply -f "$processedTplFile"
 }
 
 # creates namespace if it does not exist
-function kubeCreateNamespace {
+function kube.create_namespace {
   if [ ! "$(kubectl get ns | grep "$1" || true)" ]; then
     kubectl create namespace "$1"
   fi
 }
 
 # runs kubectl apply on the passed in string
-function kubeApply {
+function kube.apply {
   echo "$1" | kubectl apply -f -
 }
 
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "${BASHIFY_PATH}/function_runner.sh"
+  export fn_namespace='kube' && source "${BASHIFY_PATH}/function_runner_ns.sh"
 fi

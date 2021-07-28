@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# ---
+# wrapper around the shellcheck linter to make it easier to do a couple of common things
+# ---
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
+source "$(dirname "${BASH_SOURCE[0]}")"/core
+
+##
+# runs the shellcheck on the passed one or more directories
+# will recursively spin in and only run on the files that are x-shellscript mime type
+#
+# ``` shellchecker lint bin scripts2
+#
+# $@ - {array} one or more dirs
+#
+function shellcheck.lint {
+  _shellcheck_targets "$@"
+	shellcheck -s bash "${SHELLCHECK_TARGETS[@]}"
+}
+
+##
+# uses the pattern `shellcheck -f diff bin/* | git apply` to fix what can be automatically fixed
+#
+# $@ - {array} one or more dirs
+#
+function shellcheck.lint_fix {
+  _shellcheck_targets "$@"
+	shellcheck -f diff "${SHELLCHECK_TARGETS[@]}" | git apply
+}
+
+###
+# collects the files names from one or more directories into SHELLCHECK_TARGETS variable
+# will recursively spin in and only get the files that are x-shellscript mime type
+#
+# $@ - {array} one or more dirs
+#
+function _shellcheck_targets {
+  SHELLCHECK_TARGETS=()
+  for dir in "$@"; do
+    while IFS=  read -r -d $'\0'; do
+      if [[ "$(file -I "$REPLY")" == *x-shellscript* ]]; then
+        SHELLCHECK_TARGETS+=("$REPLY")
+      fi
+    done < <(find "${dir}" -type f -print0)
+  done
+}
+
+# --- boiler plate function runner, keep at end of file ------
+# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  export fn_namespace='shellcheck' && source "${BASHIFY_PATH}/function_runner_ns.sh"
+fi

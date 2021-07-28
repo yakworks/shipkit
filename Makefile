@@ -24,23 +24,18 @@ docker_tools := $(SHIPKIT_BIN)/docker_tools
 DOCK_SHELL_URL = yakworks/builder:bash-make
 
 ## docker shell for testing
-docker-shell:
-	$(docker_tools) docker.start shipkit-shell -it \
+docker.shell:
+	$(docker_tools) start shipkit-shell -it \
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
 
-shellcheck_paths ?= bin
+SHELLCHECK_DIRS ?= bin makefiles
 lint::
-	scheck_targets=()
-	while IFS=  read -r -d $$'\0'; do
-		scheck_targets+=("$$REPLY")
-	done < <(find $(shellcheck_paths) -type f -print0)
+	$(BASHIFY_PATH)/shellchecker lint $(SHELLCHECK_DIRS)
 
-	shellcheck "$${scheck_targets[@]}"
-	$(call log, shellcheck good)
-
-lint-fix:
-	shellcheck -f diff bin/* | git apply
+## fixes what is can using shellcheck diffs and git apply
+lint.fix:
+	$(BASHIFY_PATH)/shellchecker lint_fix $(SHELLCHECK_DIRS)
 
 ## Run the lint and tests
 check:: lint test

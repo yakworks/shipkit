@@ -23,6 +23,10 @@ fixtures() {
   export PATH=$FIXTURES_ROOT/bin:$PATH
 }
 
+echo_test_name() {
+  echo "# Test $(basename ${BATS_TEST_FILENAME})" >&3
+}
+
 __debug() {
   printf '===> status <===\n%s\n' "$1"
   shift

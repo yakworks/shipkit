@@ -1,7 +1,7 @@
 # kubernetes deployment for pages generated with docmark.
 # container uses env variables to download git project, build the docs and then start a nginx webserver
 # sets up ingress-nginx services and uses default tls cert that was setup for it.
-# use the sed_tpl to process this template for example `kubeApplyTpl build/bin/kube_templates/.tpl.yml`
+# use the sed_tpl to process this template for example `apply_tpl build/bin/kube_templates/.tpl.yml`
 apiVersion: apps/v1
 kind: Deployment
 metadata:

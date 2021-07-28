@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 source "$SHIPKIT_BIN/bashify/utils"
 load test_helper
+setup_file() { echo_test_name; }
 
 @test 'truthy when someVal=any value' {
   someVal="any value"

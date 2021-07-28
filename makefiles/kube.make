@@ -11,7 +11,7 @@ kube.clean: | _verify_APP_KUBE_NAMESPACE
 
 ## creates the APP_KUBE_NAMESPACE namespace if its doesn't exist
 kube.create-ns: | _verify_APP_KUBE_NAMESPACE
-	$(kube_tools) kubeCreateNamespace $(APP_KUBE_NAMESPACE)
+	$(kube_tools) create_namespace $(APP_KUBE_NAMESPACE)
 
 ## runs kubectl port-forward to the $(KUBE_DB_SERVICE_NAME)
 kube.port-forward:

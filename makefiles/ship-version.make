@@ -2,7 +2,7 @@
 # targets for release process on git
 # -------------
 
-github_release := $(SHIPKIT_BIN)/github_release
+github.sh := $(SHIPKIT_BIN)/github
 semver := $(SHIPKIT_BIN)/semver
 changelog := $(SHIPKIT_BIN)/changelog
 
@@ -35,7 +35,7 @@ ifeq (true,$(IS_RELEASABLE))
 
 # calls github endpoint to create a release on the RELEASABLE_BRANCH
 ship.github-create: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
-	$(github_release) create_github_release $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
+	$(github.sh) create_release  $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
 	echo $@ success
 
 ## If IS_RELEASABLE, bump vesion, update changelong and post tagged release on gitub.

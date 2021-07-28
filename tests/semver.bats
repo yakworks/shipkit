@@ -2,6 +2,8 @@
 source "$SHIPKIT_BIN/semver"
 load test_helper
 
+setup_file() { echo_test_name; }
+
 setup() {
   export FIXTURE_DIR="$BATS_TEST_DIRNAME/fixtures/versions"
   export VERSION_FILENAME=build/semver_tests/version.env
