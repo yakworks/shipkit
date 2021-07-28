@@ -42,7 +42,7 @@ _verify-snapshot: FORCE
 	_=$(if $(IS_SNAPSHOT),,$(error set snapshot=true in version properties))
 
 ## publish snapshot(s) jars into you local maven
-snapshot:: | _verify-snapshot
+publish.snapshot: | _verify-snapshot
 	$(gw) snapshot
 
 # here so we can depend on it being there and if not firing assemble

@@ -11,7 +11,7 @@ docker_tools := $(SHIPKIT_BIN)/docker_tools
 db.start: db.create-network
 	# ACCEPT_EULA is for sql server, just an env var so won't matter that its set for others
 	$(docker_tools) docker.start "$(DOCK_DB_BUILD_NAME)" -d \
-		--network builder-net \
+		--network $(APP_NAME)-network \
 		-v "`pwd`":/project \
 		-w /project \
 		-e ACCEPT_EULA=Y \
@@ -23,7 +23,7 @@ db.start: db.create-network
 start.db: db.start
 
 db.create-network:
-	$(docker_tools) docker.create_network $(APP_NAME)
+	$(docker_tools) docker.create_network $(APP_NAME)-network
 
 # runs a wait-for script that blocks until db mysql or sqlcmd succeeds
 db.wait:
