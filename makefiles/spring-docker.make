@@ -72,7 +72,7 @@ docker.app-shell: docker-app-up
 
 ifdef RELEASABLE_BRANCH
 
-ship.docker:: docker.app-build docker-app-push
+ship.docker:: docker.app-build docker.app-push
 	echo $@ success
 
 else
