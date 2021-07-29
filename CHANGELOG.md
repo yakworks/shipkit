@@ -1,3 +1,11 @@
+### v1.0.13
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.12...v1.0.13)
+- fix:  ship.github-release name change [link](https://github.com/yakworks/shipkit/commit/3a6a31bf34f6199e2caa4739b5b216bed8ec7e06)
+- fix: updates bad paths in test [link](https://github.com/yakworks/shipkit/commit/fbb4d6ea0464df4c09c7701a98d983518c0a58f0)
+- refactor: clean up core name from bashify, called it bashkit for consitency [link](https://github.com/yakworks/shipkit/commit/8b2a4b2912476ee28f6a53b75c37bc528ed7e765)
+- Feat/init db env and major overhaul (#6) [link](https://github.com/yakworks/shipkit/commit/0a9eb51e05d5a7a33c9fd102e47c55a7addef0db)
+
 ### v1.0.12
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.11...v1.0.12)
