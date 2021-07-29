@@ -3,8 +3,9 @@
 # updates a changelog
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
-source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "utils"
+core.import "array"
 
 # examples https://gist.github.com/kingkool68/09a201a35c83e43af08fcbacee5c315a
 #
@@ -30,7 +31,8 @@ function update_changelog {
   # make it into an array
   TAGS=()
   if [ "$gitTags" ]; then
-    TAGS=("$gitTags")
+    # shellcheck disable=SC2206 # we don't quote when creating arrays or it would be a single array
+    TAGS=($gitTags)
   fi
 
   local MARKDOWN="### $LATEST_TAG\n"
@@ -45,8 +47,9 @@ function update_changelog {
     tagRange=""
     MARKDOWN+='Initial Release'
   else
-    # shellcheck disable=SC2076 # Remove quotes from right-hand side
-    if [[ ! " ${TAGS[*]} "  =~ " ${published_version} " ]]; then
+    echo "${TAGS[@]}"
+    # shellcheck disable=SC2076,SC2199 # array is done like this intentionally
+    if ! array.contains "$published_version" "${TAGS[@]}"; then
       echo "Error creating changelog - publishedVersion $published_version does not exists"
       return 1
     fi
@@ -102,7 +105,7 @@ function update_changelog {
 }
 
 # --- boiler plate function runner if not source, keep at end of file ------
-# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+# BASH_SOURCE count will = 1 if this is run as script from cmd, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "${BASHIFY_PATH}/function_runner.sh"
+  source "${BASHKIT_CORE}/function_runner.sh"
 fi

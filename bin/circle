@@ -4,7 +4,7 @@
 # should be imported into the main build.sh
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
-source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 
 ###
 # uses curl to trigger a pipeline
@@ -31,5 +31,5 @@ function circleCommitRange {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  export fn_namespace='circle' && source "${BASHIFY_PATH}/function_runner_ns.sh"
+  export fn_namespace='circle' && source "${BASHKIT_CORE}/function_runner_ns.sh"
 fi

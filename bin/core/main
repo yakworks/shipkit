@@ -79,9 +79,9 @@ core.rel_path() {
     echo "$result"
 }
 
-BASHIFY_PATH="$(core.abs_path "$(dirname "${BASH_SOURCE[0]}")")"
+BASHKIT_CORE="$(core.abs_path "$(dirname "${BASH_SOURCE[0]}")")"
 BIN_PATH="$(core.abs_path "$(dirname "${BASH_SOURCE[0]}")/..")"
-CORE_IMPORTED_MODULES=()
+CORE_IMPORTED_MODULES=("$BASHKIT_CORE")
 # CORE_IMPORTED_MODULES+=("$CALLER_PATH")
 
 core.import() {
@@ -94,9 +94,9 @@ core.import() {
     # try bin
     if [[ -f "${BIN_PATH}/${mod_name}" ]]; then
       module_path="${BIN_PATH}/${mod_name}"
-    #try bashify
-    elif [[ -f "${BASHIFY_PATH}/${mod_name}" ]]; then
-      module_path="${BASHIFY_PATH}/${mod_name}"
+    #try core
+    elif [[ -f "${BASHKIT_CORE}/${mod_name}" ]]; then
+      module_path="${BASHKIT_CORE}/${mod_name}"
     else
       local caller_dir="$(dirname "${BASH_SOURCE[1]}")"
       module_path="$(core.abs_path "${caller_dir}/${mod_name}" )"
@@ -119,7 +119,7 @@ core.import() {
   CORE_IMPORTED_MODULES+=("$module_path")
 }
 
-core_log() {
+core.log() {
     if type -t logging_log > /dev/null; then
         logging_log "$@"
     else
@@ -127,42 +127,4 @@ core_log() {
         shift
         echo "$level": "$@"
     fi
-}
-
-# Tests if variable is empty (undefined variables are not empty)
-# $1 - variable name
-core.is_empty() {
-    local variable_name="$1"
-    core_is_defined "$variable_name" || return 1
-    [ -z "${!variable_name}" ] || return 1
-}
-
-# Tests if variable is defined (can also be empty)
-core.is_defined() {
-    (
-    set +o nounset
-    if ((BASH_VERSINFO[0] >= 4)) && ((BASH_VERSINFO[1] >= 3)) \
-            && [ -z "${core__bash_version_test:-}" ]; then
-        [[ -v "${1:-}" ]] || exit 1
-    else # for bash < 4.3
-        # Note: ${varname:-foo} expands to foo if varname is unset or set to the
-        # empty string; ${varname-foo} only expands to foo if varname is unset.
-        # shellcheck disable=SC2016
-        eval '! [[ "${'"${1}"'-this_variable_is_undefined_!!!}"' \
-            ' == "this_variable_is_undefined_!!!" ]]'
-        exit $?
-    fi
-    )
-}
-
-# prints out all declared variables and function in the current scope.
-# stdout - the list
-core.get_all_declared_names() {
-    local only_functions="${1:-}"
-    [ -z "$only_functions" ] && only_functions=false
-    {
-    declare -F | cut --delimiter ' ' --fields 3
-    $only_functions || declare -p | grep '^declare' \
-        | cut --delimiter ' ' --fields 3 - | cut --delimiter '=' --fields 1
-    } | sort --unique
 }

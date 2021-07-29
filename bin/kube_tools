@@ -3,7 +3,7 @@
 # functions to help with kubernetes
 # ------------------
 set -e
-source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "init_env"
 core.import "sed_tpl"
 
@@ -43,5 +43,5 @@ function kube.apply {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  export fn_namespace='kube' && source "${BASHIFY_PATH}/function_runner_ns.sh"
+  export fn_namespace='kube' && source "${BASHKIT_CORE}/function_runner_ns.sh"
 fi

@@ -1,7 +1,7 @@
 # --- init_env and the makefile.env generation and BUILD_VARS-----
 
-# path to bashify scripts
-export BASHIFY_PATH ?= $(SHIPKIT_BIN)/bashify
+# path to core scripts
+export BASHKIT_CORE ?= $(SHIPKIT_BIN)/core
 
 # The defult build dir, if we have only one it'll be easier to cleanup
 export BUILD_DIR ?= build

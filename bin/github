@@ -6,7 +6,7 @@
 # https://hinty.io/ivictbor/publish-and-upload-release-to-github-with-bash-and-curl/
 # https://github.com/terryburton/travis-github-release/blob/master/github-release.sh
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
-source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "utils"
 
 
@@ -56,6 +56,6 @@ EOF
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  export fn_namespace='github' && source "${BASHIFY_PATH}/function_runner_ns.sh"
+  export fn_namespace='github' && source "${BASHKIT_CORE}/function_runner_ns.sh"
 fi
 

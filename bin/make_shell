@@ -5,8 +5,7 @@
 # SHELL := $(SHIPKIT_BIN)/make_shell
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
-# bin_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir for bashify
-source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "logr"
 core.import "utils"
 

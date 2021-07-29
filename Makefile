@@ -31,11 +31,11 @@ docker.shell:
 
 SHELLCHECK_DIRS ?= bin makefiles
 lint::
-	$(BASHIFY_PATH)/shellchecker lint $(SHELLCHECK_DIRS)
+	$(SHIPKIT_BIN)/shellchecker lint $(SHELLCHECK_DIRS)
 
 ## fixes what is can using shellcheck diffs and git apply
 lint.fix:
-	$(BASHIFY_PATH)/shellchecker lint_fix $(SHELLCHECK_DIRS)
+	$(SHIPKIT_BIN)/shellchecker lint_fix $(SHELLCHECK_DIRS)
 
 ## Run the lint and tests
 check:: lint test
@@ -44,12 +44,12 @@ check:: lint test
 clean::
 	rm -rf $(BUILD_DIR)
 
-## runs the bashify tests
-test.bashify: $(BATS_EXE)
-	$(BATS_EXE) $(BATS_OPTS) -f $(TESTS) $(BATS_TEST_DIR)/bashify
+## runs the bashkit core tests
+test.core: $(BATS_EXE)
+	$(BATS_EXE) $(BATS_OPTS) -f $(TESTS) $(BATS_TEST_DIR)/core
 
 ## runs all BAT tests
-test.unit:: test-bats test-bashify
+test.unit:: test.bats test.core
 
 ## runs all BAT tests
 test:: test-bats

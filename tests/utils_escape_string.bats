@@ -2,7 +2,7 @@
 load test_helper
 setup_file() { echo_test_name; }
 
-source "$SHIPKIT_BIN/bashify/utils"
+source "$SHIPKIT_BIN/core/utils"
 
 @test 'escapes the main chars for json' {
   string="tab:	"

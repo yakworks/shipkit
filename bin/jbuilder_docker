@@ -4,7 +4,7 @@
 # # ! DEPRECATED, kept as ref for now
 # ---
 
-source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 
 # -----------------------------------
 # starts a builder docker with a volume maps to gradle-docker and /project to the local dir
@@ -81,5 +81,5 @@ function wait_for_sqlserver {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "${BASHIFY_PATH}/function_runner.sh"
+  source "${BASHKIT_CORE}/function_runner.sh"
 fi

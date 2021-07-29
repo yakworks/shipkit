@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 # converted to bats format from what is here https://github.com/jasperes/bash-yaml
-source "$SHIPKIT_BIN/bashify/yaml"
+source "$SHIPKIT_BIN/core/yaml"
 load test_helper
 setup_file() { echo_test_name; }
 

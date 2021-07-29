@@ -3,7 +3,7 @@
 # common logic for publishing a release.
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
-source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "logr"
 core.import "utils"
 
@@ -78,5 +78,5 @@ function bump_patch {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "${BASHIFY_PATH}/function_runner.sh"
+  source "${BASHKIT_CORE}/function_runner.sh"
 fi

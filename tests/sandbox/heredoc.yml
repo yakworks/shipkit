@@ -1,0 +1,15 @@
+# kubernetes deployment for pages generated with docmark.
+# container uses env variables to download git project, build the docs and then start a nginx webserver
+# sets up ingress-nginx services and uses default tls cert that was setup for it.
+# use the sed_tpl to process this template for example `echo foo`
+`tags=$(git tag -l --sort=-version:refname)
+echo "${tags[@]}"
+echo buzz
+`
+apiVersion: ${FOO1}
+kind: $FOO2
+metadata:
+  name: ${PAGES_APP_KEY} # a name for the deployment
+  labels:
+    pages: "${FOO3}" # tag with the app:grello, labels are kind of like tags
+spec: ${FOO4:-default}

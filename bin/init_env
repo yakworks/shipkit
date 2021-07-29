@@ -1,25 +1,17 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034 # appears unused, many are used in templates
 # ---
 # default functions to setup BUILD_VARS
 # BUILD_VARS are used in the build.sh and a makefile.env is created
 # that is imcluded at the start of the Makefile to share vars
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
-source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "logr"
 core.import "utils"
 core.import "yaml"
-core.import "init_db_env"
 core.import "git_tools"
 core.import "setVar"
-
-# __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
-# source "${_dir}/setVar"
-# source "${_dir}/logr"; # start verbose 'init_env' will make it kick to console
-# source "${_dir}/yaml"
-# source "${_dir}/git_tools"
-# source "${_dir}/utils"
-# source "${_dir}/init_db_env"
 
 # version.properties should be in root dir
 if [ -e "version.properties" ]; then source version.properties; fi
@@ -113,7 +105,7 @@ function init_from_build_yml {
 
 # ---
 # sets the version and sets up the other useful variables for that version such as
-# VERSIONX_DOTLESS and the NINEDB_VERSION
+# VERSIONX_DOTLESS
 # ---
 function init_versions {
   # if nothing passing in the usee the lowercase version that should have come in from version.properties
@@ -155,6 +147,42 @@ function circle_init_env {
     # setVar GIT_REPO_URL "$CIRCLE_REPOSITORY_URL"
   fi
 }
+
+
+
+# if it has a DBMS then this kicks in the db related variables
+function init_db_env {
+  if [ ! "${DBMS:-}" ]; then
+    return 0
+  fi
+  # arg $1 must always be the database, defaults to mysql if nothing specified
+  setVar DBMS "$DBMS"
+  setVar DOCK_DB_BUILD_NAME "$DBMS-build"
+  : "${DB_VERSION:=$VERSIONX}"
+  : "${DOCKER_DB_REPO:=dock9/nine-db}"
+  : "${DOCKER_DB_TAG:=${DBMS}-${DB_VERSION}}"
+  setVar DOCKER_DB_URL "$DOCKER_DB_REPO:$DOCKER_DB_TAG"
+
+  # **** DB Vars (MYSQL by default) ****
+  setVar DB_HOST 127.0.0.1
+  setVar DB_PORT 3306
+  # PASS_VAR_NAME is the environment variable name that the docker dbs require. will be different based on vendor
+  setVar PASS_VAR_NAME "MYSQL_ROOT_PASSWORD"
+
+  # DBMS overrides for sqlserver
+  if [ "$DBMS" == "sqlserver" ]; then
+    PASS_VAR_NAME="SA_PASSWORD"
+    DB_PORT=1433
+  fi
+  if [ "${USE_DOCKER_DB_BUILDER:-}" = "true" ]; then
+    setVar DockerDbExec "docker exec ${DOCK_DB_BUILD_NAME}"
+  fi
+  # if we are inside the docker builder but not in circleCI force the DB_HOST
+  if [ -f /.dockerenv ] && [ "$CI" != "true" ]; then
+    setVar DB_HOST "${DOCK_DB_BUILD_NAME}"
+  fi
+}
+
 
 # main make env, this is called early shipkit or can be overriden in build.sh.
 # $1 - BUILD_ENV (test, dev, seed)
@@ -247,6 +275,6 @@ function parse_env_file {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "${BASHIFY_PATH}/function_runner.sh"
+  source "${BASHKIT_CORE}/function_runner.sh"
 fi
 

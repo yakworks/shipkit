@@ -9,7 +9,7 @@
 # ------------------------------------------------
 
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
-source "$(dirname "${BASH_SOURCE[0]}")"/core
+source "$(dirname "${BASH_SOURCE[0]}")"/main
 core.import "utils"
 
 # pares yaml file and and creates shell variables

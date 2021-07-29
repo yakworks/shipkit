@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 
-# runs sed on the tpl.yml (kubernetes) template files to update and replace variables with values
+###
+# basic tempalate variable replacement using sed
+# runs sed on a .tpl. file in form some_file.tpl.yml for example
+# replaces variables with values from the BUILD_ENV_VARS in the form ${var_name}
+#
 # $1 - the tpl.yml file
-# $2 - the dir for sed to put the processed file
-# echos out the processed tpl build file location
+# $2 - the output dir for sed to put the processed files with the .tpl. stripped from the name
+#
+# @stdout the processed tpl build file name
+#
 function sed_tpl {
-  buildSedArgs
+  build_sed_args
   mkdir -p "$2"
   # parse just the file name
   local tplFile=${1##*/}
   # replace .tpl.yml with .yml or .tpl.any with .any is what `/.tpl./.` is doing
-  local processedTpl="$2/${tplFile/.tpl.yml/.yml}"
+  local processedTpl="$2/${tplFile/.tpl./.}"
   sed "$BUILD_VARS_SED_ARGS" "$1" > "$processedTpl"
 	echo "$processedTpl"
 }
@@ -19,10 +25,10 @@ function sed_tpl {
 # just spins through the BUILD_VARS and creates BUILD_VARS_SED_ARGS
 # for sed replace in the form s|\${$SOME_VAR}|the value|g;
 # after this is called then can be ued like ` sed "$BUILD_VARS_SED_ARGS" someFile.yml > processed.yml `
-function buildSedArgs {
+function build_sed_args {
   for varName in $BUILD_VARS; do
-    ESCAPED_VarName=$(printf '%s\n' "${!varName}" | sed -e 's/[\|&]/\\&/g')
-    BUILD_VARS_SED_ARGS+="s|\\\${$varName}|$ESCAPED_VarName|g; "
+    local escaped_var_name=$(printf '%s\n' "${!varName}" | sed -e 's/[\|&]/\\&/g')
+    BUILD_VARS_SED_ARGS+="s|\\\${$varName}|$escaped_var_name|g; "
   done
   # echo "$BUILD_VARS_SED_ARGS"
 }

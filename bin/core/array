@@ -26,8 +26,12 @@ array.contains() {
     declare query="${1:-}"
     shift
 
+    [[ "$*" =~ ${query} ]] || return 1
+
     for element in "${@}"; do
-        [[ "${element}" == "${query}" ]] && return 0
+        [[ "${element}" == "${query}" ]] && {
+          return 0
+        }
     done
 
     return 1
