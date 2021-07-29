@@ -21,4 +21,4 @@ install-shellcheck-alpine:
 
 # install the file command for alpine, file is used to get meta data on files to know if we should run in shellcheck
 install-file-alpine:
-	apk install file
+	apk add file
