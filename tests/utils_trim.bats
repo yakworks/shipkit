@@ -1,6 +1,8 @@
 #!/usr/bin/env bats
+load test_helper
+setup_file() { echo_test_name; }
 
-source "$SHIPKIT_BIN/utils"
+source "$SHIPKIT_BIN/bashify/utils"
 
 @test 'trim with leading spaces' {
   FOO="  some value"

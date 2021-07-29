@@ -9,8 +9,8 @@
 
 # --- boiler plate function runner, keep at end of file ------
 # if declare works then its a function
-if declare -f "$1" > /dev/null; then
+if declare -f "${1:-}" > /dev/null; then
   "$@" #call function with arguments verbatim
 else
-  echo "'$1' is not a known function name" >&2; exit 1
+  [ "${1:-}" ] && echo "'$1' is not a known function name" >&2 && exit 1
 fi

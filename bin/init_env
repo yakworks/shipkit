@@ -5,13 +5,21 @@
 # that is imcluded at the start of the Makefile to share vars
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
+source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+core.import "logr"
+core.import "utils"
+core.import "yaml"
+core.import "init_db_env"
+core.import "git_tools"
+core.import "setVar"
 
-__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
-source "${__dir}/setVar"
-source "${__dir}/logr"; # start verbose 'init_env' will make it kick to console
-source "${__dir}/yaml"
-source "${__dir}/git_tools"
-source "${__dir}/utils"
+# __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
+# source "${_dir}/setVar"
+# source "${_dir}/logr"; # start verbose 'init_env' will make it kick to console
+# source "${_dir}/yaml"
+# source "${_dir}/git_tools"
+# source "${_dir}/utils"
+# source "${_dir}/init_db_env"
 
 # version.properties should be in root dir
 if [ -e "version.properties" ]; then source version.properties; fi
@@ -62,13 +70,13 @@ function init_defaults {
   # default the releasable branch pattern and changelog name
   setVar RELEASE_BRANCH_REGEX "master|main|release/.+"
   setVar RELEASE_CHANGELOG "CHANGELOG.md"
-
-
-  [ "${ACTIVE_BRANCH:-}" ] && setVar RELEASABLE_BRANCH "$(is_releasable_branch "$ACTIVE_BRANCH" "$RELEASE_BRANCH_REGEX")"
+  if [[ "${ACTIVE_BRANCH:-}" && "${ACTIVE_BRANCH}" =~ ^(${RELEASE_BRANCH_REGEX})$ ]]; then
+    setVar RELEASABLE_BRANCH "$ACTIVE_BRANCH"
+  fi
 
   # shellcheck disable=SC2034
   IS_RELEASABLE=''
-  if [[ "${RELEASABLE_BRANCH:-}" && $(isFalsy "${IS_SNAPSHOT:-}") ]]; then
+  if [[ "${RELEASABLE_BRANCH:-}" && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
     setVar IS_RELEASABLE true
   fi
 
@@ -86,34 +94,17 @@ function init_defaults {
 function init_from_build_yml {
   # if gradle
   if [ -e ./build.yml ]; then
-    create_yml_variables "./build.yml"
-
-    local varsToEval="project_fullName project_subprojects"
-    # ! spaces separators at begging are important
-    # bot
-    varsToEval+=" bot_user bot_email vault_url"
-    # release
-    varsToEval+=" release_changelog release_branch_regex"
-    # pages
-    varsToEval+=" pages_build_dir pages_branch"
-    # builder
-    varsToEval+=" builder_exec builder_name builder_url"
-    # app
-    varsToEval+=" app_name app_key app_dir app_jar app_docker_url"
-    # k8s
-    varsToEval+=" app_kube_nfs app_kube_namespace app_kube_ingress_url"
+    # creates the variables from build.yml, exclude certain keys that are for gradle only
+    yaml.load "./build.yml" true "" "MAVEN|CODENARC|SPOTLESS"
+    BUILD_VARS+=" ${YAML_VARS[*]} "
 
     set +u
-    for varName in $varsToEval; do
-      local upperVarName=$(toupper "$varName")
-      local varVal="${!varName}"
-      [ "$varVal" ] && evalVar "$upperVarName" "$varVal"
-    done
     # special handling, kubernetes requires all lower case for names so we abide and lower APP_KEY
     # APP_KEY="${APP_KEY:-$(tolower "$APP_KEY")}"
-    [ "$APP_KEY" ] && APP_KEY=$(tolower "${APP_KEY:-}")
+    [ "$APP_KEY" ] && APP_KEY=$(tolower "${APP_KEY}")
     [ "$APP_DOCKER_URL" ] && APP_DOCKER_URL=$(tolower "$APP_DOCKER_URL")
     [ "$APP_KUBE_INGRESS_URL" ] && APP_KUBE_INGRESS_URL=$(tolower "$APP_KUBE_INGRESS_URL")
+    [ "$APP_KUBE_DB_SERVICE_NAME" ] && APP_KUBE_DB_SERVICE_NAME=$(tolower "$APP_KUBE_DB_SERVICE_NAME")
     set -u
   fi
   return 0 # I don't understand why this is needed
@@ -122,7 +113,7 @@ function init_from_build_yml {
 
 # ---
 # sets the version and sets up the other useful variables for that version such as
-# VERX_NO_DOTS and the NINEDB_VERSION
+# VERSIONX_DOTLESS and the NINEDB_VERSION
 # ---
 function init_versions {
   # if nothing passing in the usee the lowercase version that should have come in from version.properties
@@ -130,25 +121,24 @@ function init_versions {
   setVar VERSION "$version"
   setVar PUBLISHED_VERSION "${publishedVersion:-}"
 
-  # shellcheck disable=SC2153
-  local dotCount=$(echo "${VERSION}" | awk -F"." '{print NF-1}')
+  # shellcheck disable=SC2153 # Possible misspelling
   # cuts to the last dot
-  local baseVersion=$(echo "$VERSION" | cut -d. -f1-"$dotCount")
+  local baseVersion="${VERSION%.*}"
 
   # VERSIONX is used for docker and k8s as we deploy latests minor version
   # also used to connect to the latest compatible database when that is relevant
   setVar VERSIONX "$baseVersion.x"
   #replace dots with - so 10.0.x turns into v10-0-x. k8s can't have dots in names
-  setVar VERX_NO_DOTS "v${VERSIONX//./-}"
+  setVar VERSIONX_DOTLESS "v${VERSIONX//./-}"
 
   putVar BUILD_VERSION "$VERSION"
 
   # if its a snapshot then append the SNAPSHOT
-  if [[ $(isTruthy "${snapshot:-}") ]]; then
+  if truthy "${snapshot:-}"; then
     putVar VERSION_POSTFIX "-SNAPSHOT"
     putVar IS_SNAPSHOT true
     BUILD_VERSION+="-SNAPSHOT"
-    VERX_NO_DOTS+="-SNAPSHOT"
+    VERSIONX_DOTLESS+="-SNAPSHOT"
   fi
 
   return 0
@@ -166,61 +156,34 @@ function circle_init_env {
   fi
 }
 
-# ---
-# checks if the passed in branch matches whats in the release_branch_regex var
-# $1 - the branch name
-# $2 - the RELEASE_BRANCH_REGEX
-# returns the branch name if it matches, empty if not
-# ---
-function is_releasable_branch {
-  # wraps in the ^(..)$ so it only matches full word not partials
-  local grepRegex="^(${RELEASE_BRANCH_REGEX})$"
-  # returns the branch name if it matches, empty if not
-  echo "$1" | grep -E "$grepRegex" || true
-}
-
-# calls init_env and creates build/make/makefile.envv for importing into makefile.
+# main make env, this is called early shipkit or can be overriden in build.sh.
 # $1 - BUILD_ENV (test, dev, seed)
-# $2 - optional DBMS Vendor (sqlserver,mysql, etc) *optional*
-function init_and_create_env_file {
-  set_build_env "${1:-}" "${2:-}"
-  init_env
-  mkdir -p "$BUILD_DIR"/make
-  createEnvFile "$BUILD_DIR/make/makefile.env"
+function make_env {
+  make_env_init "${1:-}"
+  createEnvFile
 }
 
 # create build/make_env_db.env for importing into makefile.
 # $1 - BUILD_ENV (test, dev, seed)
-# $2 - optional DBMS Vendor (sqlserver,mysql, etc) *optional*
-function make_env_file {
-  set_build_env "${1:-}" "${2:-}"
-  mkdir -p "$BUILD_DIR"/make
-  createEnvFile "$BUILD_DIR/make/makefile.env"
-}
-
-# set build environment if present
-# $1 - BUILD_ENV (test, dev, seed)
-# $2 - DBMS Vendor (sqlserver,mysql, etc) *optional*
-function set_build_env {
+function make_env_init {
   setVar BUILD_ENV "${1:-test}"
-  local dbms=${2:-} # default to empty if not passed
-  [ "$dbms" ] && setDbEnv "$dbms"
-  after_build_env
+  init_env
+  init_db_env  #if DBMS env is set
 }
-
-# dummy place holder, can be implemented in projects build.sh
-function after_build_env { :; }
 
 # create env file from BUILD_VARS for importing into makefile.
-# arg $1 - the file to use
 function createEnvFile {
-  echo "# ----- Generated from build.sh --------" > "$1"
+  local env_file="$MAKE_ENV_FILE" # exported from shipkit-main
+  local env_file_dir="$(dirname "$env_file")"
+  mkdir -p "$env_file_dir"
+
+  echo "# ----- Generated from build.sh --------" > "$env_file"
   for varName in $BUILD_VARS; do
       val=${!varName}
-      echo "$varName=$val" >> "$1"
+      echo "$varName=$val" >> "$env_file"
   done
-  echo "BUILD_VARS=$BUILD_VARS" >> "$1"
-  echo "created $1"
+  echo "BUILD_VARS=$BUILD_VARS" >> "$env_file"
+  echo "created $env_file"
 }
 
 # looks for build/vault/bot.env file and loads it in if its there
@@ -269,7 +232,7 @@ function parse_env_file {
     # echo "line $line"
     key="${line%%=*}"
     val="${line#*=}"
-    if [[ $(isTruthy "$overrideVar") ]]; then
+    if truthy "$overrideVar" ; then
       putVar "$key" "$val"
     else
       setVar "$key" "$val"
@@ -284,6 +247,6 @@ function parse_env_file {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "$(dirname "$0")/function_runner.sh"
+  source "${BASHIFY_PATH}/function_runner.sh"
 fi
 

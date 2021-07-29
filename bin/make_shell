@@ -5,9 +5,10 @@
 # SHELL := $(SHIPKIT_BIN)/make_shell
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
-__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
-source "${__dir}/logr"
-source "${__dir}/utils"
+# bin_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir for bashify
+source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+core.import "logr"
+core.import "utils"
 
 # its will usually have the -c passed from make
 if [  "$1" == "-c" ] ; then
@@ -28,5 +29,6 @@ fi
 #   target_cmds="${target_cmds%?}" # removes the first character
 # fi
 
+# echo "$target_cmds"
 # strace -f -o `mktemp $RESULTZ/result_XXXXXXX` -e trace=open,stat64,execve,exit_group,chdir /bin/sh -c "$@"  | awk '{if (match("Process PID=\d+ runs in (64|32) bit",$0) == 0) {print $0}}'
 eval "$target_cmds"

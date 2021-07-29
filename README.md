@@ -87,6 +87,11 @@ https://www.conventionalcommits.org/en/v1.0.0/
 https://style-guides.readthedocs.io/en/latest/makefile.html
 https://google.github.io/styleguide/shellguide.html
 
+on bash from google style guide
+>Executables should have no extension (strongly preferred) or a .sh extension. Libraries must have a .sh extension and should not be executable.
+
+we will add that if they are both, meaning they can be run or sourced in as a lib then the default is not .sh extension
+
 
 ## Setup
 
@@ -132,6 +137,8 @@ and https://github.com/martinwalsh/ludicrous-makefiles
 
 - http://bash3boilerplate.sh
 - http://redsymbol.net/articles/unofficial-bash-strict-mode/
+- http://rus.har.mn/blog/2010-07-05/subshells/
+- https://github.com/dylanaraps/pure-bash-bible
 
 ## versioning example
 

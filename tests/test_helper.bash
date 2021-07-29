@@ -1,4 +1,10 @@
 #!/bin/bash
+# Load dependencies.
+load "build/installs/bats-support/load.bash"
+load "build/installs/bats-assert/load.bash"
+
+source "$SHIPKIT_BIN/bashify/core"
+
 export OLD_PATH=$PATH
 
 unset_term() {
@@ -15,6 +21,10 @@ fixtures_bin() {
 fixtures() {
   export FIXTURES_ROOT="$BATS_TEST_DIRNAME/fixtures/$1"
   export PATH=$FIXTURES_ROOT/bin:$PATH
+}
+
+echo_test_name() {
+  echo "# Test $(basename ${BATS_TEST_FILENAME})" >&3
 }
 
 __debug() {

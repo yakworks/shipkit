@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1003
+# ------------------------------------------------
+# pares yaml file and and creates shell variables. supports a fairly limited yaml set
+# all loaded variable will be in the array YAML_VARS on completeion
+#
+# From https://github.com/jasperes/bash-yaml which iself was based on https://gist.github.com/pkuczynski/8665367
+# under the MIT license mit-license.org
+# ------------------------------------------------
+
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
+source "$(dirname "${BASH_SOURCE[0]}")"/core
+core.import "utils"
+
+# pares yaml file and and creates shell variables
+# all loaded variable will be in the array YAML_VARS on completeion
+# $1 - the yaml file
+# $2 - whether to capitalize them all
+# $3 - if specified, all vars will have this prefix
+# $4 - the prefixes to exclude in the form "foo|bar|baz"
+yaml.load() {
+    local yaml_string
+    yaml_string="$(yaml.parse "$1" "${2:-}" "${3:-}")"
+    yaml.set_variables "${yaml_string}" "${4:-}"
+    # echo "YML_VARIABLES: ${YML_VARIABLES[*]}"
+    # eval "${yaml_string}"
+}
+
+# pares yaml
+# $1 - the yaml file
+# $2 - whether to capitalize them all
+# $3 - the prefix to add to the vars
+yaml.parse() {
+    local yaml_file="$1"
+    local to_upper="${2}"
+    local prefix="${3}"
+    local s
+    local w
+    local fs
+
+    s='[[:space:]]*'
+    w='[a-zA-Z0-9_.-]*'
+    fs="$(echo @|tr @ '\034')"
+
+    (
+        sed -e '/- [^\“]'"[^\']"'.*: /s|\([ ]*\)- \([[:space:]]*\)|\1-\'$'\n''  \1\2|g' |
+
+        sed -ne '/^--/s|--||g; s|\"|\\\"|g; s/[[:space:]]*$//g;' \
+            -e 's/\$/\\\$/g' \
+            -e "/#.*[\"\']/!s| #.*||g; /^#/s|#.*||g;" \
+            -e "s|^\($s\)\($w\)$s:$s\"\(.*\)\"$s\$|\1$fs\2$fs\3|p" \
+            -e "s|^\($s\)\($w\)${s}[:-]$s\(.*\)$s\$|\1$fs\2$fs\3|p" |
+
+        awk -F"$fs" '{
+            indent = length($1)/2;
+            if (length($2) == 0) { conj[indent]="+";} else {conj[indent]="";}
+            vname[indent] = $2;
+            for (i in vname) {if (i > indent) {delete vname[i]}}
+                if (length($3) > 0) {
+                    vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+                    next_vn=$2
+                    if("'"$to_upper"'") {vn=toupper(vn); next_vn=toupper(next_vn)}
+                    printf("%s%s%s%s=(\"%s\")\n", "'"$prefix"'",vn, next_vn, conj[indent-1], $3);
+                }
+            }' |
+
+        sed -e 's/_=/+=/g' |
+
+        awk 'BEGIN {
+                FS="=";
+                OFS="="
+            }
+            /(-|\.).*=/ {
+                gsub("-|\\.", "_", $1)
+            }
+            { print }'
+    ) < "$yaml_file"
+}
+
+# $1 - the lines to eval in form var_name=(xxx) or var_name+=(xxx)
+# $2 - the regex exclude pattern for keys such as "foo|bar|baz"
+yaml.set_variables() {
+  local origIFS="$IFS"
+  IFS=$'\n'
+  # shellcheck disable=SC2206 #Quote to prevent word splitting/globbing,
+  local variable_string=($1)
+  IFS="$origIFS"
+
+  local exclude_pattern="${2:-}"
+
+  # echo "variable_string_array= ${variable_string}"
+  YAML_VARS=()
+  for varline in "${variable_string[@]}" ; do
+
+    # var_name from line where its either some_name= or some_name+=, so parse up to first = and then drop off +
+    var_name=${varline%%=*}
+    var_name=${var_name%+}
+    # echo "$var_name"
+    # if var_name matches exclude pattern then move on
+    if [[ "$exclude_pattern" && "$var_name" =~ ^($exclude_pattern).*$ ]]; then
+      continue
+    fi
+
+    YAML_VARS+=("$var_name")
+    eval "${varline}"
+    # not sure why this is needed, second pass to evaluate aything that has ${
+    # only works for strings not arrays right now
+    local varVal="${!var_name}"
+    set +u
+    # shellcheck disable=SC2016 #Expressions don't expand in single quotes
+    if [[ "$varVal" == *'${'* ]]; then
+      #echo "$var_name=\"$varVal\""
+      eval "$var_name=\"$varVal\""
+    fi
+    set -u
+  done
+  # convoluted way to see if variable is array
+  # if [[ "$(declare -p $var_name)" =~ "declare -a" ]]; then
+  #
+
+}
+

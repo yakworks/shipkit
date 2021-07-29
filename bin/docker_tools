@@ -5,19 +5,20 @@
 # docmark makes heavy use of this
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
+source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
 
 # ---
 # login to docker hub
 # $1 - docker hub user
 # $2 - docker hub password
 # ---
-function docker_login {
+function docker.login {
   echo "$2" | docker login -u "$1" --password-stdin
 }
 
 # removes the docker
 # arg $1 - the docker name
-function docker_stop {
+function docker.stop {
   if [ "$(docker ps -aq -f name="${1}")" ]; then
     # echo "if this following shows errors 'No such container:' next its fine as its doing a force rm"
     docker stop "${1}" || true
@@ -26,7 +27,7 @@ function docker_stop {
 
 # removes the docker
 # arg $1 - the docker name
-function dockerRemove {
+function docker.remove {
   if [ "$(docker ps -aq -f name="${1}")" ]; then
     # echo "if this following shows errors 'No such container:' next its fine as its doing a force rm"
     ( docker stop "${1}" || true ) && ( docker rm "${1}" || true )
@@ -37,25 +38,26 @@ function dockerRemove {
 # starts a docker (docker run) if its not already running
 # arg $1 - the name of the docker as in --name=${1}
 # arg $2 - the arguments that would normall passed to a docker run
-function dockerStart {
+function docker.start {
   if [ ! "$(docker ps -q -f name="${1}")" ]; then
     # just in case it does exist but with status=exited fire a remove
-    dockerRemove "${1}"
-		docker run --name="${1}" "${@:2}"
+    docker.remove "${1}"
+    docker run --name="${1}" "${@:2}"
   fi
 }
 
 # -----------------------------------
 # create a docker network if it does not exist
 # arg $1 - network name
-function dockerNetworkCreate {
-  if [ ! "$( docker network ls | grep "$1" )" ]; then \
-	  docker network create "$1"; \
-	fi
+function docker.create_network {
+  if [ ! "$( docker network ls | grep "$1" )" ]; then
+    docker network create "$1"
+    echo "$1 network created"
+  fi
 }
 
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "$(dirname "$0")/function_runner.sh"
+  export fn_namespace='docker' && source "${BASHIFY_PATH}/function_runner_ns.sh"
 fi

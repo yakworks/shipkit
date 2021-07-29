@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+set +u #allow undefined
+if [ ${#CORE_IMPORTED_MODULES[@]} -ne 0 ]; then
+    # load core only once
+    return 0
+fi
+set -u #disallow undefined
+
+shopt -s expand_aliases
+
+core.is_main() {
+    [[ "${BASH_SOURCE[1]}" = "$0" ]]
+}
+
+# $1 - path to make absolute
+# stdout - the abd path
+core.abs_path() {
+    local path="$1"
+    if [ -d "$path" ]; then
+        local abs_path_dir
+        abs_path_dir="$(cd "$path" && pwd)"
+        echo "${abs_path_dir}"
+    else
+        local file_name
+        local abs_path_dir
+        file_name="$(basename "$path")"
+        path=$(dirname "$path")
+        abs_path_dir="$(cd "$path" && pwd)"
+        echo "${abs_path_dir}/${file_name}"
+    fi
+}
+
+# Computes relative path from $1 to $2.
+# $1 - starting path
+# $2 - the path to navigate to
+# out - the string relative path
+core.rel_path() {
+
+    # both $1 and $2 are absolute paths beginning with /
+    # returns relative path to $2/$target from $1/$source
+    local source="$1"
+    local target="$2"
+    if [[ "$source" == "$target" ]]; then
+        echo "."
+        return
+    fi
+
+    local common_part="$source" # for now
+    local result="" # for now
+
+    while [[ "${target#$common_part}" == "${target}" ]]; do
+        # no match, means that candidate common part is not correct
+        # go up one level (reduce common part)
+        common_part="$(dirname "$common_part")"
+        # and record that we went back, with correct / handling
+        if [[ -z $result ]]; then
+            result=".."
+        else
+            result="../$result"
+        fi
+    done
+
+    if [[ $common_part == "/" ]]; then
+        # special case for root (no common path)
+        result="$result/"
+    fi
+
+    # since we now have identified the common part,
+    # compute the non-common part
+    local forward_part="${target#$common_part}"
+
+    # and now stick all parts together
+    if [[ -n $result ]] && [[ -n $forward_part ]]; then
+        result="$result$forward_part"
+    elif [[ -n $forward_part ]]; then
+        # extra slash removal
+        result="${forward_part:1}"
+    fi
+    echo "$result"
+}
+
+BASHIFY_PATH="$(core.abs_path "$(dirname "${BASH_SOURCE[0]}")")"
+BIN_PATH="$(core.abs_path "$(dirname "${BASH_SOURCE[0]}")/..")"
+CORE_IMPORTED_MODULES=()
+# CORE_IMPORTED_MODULES+=("$CALLER_PATH")
+
+core.import() {
+  local mod_name=${1}
+  local module_path
+
+  if [[ ${mod_name} == /* ]]; then
+    module_path="${mod_name}"
+  else
+    # try bin
+    if [[ -f "${BIN_PATH}/${mod_name}" ]]; then
+      module_path="${BIN_PATH}/${mod_name}"
+    #try bashify
+    elif [[ -f "${BASHIFY_PATH}/${mod_name}" ]]; then
+      module_path="${BASHIFY_PATH}/${mod_name}"
+    else
+      local caller_dir="$(dirname "${BASH_SOURCE[1]}")"
+      module_path="$(core.abs_path "${caller_dir}/${mod_name}" )"
+    fi
+  fi
+  # echo "module_path $module_path"
+
+  local loaded_module
+  for loaded_module in "${CORE_IMPORTED_MODULES[@]}"; do
+    if [[ "$loaded_module" == "$module_path" ]];then
+      return 0
+    fi
+  done
+
+  # shellcheck disable=SC2076 # Remove quotes from right-hand side
+  source "$module_path"
+  if [ $? = 1 ]; then
+    core_log critical "Failed to source $module_path" && exit 1
+  fi
+  CORE_IMPORTED_MODULES+=("$module_path")
+}
+
+core_log() {
+    if type -t logging_log > /dev/null; then
+        logging_log "$@"
+    else
+        local level=$1
+        shift
+        echo "$level": "$@"
+    fi
+}
+
+# Tests if variable is empty (undefined variables are not empty)
+# $1 - variable name
+core.is_empty() {
+    local variable_name="$1"
+    core_is_defined "$variable_name" || return 1
+    [ -z "${!variable_name}" ] || return 1
+}
+
+# Tests if variable is defined (can also be empty)
+core.is_defined() {
+    (
+    set +o nounset
+    if ((BASH_VERSINFO[0] >= 4)) && ((BASH_VERSINFO[1] >= 3)) \
+            && [ -z "${core__bash_version_test:-}" ]; then
+        [[ -v "${1:-}" ]] || exit 1
+    else # for bash < 4.3
+        # Note: ${varname:-foo} expands to foo if varname is unset or set to the
+        # empty string; ${varname-foo} only expands to foo if varname is unset.
+        # shellcheck disable=SC2016
+        eval '! [[ "${'"${1}"'-this_variable_is_undefined_!!!}"' \
+            ' == "this_variable_is_undefined_!!!" ]]'
+        exit $?
+    fi
+    )
+}
+
+# prints out all declared variables and function in the current scope.
+# stdout - the list
+core.get_all_declared_names() {
+    local only_functions="${1:-}"
+    [ -z "$only_functions" ] && only_functions=false
+    {
+    declare -F | cut --delimiter ' ' --fields 3
+    $only_functions || declare -p | grep '^declare' \
+        | cut --delimiter ' ' --fields 3 - | cut --delimiter '=' --fields 1
+    } | sort --unique
+}

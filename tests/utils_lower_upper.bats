@@ -1,5 +1,7 @@
 #!/usr/bin/env bats
-source "$SHIPKIT_BIN/utils"
+source "$SHIPKIT_BIN/bashify/utils"
+load test_helper
+setup_file() { echo_test_name; }
 
 @test 'tolower' {
   FOO="MaKe LoWeR"

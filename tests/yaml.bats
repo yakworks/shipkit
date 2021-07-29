@@ -1,26 +1,31 @@
 #!/usr/bin/env bats
-
 # converted to bats format from what is here https://github.com/jasperes/bash-yaml
-source "$SHIPKIT_BIN/yaml"
+source "$SHIPKIT_BIN/bashify/yaml"
+load test_helper
+setup_file() { echo_test_name; }
 
 setup() {
-  # echo "BATS_TMPDIR ${BATS_TMPDIR}"
-  create_yml_variables "${BATS_TEST_DIRNAME}/fixtures/testing.yml"
+  echo "BATS_TMPDIR ${BATS_TMPDIR}"
+  # load_yaml_variables "${BATS_TEST_DIRNAME}/fixtures/testing.yml"
 }
 
-@test 'simple list items' {
-
-  # listItems="${sample_lists[*]}"
-  # # echo "# listItems ${listItems}" > &3
-  # for item in $listItems; do
-  #     echo "# item in list $item" >&3
-  # done
-  [ "${#thingList[@]}" = 3 ]
-  [ "${thingList[0]}" = "foo" ]
+@test 'check with caps and excludes pattern' {
+  SOME_ENV_VAR="go go go"
+  yaml.load "${BATS_TEST_DIRNAME}/fixtures/build.yml" true "" "MAVEN|CODENARC|SECRET"
+  # size should be 7 because of what we excluded
+  assert_equal "${#YAML_VARS[@]}" 8
+  assert_equal "$TITLE" "Project Title"
+  assert_equal "$APP_NAME" "some-name"
+  assert_equal "$APP_KEY" "some-name-key"
+  assert_equal "$APP_SOME_VAR" "go go go"
+  assert_equal "$APP_KUBE_NFS" "10.10.10.10"
+  assert_equal "${ARRAY_TEST2[*]}" "foo bar"
 }
 
 @test 'the big verify' {
-  [ "$person_name" = "Jonathan" ] &&
+  yaml.load "${BATS_TEST_DIRNAME}/fixtures/testing.yml"
+
+  [ "$person_name" = "Jon athan" ] &&
   [ "$person_age" = "99" ] &&
   [ "$person_email" = "jonathan@email.com" ] &&
 
@@ -63,7 +68,7 @@ setup() {
   [ "$more_tests_a_multi_dash_property" = "result-is=OK" ] &&
   [ "$more_tests_a_multi_dot_property" = "result.is=OK" ] &&
   [ "$more_tests_a_property_that_has_quite_a_number_of_dashes" = "result-is=OK" ] &&
-  [ "$more_tests_a_property_that_has_dashes_and_dots" = "result-is.absolutely=fine.and-perfect" ] 
+  [ "$more_tests_a_property_that_has_dashes_and_dots" = "result-is.absolutely=fine.and-perfect" ]
 }
 
 # Functions

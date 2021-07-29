@@ -12,6 +12,7 @@ include $(SHIPKIT_MAKEFILES)/secrets.make
 include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/ship-version.make
 include $(SHIPKIT_MAKEFILES)/circle.make
+include $(SHIPKIT_MAKEFILES)/bats-testing.make
 
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
@@ -23,36 +24,18 @@ docker_tools := $(SHIPKIT_BIN)/docker_tools
 DOCK_SHELL_URL = yakworks/builder:bash-make
 
 ## docker shell for testing
-docker-shell:
-	$(docker_tools) dockerStart shipkit-shell -it \
+docker.shell:
+	$(docker_tools) start shipkit-shell -it \
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
 
-# --- BATS Testing ---
-BATS_VERSION ?= 1.3.0
-# BATS_TESTS   ?= . 3>&1
-# the tests to run under the test dir, dot means all
-TESTS   	 ?= .
-BATS_OPTS    ?=
-BATS_URL     := https://github.com/bats-core/bats-core/archive/refs/tags/v$(BATS_VERSION).tar.gz
-BATS_EXE     := $(SHIPKIT_INSTALLS)/bats/bin/bats
-
-## runs the bat tests
-test-unit:: $(BATS_EXE)
-	$(BATS_EXE) $(BATS_OPTS) tests/$(TESTS)
-
-.PHONY: test
-
-$(BATS_EXE):
-	$(call download_tar,$(BATS_URL),bats)
-	touch $(BATS_EXE)
-
+SHELLCHECK_DIRS ?= bin makefiles
 lint::
-	shellcheck bin/*
-	$(call log, shellcheck good)
+	$(BASHIFY_PATH)/shellchecker lint $(SHELLCHECK_DIRS)
 
-lint-fix:
-	shellcheck -f diff bin/* | git apply
+## fixes what is can using shellcheck diffs and git apply
+lint.fix:
+	$(BASHIFY_PATH)/shellchecker lint_fix $(SHELLCHECK_DIRS)
 
 ## Run the lint and tests
 check:: lint test
@@ -61,11 +44,18 @@ check:: lint test
 clean::
 	rm -rf $(BUILD_DIR)
 
+## runs the bashify tests
+test.bashify: $(BATS_EXE)
+	$(BATS_EXE) $(BATS_OPTS) -f $(TESTS) $(BATS_TEST_DIR)/bashify
+
 ## runs all BAT tests
-test:: test-unit
+test.unit:: test-bats test-bashify
+
+## runs all BAT tests
+test:: test-bats
 
 ## NA runs integration/e2e tests
-test-e2e::
+test.e2e::
 
 ## NA builds the libs
 build::

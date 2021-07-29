@@ -1,0 +1,28 @@
+# used with yakworks/shipkit as well as gradle
+title: Project Title
+SeCreT: should not get imported
+
+# app info, assumes that there is one main deployable app per project which is the best practice. You can always make more
+# bash converts to upper and dots to underscore. for example app.name will be APP_NAME
+app:
+  name: some-name
+  # key: ${APP_NAME}-${VERSIONX_DOTLESS}
+  key: "${APP_NAME}-key"
+  some_var: ${SOME_ENV_VAR}
+  kube:
+    nfs: 10.10.10.10
+
+# this won't get parsed as an array
+array_test1: ['foo', 'bar']
+# this should get parsed as an array
+array_test2:
+  - foo
+  - bar
+
+# these get excluded
+maven:
+  repoUrl: http://repo.9ci.com/private-libs
+  snapshotUrl: http://repo.9ci.com/snapshots
+codenarc:
+  main:
+    excludes: ['**/BootStrap.*', '**/UrlMappings.*']

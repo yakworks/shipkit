@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Logging utility that simplifies user of bash logger command
+# based on this from here https://gist.github.com/ttscoff/6708b082e151ed4910e85f3fde35e9ad
 # others to look at
 # https://github.com/Zordrak/bashlog/blob/master/log.sh
 

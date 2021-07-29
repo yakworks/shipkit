@@ -2,13 +2,25 @@
 # ---
 # working with CI circle and publishing,
 # should be imported into the main build.sh
-# ! not really used now
 # ---
-set -e
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
+source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
 
+###
+# uses curl to trigger a pipeline
+#
+# $1 - the owner/repo
+# $2 - the circle token
+circle.trigger(){
+  curl --location --request POST \
+		"https://circleci.com/api/v2/project/github/$1/pipeline" \
+		--header 'Content-Type: application/json' \
+		-u "$2:"
+}
 # ---
 # circle orb compare-url/reconstruct makes a CIRCLE_COMPARE_URL.txt and this will
 # returns the commit range like 911ff1ea1fa5...a883787c2f50
+# !deprecated
 # ---
 function circleCommitRange {
   CIRCLE_COMPARE_URL=$(cat CIRCLE_COMPARE_URL.txt || true)
@@ -19,5 +31,5 @@ function circleCommitRange {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "$(dirname "$0")/function_runner.sh"
+  export fn_namespace='circle' && source "${BASHIFY_PATH}/function_runner_ns.sh"
 fi

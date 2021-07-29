@@ -1,23 +1,28 @@
 # --- init_env and the makefile.env generation and BUILD_VARS-----
 
+# path to bashify scripts
+export BASHIFY_PATH ?= $(SHIPKIT_BIN)/bashify
+
 # The defult build dir, if we have only one it'll be easier to cleanup
 export BUILD_DIR ?= build
-BUILD_VARS += BUILD_DIR
+# make a unique makefile using MAKELEVEL, which is incrmented for each make subprocess.
+# so if make calls a make target it doesn't collide, they can be different based on whats passed for DBMS for example
+export MAKE_ENV_FILE = $(BUILD_DIR)/make/makefile$(MAKELEVEL).env
+SHELL_VARS += BUILD_DIR MAKE_ENV_FILE
 
 #shell doesn't get the exported vars so we need to spin the ones we want, which should be in BUILD_VARS
-SHELL_EXPORTS := $(foreach v,$(BUILD_VARS), $(v)='$($(v))')
-# if no build.sh var is not set then call the the init_env script directly
-# if its set then call build.sh and assume its setting up variables and will call the main init_env where needed
-ifdef build.sh
-shResults := $(shell $(SHELL_EXPORTS) $(build.sh) make_env_file $(BUILD_ENV) $(DB_VENDOR))
-else
-shResults := $(shell $(SHELL_EXPORTS) $(SHIPKIT_BIN)/init_env init_and_create_env_file $(BUILD_ENV) $(DB_VENDOR))
-endif
+SHELL_EXPORTS := $(foreach v,$(SHELL_VARS), $(v)="$($(v))")
+# if no build.sh var is not set then use the the init_env script directly
+# if its set then call build.sh and assume it sourced in /init_env and will
+# be setting up variables and/or potentially overriding make_env
+build.sh ?= $(SHIPKIT_BIN)/init_env
+shResults := $(shell $(SHELL_EXPORTS) $(build.sh) make_env $(BUILD_ENV))
 ifneq ($(.SHELLSTATUS),0)
   $(error error with init_env or build.sh $(shResults))
 endif
+# $(info make_env results $(shResults))
 
-makefile_env := ./$(BUILD_DIR)/make/makefile.env
+makefile_env := $(MAKE_ENV_FILE)
 # import/sinclude the variables file to make it availiable to make as well
 sinclude $(makefile_env)
 # now re-export them so for future shell calls, BUILD_VARS is the list of them all
@@ -59,16 +64,8 @@ log-vars: FORCE
 	$(foreach v, $(sort $(BUILD_VARS)), $(info $(v) = $($(v))))
 
 # logs all the make variables, get ready for some noise
-log-make-vars: FORCE
+print-make-vars: FORCE
 	$(foreach v, $(.VARIABLES), $(info $(v) = $($(v))))
-
-# for debugging, calls the build.sh log-vars to sanity check
-log-buildsh-vars: FORCE
-	$(build.sh) log-vars
-
-# list all the functions sourced into the build.sh
-list-functions: FORCE
-	$(build.sh) list-functions
 
 # Helper target for declaring an external executable as a recipe dependency.
 # For example,
@@ -162,11 +159,22 @@ define download
 endef
 
 # downloads a tar.gz and expands it into the specifed dir under SHIPKIT_INSTALLS
+# $1 - the url to the tar.gz
+# $2 - where to put it
 define download_tar
 	$(call log, download and untar to $(2))
 	install_dir=$(SHIPKIT_INSTALLS)/$(2)
 	mkdir -p $$install_dir
 	$(DOWNLOADER) $(DOWNLOAD_FLAGS) "$(1)" | tar zxf - -C $$install_dir --strip-components 1
+endef
+
+# when need to git clone will put under SHIPKIT_INSTALLS
+# $1 - the clone url
+# $2 - where to put it
+define download_git
+	$(call log, git clone to $(SHIPKIT_INSTALLS)/$(2))
+	install_dir=$(SHIPKIT_INSTALLS)/$(2)
+	git clone $(1) $(SHIPKIT_INSTALLS)/$(2)
 endef
 
 define download_to

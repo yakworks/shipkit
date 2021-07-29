@@ -3,9 +3,8 @@
 # updates a changelog
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
-
-__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # get dir this script is in
-source "${__dir}/utils"
+source "$(dirname "${BASH_SOURCE[0]}")"/bashify/core
+core.import "utils"
 
 # examples https://gist.github.com/kingkool68/09a201a35c83e43af08fcbacee5c315a
 #
@@ -22,7 +21,7 @@ function update_changelog {
   # Repo URL to base links off of
   local LATEST_TAG="v$1" # example v6.1.12
   local published_version="v$2" # example v6.1.11
-  local changelogName="$3"
+  local changelogName=$3
 
   # Get a list of all tags in reverse order
   # Assumes the tags are in version format like v1.2.3
@@ -42,11 +41,12 @@ function update_changelog {
   # if published_version is falsy then its an initial release so blank out range to get all of it
   # if this is not what you want then create a tag that starts with a v
   # and set publishedVersion to that tag without the v prefix in version.props
-  if [[ $(isFalsy "$2") ]]; then
+  if falsy "$2"; then
     tagRange=""
     MARKDOWN+='Initial Release'
   else
-    if [[ ! "${TAGS[*]}"  =~ ${published_version}  ]]; then
+    # shellcheck disable=SC2076 # Remove quotes from right-hand side
+    if [[ ! " ${TAGS[*]} "  =~ " ${published_version} " ]]; then
       echo "Error creating changelog - publishedVersion $published_version does not exists"
       return 1
     fi
@@ -101,8 +101,8 @@ function update_changelog {
   #echo -e $MARKDOWN > CHANGELOG.md
 }
 
-# --- boiler plate function runner, keep at end of file ------
+# --- boiler plate function runner if not source, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  source "${__dir}/function_runner.sh"
+  source "${BASHIFY_PATH}/function_runner.sh"
 fi

@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
+
+# function indexOf {
+#   local match="$1"
+#   shift
+#   for e in "$@"; do
+#     [[ "$e" == "$match" ]] && return 0;
+#   done
+#   return 1
+
+#   # for ((i = 0; i < ${#items[@]}; i++));do
+#   #     echo "${items[$i]}"
+#   #     [[ "${items[$i]}" == "$match" ]] && return 0
+#   # done
+# }
+
+# check if array contains an item
+# $1 - the item to search for
+# $2 - the array
+# returns 0 if found and 1 if not
+function array_contains {
+  # the array is second arg for a reason as passing arrays is tricky because your not acutuall passing them
+  local e match="$1"
+  shift # removes first arg off
+  for e in "$@"; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
+
+# check if array contains an item
+# $1 - the item to search for
+# $2 - the array
+# returns 0 if found and 1 if not
+function array_indexOf {
+  local value="$1"
+  shift
+  local array=("$@")
+  local -i index=-1
+  local i
+  for i in "${!array[@]}"; do
+    if [[ "${array[$i]}" == "${value}" ]]; then
+      local index="${i}"
+    fi
+  done
+  echo "$index"
+  if (( index == -1 )); then
+    return 1
+  fi
+}
+
+arr=("something to search for" "a string" "test2000")
+array_indexOf "a string" "${arr[@]}"
+echo $?
+
+if ! (array_indexOf "as string" "${arr[@]}"); then
+  echo "not found"
+fi
+
+
+# IFS=" "
+foo=(zoo za zoo ba)
+uniq=$(printf "%s\n" ${foo[@]} | sort | uniq)
+echo ${uniq[*]}
+

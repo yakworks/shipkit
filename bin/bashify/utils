@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
+
+# -----------------
+# some common bash util helpers
+# ------------------
+
+# ---
+# trims leading and trailing spaces or tabs from string
+# $1 - the string to trim
+# ---
+function trim {
+    # the blank area between brackets [ 	] has both a space and a tab
+    echo "$1" | sed 's/^[ 	]*//' | sed 's/[ 	]*$//g'
+}
+
+
+# standardizes any value to echo either "false" or "true"
+# anything that is false, "false", "False", 0, "0", unset, or empty string will be "false"
+# so the following would be true
+# [ $(bool "0") = "false" ]
+#
+# $1 - the value to convert
+function bool {
+  local val="${1:-}"
+  if falsy "$val"; then
+    echo "false"
+  else
+    echo "true"
+  fi
+}
+
+# see falsy
+# if its falsy then it echos "false"
+# else doesn't return error code and just does nothing if its truthy
+function isFalsy {
+  local val="${1:-}"
+  if falsy "$val"; then
+    echo "false"
+  fi
+}
+
+# normal return code of 0 if its falsy, return code of 1 (which is an error in bash land)
+# to be falsy a value could be false, "false", "False", 0, "0", unset, empty string
+# usage:
+#   FOO=false # or 0 or empty
+#   # if you leave off the `|| true` and -e is set then will stop if its truthy as this would return error code 1
+#   # so this will only echo if isFalsy, otherwise it just moves on
+#   isFalsy "$FOO" && echo "FOO is falsy" || true
+function falsy {
+  local val="${1:-}"
+  if [[ ! $val || $val = false || $val = 0  || $val = False ]]; then
+    return 0
+  else
+    # its something that is "truthy" so return error code
+    return 1
+  fi
+}
+
+# normal return code of 0 if its not a falsy, return code of 1 (which is an error in bash land) if it is falsy
+function truthy {
+  if falsy "${1:-}"; then
+    return 1 # return error code
+  else
+    return 0 # return success
+  fi
+}
+
+# converts to lower case
+# $1 - what to convert
+function tolower {
+  tr '[:upper:]' '[:lower:]' <<< "$1"
+}
+
+# converts to upper case
+# $1 - what to convert
+function toupper {
+  tr '[:lower:]' '[:upper:]' <<< "$1"
+}
+
+# check if array contains an item
+# $1 - the item to search for
+# $2 - the array
+# returns 0 if found and 1 if not
+function array_contains {
+  # the array is second arg for a reason as passing arrays is tricky because your not acutuall passing them
+  local e match="$1"
+  shift # removes first arg off
+  for e in "$@"; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
+
+# check if array contains an item
+# $1 - the item to search for
+# $2 - the array
+# returns 0 if found and 1 if not
+function array_indexOf {
+  local value="$1"
+  shift
+  local array=("$@")
+  local -i index=-1
+  local i
+  for i in "${!array[@]}"; do
+    if [[ "${array[$i]}" == "${value}" ]]; then
+      local index="${i}"
+    fi
+  done
+  echo "$index"
+  if (( index == -1 )); then
+    return 1
+  fi
+}
+
+# greps the value from a properly formed env or properties file
+# $1 - the prop name
+# $2 - file name
+# example file:
+# FOO=bar
+# `grepValue FOO` = bar
+function grepValue {
+    PROP_KEY=$1
+    PROP_VALUE=`grep "^$PROP_KEY=" "$2" | cut -d'=' -f2`
+    echo "$PROP_VALUE"
+}
+
+# lists all the function/methods for the bash script
+function list-functions {
+  shopt -s extdebug
+  funcList=`compgen -A function`
+  # echo $funcList
+  for f in $funcList; do
+    funcParts=`declare -F "$f"`
+    arr=("$funcParts")
+    local file=${arr[2]##*/}
+    printf "%-25s %s:%s\n" "${arr[0]}" "${file}" "${arr[1]}"
+  done
+}
+
+# $1 - the sring data
+function escape_json_string {
+  jdata=${1:-}
+  # !! DO NOT INDENT THE LINE FEED BELOW, NEEDED FOR REPLACEMENT
+  #! squinky hack alert coming up
+  jdata=${jdata//
+/~~~} # \n (newline to some squiglys ~~~ first then back to \n with sed below)
+  jdata=${jdata//\\/\\\\} # \
+  jdata=${jdata//\//\\\/} # /
+  jdata=${jdata//\"/\\\"} # "
+  jdata=${jdata//	/\\t} # \t (tab)
+  jdata=${jdata//^M/\\\r} # \r (carriage return)
+  # echo "$jdata"
+  # shellcheck disable=SC2001
+  echo "$jdata" | sed 's/~~~/\\n/g'
+}
+
