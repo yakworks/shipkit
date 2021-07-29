@@ -6,6 +6,7 @@ jobs:
     steps:
       - checkout
       - run: make install-shellcheck-alpine
+      - run: make install-file-alpine
       - run: make check
       # test some other stuff
       - run: make git.config-bot-user

@@ -18,3 +18,7 @@ install-shellcheck-alpine:
 	mv shellcheck-*/shellcheck /usr/bin/
 	rm -rf shellcheck*
 	ls -laF /usr/bin/shellcheck
+
+# install the file command for alpine, file is used to get meta data on files to know if we should run in shellcheck
+install-file-alpine:
+	apk install file

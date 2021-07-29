@@ -38,7 +38,7 @@ function _shellcheck_targets {
   SHELLCHECK_TARGETS=()
   for dir in "$@"; do
     while IFS=  read -r -d $'\0'; do
-      if [[ "$(file -I "$REPLY")" == *x-shellscript* ]]; then
+      if [[ "$(file --mime-type "$REPLY")" == *x-shellscript* ]]; then
         SHELLCHECK_TARGETS+=("$REPLY")
       fi
     done < <(find "${dir}" -type f -print0)
