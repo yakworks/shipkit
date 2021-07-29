@@ -23,7 +23,7 @@ function kube.process_tpl {
 # $1 - the template file to apply
 #
 function kube.apply_tpl {
-  local processedTplFile=$(process_tpl "$1" "build/kube")
+  local processedTplFile=$(kube.process_tpl "$1" "build/kube")
   # echo "processedTpl $processedTpl"
   kubectl apply -f "$processedTplFile"
 }

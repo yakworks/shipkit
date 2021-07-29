@@ -14,7 +14,7 @@ source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 # $@ - {array} one or more dirs
 #
 function shellcheck.lint {
-  _shellcheck_targets "$@"
+  find_shellcheck_targets "$@"
 	shellcheck -s bash "${SHELLCHECK_TARGETS[@]}"
 }
 
@@ -24,7 +24,7 @@ function shellcheck.lint {
 # $@ - {array} one or more dirs
 #
 function shellcheck.lint_fix {
-  _shellcheck_targets "$@"
+  find_shellcheck_targets "$@"
 	shellcheck -f diff "${SHELLCHECK_TARGETS[@]}" | git apply
 }
 
@@ -34,7 +34,7 @@ function shellcheck.lint_fix {
 #
 # $@ - {array} one or more dirs
 #
-function _shellcheck_targets {
+function find_shellcheck_targets {
   SHELLCHECK_TARGETS=()
   for dir in "$@"; do
     while IFS=  read -r -d $'\0'; do
