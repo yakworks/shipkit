@@ -47,7 +47,6 @@ function update_changelog {
     tagRange=""
     MARKDOWN+='Initial Release'
   else
-    echo "${TAGS[@]}"
     # shellcheck disable=SC2076,SC2199 # array is done like this intentionally
     if ! array.contains "$published_version" "${TAGS[@]}"; then
       echo "Error creating changelog - publishedVersion $published_version does not exists"

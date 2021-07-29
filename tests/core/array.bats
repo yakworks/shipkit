@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 load ../test_helper
-core.import "array.sh"
+core.import "array"
 # alias array.contains="array::contains"
 
 @test 'array contains' {

@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-source "$SHIPKIT_BIN/core/core"
+source "$SHIPKIT_BIN/core/main"
 load ../test_helper
 
 @test 'core.rel_path' {
