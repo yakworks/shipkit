@@ -1,3 +1,8 @@
+### v1.0.14
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.13...v1.0.14)
+- fix: bad function name in kube [link](https://github.com/yakworks/shipkit/commit/e56f0a0ae8b66b74449b6b2764a99ca8f3c3ade3)
+
 ### v1.0.13
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.12...v1.0.13)
