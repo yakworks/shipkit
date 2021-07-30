@@ -21,11 +21,63 @@ secrets.import-gpg-key: | _verify_BOT_EMAIL
 	fi
 # gpg above --batch doesn't ask for prompt and -v is verbose
 
-git-secret-version: $(GIT_SECRET_SH)
+## run this to show help for secret goals
+secrets.help:
+	echo
+	echo -e "${cbold}Git-secrets make tasks. see https://git-secret.io/ for more info on using installed version$(cnormal)\n"
+	echo -e "Targets:\n"
+	echo "$(ccyan)secrets.init                     $(cnormal)| initializes new project "
+	echo "$(ccyan)secrets.add email=jim@gmail.com  $(cnormal)| adds an authorized user key, should only be by email that matched their public key "
+	echo "$(ccyan)secrets.add file=secret.env      $(cnormal)| adds a file to the secrets"
+	echo "$(ccyan)secrets.hide                     $(cnormal)| encrypts and hides all the files in the secret list "
+	echo "$(ccyan)secrets.reveal                   $(cnormal)| decrytps all the files in the secret list "
+	echo "$(ccyan)secrets.remove file=abc.env      $(cnormal)| removes a file to the secrets"
+	echo "$(ccyan)secrets.remove email=...         $(cnormal)| removes an authroized user key"
+	echo "$(ccyan)secrets.list                     $(cnormal)| list files and authorized users"
+	echo "$(ccyan)secrets.clean                    $(cnormal)| removes all the hidden files"
+	echo
+
+# Shows the git-secret version
+secrets.show-version: $(GIT_SECRET_SH)
 	$(GIT_SECRET_SH) --version
 
-secrets-encrypt:
-	@$(GIT_SECRET_SH) hide
+# initializes the project
+secrets.init: $(GIT_SECRET_SH)
+	$(GIT_SECRET_SH) init
 
-secrets-decrypt:
-	@$(GIT_SECRET_SH) reveal -p "$(GPG_PASS)"
+secrets.add:
+	if [ "$(file)" ]; then
+		$(GIT_SECRET_SH) add $(file)
+	elif [ "$(email)" ]; then
+		$(GIT_SECRET_SH) tell $(email)
+	else
+		echo "must set either the 'file' var or 'email' var"
+	fi
+
+secrets.remove:
+	if [ "$(file)" ]; then
+		$(GIT_SECRET_SH) remove $(file)
+	elif [ "$(email)" ]; then
+		$(GIT_SECRET_SH) removeperson $(email)
+	else
+		echo "must set either the 'file' var or 'email' var"
+	fi
+
+# alias to hide
+secrets.encrypt: secrets.hide
+
+secrets.hide: $(GIT_SECRET_SH)
+	$(GIT_SECRET_SH) hide -d
+
+# alias to reveal
+secrets.decrypt: secrets.reveal
+
+secrets.reveal:
+	$(GIT_SECRET_SH) reveal -p "$(GPG_PASS)"
+
+secrets.list:
+	echo "$(cgreen) -- Secret Files --"
+	$(GIT_SECRET_SH) list
+	echo
+	echo "$(cblue) -- Secret Users --"
+	$(GIT_SECRET_SH) whoknows

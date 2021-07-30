@@ -2,14 +2,14 @@
 # BUILD_ENV is used to to pass to gradle/liquibase and to build the database name etc....
 BUILD_ENV = dev
 # MAKECMDGOALS has the list of all target goals that are passed into make cmd
-ifeq (test-env,$(filter test-env,$(MAKECMDGOALS)))
+ifeq (testenv,$(filter testenv,$(MAKECMDGOALS)))
   BUILD_ENV = test
-else ifeq (seed,$(filter seed,$(MAKECMDGOALS)))
-  BUILD_ENV = seed
+else ifeq (prod,$(filter prod,$(MAKECMDGOALS)))
+  BUILD_ENV = prod
 endif
 
 # dummy targets so we dont get the make[1]: Nothing to be done for `xxx'.
-dummy_targets = dev seed test-env
+dummy_targets = dev prod testenv
 .PHONY: $(dummy_targets)
 $(dummy_targets):
 	@:

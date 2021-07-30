@@ -110,6 +110,13 @@ TPUT_SUFFIX := $(TPUT) sgr0
 TPUT_RED    := $(TPUT) setaf 1;
 TPUT_GREEN  := $(TPUT) setaf 2;
 TPUT_YELLOW := $(TPUT) setaf 3;
+TPUT_BLUE   := $(TPUT) setaf 4;
+TPUT_CYAN   := $(TPUT) setaf 6;
+cgreen      := $(shell $(TPUT_GREEN))
+cbold       := $(shell $(TPUT_PREFIX))
+cnormal     := $(shell $(TPUT_SUFFIX))
+cblue       := $(shell $(TPUT_BLUE))
+ccyan      := $(shell $(TPUT_CYAN))
 LOG_PREFIX  ?= ===>
 
 # if not TPUT then blank out the vars
