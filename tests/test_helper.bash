@@ -7,6 +7,10 @@ source "$SHIPKIT_BIN/core/main"
 
 export OLD_PATH=$PATH
 
+unset_term() {
+  unset TERM
+}
+
 # makes the fixtures/bin come first so we can override and stub out programs
 fixtures_bin() {
   export PATH=fixtures/bin:$PATH
