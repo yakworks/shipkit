@@ -1,3 +1,8 @@
+### v1.0.16
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.15...v1.0.16)
+- feat: git secretes to check download on each goal (#8) [link](https://github.com/yakworks/shipkit/commit/994f8da55e7ff6a6598610205da1b85812e69ba6)
+
 ### v1.0.15
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.14...v1.0.15)
