@@ -116,7 +116,7 @@ cgreen      := $(shell $(TPUT_GREEN))
 cbold       := $(shell $(TPUT_PREFIX))
 cnormal     := $(shell $(TPUT_SUFFIX))
 cblue       := $(shell $(TPUT_BLUE))
-ccyan      := $(shell $(TPUT_CYAN))
+ccyan       := $(shell $(TPUT_CYAN))
 LOG_PREFIX  ?= ===>
 
 # if not TPUT then blank out the vars

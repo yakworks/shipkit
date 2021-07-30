@@ -12,8 +12,8 @@ teardown() {
   PATH=$OLD_PATH
 }
 
-@test 'make sure git-secret-version works' {
-  run make -f $FIXTURE_DIR/Makefile git-secret-version
+@test 'make sure secrets.show-version works' {
+  run make -f $FIXTURE_DIR/Makefile secrets.show-version
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]

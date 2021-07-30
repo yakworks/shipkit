@@ -37,7 +37,7 @@ setup() {
 
 }
 
-@test 'make sure git-secret-version works' {
+@test 'make sure gsecrets.show-version works' {
 
   semverFile=$VERSION_FILENAME
   echo "version=1.0.1" > $semverFile
