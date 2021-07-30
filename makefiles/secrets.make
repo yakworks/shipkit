@@ -45,7 +45,7 @@ secrets.show-version: $(GIT_SECRET_SH)
 secrets.init: $(GIT_SECRET_SH)
 	$(GIT_SECRET_SH) init
 
-secrets.add:
+secrets.add: $(GIT_SECRET_SH)
 	if [ "$(file)" ]; then
 		$(GIT_SECRET_SH) add $(file)
 	elif [ "$(email)" ]; then
@@ -54,11 +54,11 @@ secrets.add:
 		echo "must set either the 'file' var or 'email' var"
 	fi
 
-secrets.remove:
+secrets.remove: $(GIT_SECRET_SH)
 	if [ "$(file)" ]; then
 		$(GIT_SECRET_SH) remove $(file)
 	elif [ "$(email)" ]; then
-		$(GIT_SECRET_SH) removeperson $(email)
+		$(GIT_SECRET_SH) killperson $(email)
 	else
 		echo "must set either the 'file' var or 'email' var"
 	fi
@@ -72,10 +72,10 @@ secrets.hide: $(GIT_SECRET_SH)
 # alias to reveal
 secrets.decrypt: secrets.reveal
 
-secrets.reveal:
+secrets.reveal: $(GIT_SECRET_SH)
 	$(GIT_SECRET_SH) reveal -p "$(GPG_PASS)"
 
-secrets.list:
+secrets.list: $(GIT_SECRET_SH)
 	echo "$(cgreen) -- Secret Files --"
 	$(GIT_SECRET_SH) list
 	echo
