@@ -1,3 +1,8 @@
+### v1.0.15
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.14...v1.0.15)
+- feat: add colors using tput and secrets goals for git-secret (#7) [link](https://github.com/yakworks/shipkit/commit/ac621759beaf0d148ee097e6e8fd05d5c22dbc62)
+
 ### v1.0.14
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.13...v1.0.14)
