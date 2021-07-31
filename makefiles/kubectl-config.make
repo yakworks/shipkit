@@ -12,3 +12,10 @@ kubectl.config: | _verify_K8_SERVER _verify_K8_USER _verify_K8_TOKEN
 	echo "$@ success"
 
 .PHONY: kubectl.config
+
+kubectl.get-contexts:
+	kubectl config get-contexts
+
+kubectl.use-context.%:
+	kubectl config use-context $*
+

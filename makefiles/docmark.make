@@ -10,8 +10,10 @@ GROOVYDOC_BUILD_DIR ?= $(BUILD_DIR)/docs/groovydoc
 # --- Dockers ---
 
 ## serves the docmark docs from docker, alias to docker.dockmark-up
-docmark.start: | _verify-DOCKER_CMD
-	make docker.dockmark-$(DOCKER_CMD)
+docmark.start: docker.dockmark-up
+
+## serves the docmark docs from docker, alias to docker.dockmark-up
+docmark.shell: docker.dockmark-shell
 
 ## docker for docmark docs, follow with a docker cmd  up, down, shell or pull
 docker.dockmark: | _verify-DOCKER_CMD

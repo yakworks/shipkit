@@ -148,8 +148,6 @@ function circle_init_env {
   fi
 }
 
-
-
 # if it has a DBMS then this kicks in the db related variables
 function init_db_env {
   if [ ! "${DBMS:-}" ]; then
@@ -158,10 +156,6 @@ function init_db_env {
   # arg $1 must always be the database, defaults to mysql if nothing specified
   setVar DBMS "$DBMS"
   setVar DOCK_DB_BUILD_NAME "$DBMS-build"
-  : "${DB_VERSION:=$VERSIONX}"
-  : "${DOCKER_DB_REPO:=dock9/nine-db}"
-  : "${DOCKER_DB_TAG:=${DBMS}-${DB_VERSION}}"
-  setVar DOCKER_DB_URL "$DOCKER_DB_REPO:$DOCKER_DB_TAG"
 
   # **** DB Vars (MYSQL by default) ****
   setVar DB_HOST 127.0.0.1
