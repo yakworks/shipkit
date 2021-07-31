@@ -1,3 +1,8 @@
+### v1.0.18
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.17...v1.0.18)
+- fix: db_docker_url -> docker_db_url (#10) [link](https://github.com/yakworks/shipkit/commit/d08056e9c27140e9a3a30264fcb64cf7ba1ddd58)
+
 ### v1.0.17
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.16...v1.0.17)
