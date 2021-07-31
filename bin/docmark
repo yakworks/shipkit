@@ -42,7 +42,7 @@ function docmark.shell {
   docker.start "$DOCMARK_DOCKER_NAME" --rm -it \
     --entrypoint /bin/bash \
     -p 8000:8000 \
-	  -v "$(pwd)":/project:delegated  \
+	  -v "$(pwd)":/project  \
     -e GITHUB_TOKEN="${GITHUB_TOKEN}" \
 		"$DOCMARK_DOCKER_IMAGE"
 

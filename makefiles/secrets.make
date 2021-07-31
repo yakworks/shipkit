@@ -11,7 +11,7 @@ $(GIT_SECRET_SH):
 	cd $(SHIPKIT_INSTALLS)/git-secret && make build
 
 secrets.decrypt-vault: secrets.import-gpg-key $(GIT_SECRET_SH) | _verify_VAULT_URL _verify_GPG_PASS
-	@[ ! -e $(VAULT_DIR) ] && git clone $(VAULT_URL) $(VAULT_DIR) || :;
+	[ ! -e $(VAULT_DIR) ] && git clone $(VAULT_URL) $(VAULT_DIR) || :;
 	cd build/vault && $(GIT_SECRET_SH) reveal -p "$(GPG_PASS)"
 
 secrets.import-gpg-key: | _verify_BOT_EMAIL
@@ -36,6 +36,8 @@ secrets.help:
 	echo "$(ccyan)secrets.list                     $(cnormal)| list files and authorized users"
 	echo "$(ccyan)secrets.clean                    $(cnormal)| removes all the hidden files"
 	echo
+	echo -e "${cbold}If using a gir repo as a vault linked the VAULT_URL variable then\n"
+	echo "$(ccyan)secrets.decrypt-vault   $(cnormal)| clone in VAULT_DIR and decrypt/reveal. bot.env here is used in other shipkit scripts"
 
 # Shows the git-secret version
 secrets.show-version: $(GIT_SECRET_SH)
