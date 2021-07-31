@@ -17,7 +17,7 @@ db.start: db.create-network
 		-e ACCEPT_EULA=Y \
 		-p "$(DB_PORT)":"$(DB_PORT)"  \
 		-e "$(PASS_VAR_NAME)"="$(DB_PASSWORD)" \
-		"$(DOCKER_DB_URL)"
+		"$(DB_DOCKER_URL)"
 
 ## alias for db.start
 start.db: db.start
