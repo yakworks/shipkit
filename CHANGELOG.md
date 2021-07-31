@@ -1,3 +1,8 @@
+### v1.0.17
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.16...v1.0.17)
+- feat: make env unde db consistent with app (#9) [link](https://github.com/yakworks/shipkit/commit/0b6ecb03f51c6a8b7fdb03dc51e44a5ae3a85412)
+
 ### v1.0.16
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.15...v1.0.16)
