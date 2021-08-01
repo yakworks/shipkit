@@ -5,7 +5,6 @@
 docker_tools := $(SHIPKIT_BIN)/docker_tools
 
 #----- DB targets -------
-.PHONY: db-start db-wait db-down
 
 ## starts the DOCK_DB_BUILD_NAME db if its not started yet
 db.start: db.create-network
@@ -44,7 +43,7 @@ db.pull: db.down ## pulls latest nine-db from dock9 docker hub
 
 
 #----- clean up-------
-# runs `make db-down` for sqlserver and mysql and
+# runs `make db.down` for sqlserver and mysql and
 docker.remove-all: builder-remove
-	$(MAKE) mysql db-down
-	$(MAKE) sqlserver db-down
+	$(MAKE) mysql db.down
+	$(MAKE) sqlserver db.down

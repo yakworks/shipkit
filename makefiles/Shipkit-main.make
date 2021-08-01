@@ -97,59 +97,44 @@ $(BUILD_DIR)::
 ship-it::
 
 
-# ---- Logging ----
-# usage example : $(call log, logging message $(SomeVar));
+# ---- Logr ----
+# usage example : $(logr) "message"
 
-# Provides two callables, `log` and `_log`, to facilitate consistent
-# user-defined output, formatted using tput when available.
-#
-# Override TPUT_PREFIX to alter the formatting.
-TPUT        := $(shell which tput 2> /dev/null)
-TPUT_PREFIX := $(TPUT) bold;
-TPUT_SUFFIX := $(TPUT) sgr0
-TPUT_RED    := $(TPUT) setaf 1;
-TPUT_GREEN  := $(TPUT) setaf 2;
-TPUT_YELLOW := $(TPUT) setaf 3;
-TPUT_BLUE   := $(TPUT) setaf 4;
-TPUT_CYAN   := $(TPUT) setaf 6;
-cgreen      :=
-cbold       :=
-cnormal     :=
-cblue       :=
-ccyan       :=
-LOG_PREFIX  ?= ===>
+LOG_PREFIX ?= --->
 
-# if not TPUT then blank out the vars
-ifeq (,$(and $(TPUT),$(TERM)))
-TPUT_PREFIX :=
-TPUT_SUFFIX :=
-TPUT_RED    :=
-TPUT_GREEN  :=
-TPUT_YELLOW :=
-TPUT_BLUE   :=
-TPUT_CYAN   :=
-else
-cgreen      := $(shell $(TPUT_GREEN))
-cbold       := $(shell $(TPUT_PREFIX))
-cnormal     := $(shell $(TPUT_SUFFIX))
-cblue       := $(shell $(TPUT_BLUE))
-ccyan       := $(shell $(TPUT_CYAN))
-endif # end tput check
+creset=\e[0m
+#bold
+cbold=\e[1m
+#underline
+culine=\e[4m
+cgreen=\e[32m
+cblue=\e[34m
+ccyan=\e[36m
+cmagenta=\e[35m
+cred=\e[31m
+cyellow=\e[33m
 
-define _log
-	$(TPUT_PREFIX) echo "$(if $(LOG_PREFIX),$(LOG_PREFIX) )$(1)"; $(TPUT_SUFFIX)
+#bold
+cblueB=\e[1;34m
+ccyanB=\e[1;36m
+cmagentaB=\e[1;35m
+credB=\e[1;31m
+
+# print target wtih check mark
+define _finished =
+printf '$(cgreen)✔︎ $@ finished $(creset)\n'
 endef
 
-define _warn
-	$(TPUT_PREFIX) $(TPUT_YELLOW) echo "$(if $(LOG_PREFIX),$(LOG_PREFIX) )$(1)"; $(TPUT_SUFFIX)
+define logr =
+printf '$(ccyan)$(LOG_PREFIX) %s $(creset)\n'
 endef
 
-define _error
-	$(TPUT_PREFIX) $(TPUT_RED) echo "$(if $(LOG_PREFIX),$(LOG_PREFIX) )$(1)"; $(TPUT_SUFFIX)
+define logr.warn =
+printf '$(cyellow)$(LOG_PREFIX) %s $(creset)\n'
 endef
 
-define log
-	$(_log)
+define logr.error =
+printf '$(credB)$(LOG_PREFIX) %s $(creset)\n'
 endef
 
 # Provides callables `download` and `download_to`.
@@ -177,7 +162,7 @@ endef
 # $1 - the url to the tar.gz
 # $2 - where to put it
 define download_tar
-	$(call log, download and untar to $(2))
+	$(logr) "download and untar to $(2)"
 	install_dir=$(SHIPKIT_INSTALLS)/$(2)
 	mkdir -p $$install_dir
 	$(DOWNLOADER) $(DOWNLOAD_FLAGS) "$(1)" | tar zxf - -C $$install_dir --strip-components 1
@@ -187,7 +172,7 @@ endef
 # $1 - the clone url
 # $2 - where to put it
 define download_git
-	$(call log, git clone to $(SHIPKIT_INSTALLS)/$(2))
+	$(logr) "git clone to $(SHIPKIT_INSTALLS)/$(2)"
 	install_dir=$(SHIPKIT_INSTALLS)/$(2)
 	git clone $(1) $(SHIPKIT_INSTALLS)/$(2)
 endef
@@ -215,7 +200,8 @@ OS_CPU  := $(if $(findstring 64,$(OS_ARCH)),amd64,x86)
 endif
 
 test-logging-os: FORCE
-	$(call log, log OS_NAME $(OS_NAME))
-	$(call _log, _log OS_ARCH $(OS_ARCH))
-	$(call _warn, _warn OS_CPU $(OS_CPU))
-	$(call _error, sample _error $(OS_CPU))
+	$(logr) "OS_NAME $(OS_NAME)"
+	$(logr) "OS_ARCH $(OS_ARCH)"
+	$(logr.warn) "OS_CPU $(OS_CPU)"
+	$(logr.error) "error $(OS_CPU)"
+	$(_finished)

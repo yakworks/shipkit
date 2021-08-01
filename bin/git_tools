@@ -46,8 +46,13 @@ function init_github_vars {
 # set the PROJECT_FULLNAME github slug from git config --get remote.origin.url
 # based on whther its https or ssh git
 function project_fullname_from_git_remote {
+  HAS_GIT="$(which git 2> /dev/null)" || true
+  if [ ! "$HAS_GIT" ];then
+    echo -e "\e[91mgit can't be located, not stable"; return 0
+  fi
+
   local remoteUrl=$(git config --get remote.origin.url)
-  if  [[ $remoteUrl == git* ]];then
+  if [[ $remoteUrl == git* ]];then
     PROJECT_FULLNAME=$(echo "$remoteUrl"  | cut -d: -f2 | cut -d. -f1)
   else
     PROJECT_FULLNAME=$(echo "$remoteUrl" | cut -d/ -f4,5 | cut -d. -f1)

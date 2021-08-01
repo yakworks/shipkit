@@ -9,7 +9,7 @@ kubectl.config: | _verify_K8_SERVER _verify_K8_USER _verify_K8_TOKEN
 	kubectl config set-credentials "$(K8_USER)" --token="$(K8_TOKEN)"
 	kubectl config set-context "ranch-dev" --user="$(K8_USER)" --cluster="ranch-dev"
 	kubectl config use-context "ranch-dev"
-	echo "$@ success"
+	$(_finished)
 
 .PHONY: kubectl.config
 

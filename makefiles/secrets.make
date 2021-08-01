@@ -13,6 +13,7 @@ $(GIT_SECRET_SH):
 secrets.decrypt-vault: secrets.import-gpg-key $(GIT_SECRET_SH) | _verify_VAULT_URL _verify_GPG_PASS
 	[ ! -e $(VAULT_DIR) ] && git clone $(VAULT_URL) $(VAULT_DIR) || :;
 	cd build/vault && $(GIT_SECRET_SH) reveal -p "$(GPG_PASS)"
+	$(_finished)
 
 secrets.import-gpg-key: | _verify_BOT_EMAIL
 	@if [ "$(GPG_PRIVATE_KEY)"  ]; then
@@ -23,21 +24,20 @@ secrets.import-gpg-key: | _verify_BOT_EMAIL
 
 ## run this to show help for secret goals
 secrets.help:
-	echo
-	echo -e "${cbold}Git-secrets make tasks. see https://git-secret.io/ for more info on using installed version$(cnormal)\n"
-	echo -e "Targets:\n"
-	echo "$(ccyan)secrets.init                     $(cnormal)| initializes new project "
-	echo "$(ccyan)secrets.add email=jim@gmail.com  $(cnormal)| adds an authorized user key, should only be by email that matched their public key "
-	echo "$(ccyan)secrets.add file=secret.env      $(cnormal)| adds a file to the secrets"
-	echo "$(ccyan)secrets.hide                     $(cnormal)| encrypts and hides all the files in the secret list "
-	echo "$(ccyan)secrets.reveal                   $(cnormal)| decrytps all the files in the secret list "
-	echo "$(ccyan)secrets.remove file=abc.env      $(cnormal)| removes a file to the secrets"
-	echo "$(ccyan)secrets.remove email=...         $(cnormal)| removes an authroized user key"
-	echo "$(ccyan)secrets.list                     $(cnormal)| list files and authorized users"
-	echo "$(ccyan)secrets.clean                    $(cnormal)| removes all the hidden files"
-	echo
-	echo -e "${cbold}If using a gir repo as a vault linked the VAULT_URL variable then\n"
-	echo "$(ccyan)secrets.decrypt-vault   $(cnormal)| clone in VAULT_DIR and decrypt/reveal. bot.env here is used in other shipkit scripts"
+	printf "\n$(cmagenta)Git-secrets make tasks. see https://git-secret.io/ for more info on using installed version$(creset)\n\n"
+	printf "$(culine)Targets:\n\n$(creset)"
+	printf "$(ccyanB)secrets.init                     $(creset)| initializes new project \n"
+	printf "$(ccyanB)secrets.add email=jim@gmail.com  $(creset)| adds an authorized user key, should only be by email that matched their public key \n"
+	printf "$(ccyanB)secrets.add file=secret.env      $(creset)| adds a file to the secrets \n"
+	printf "$(ccyanB)secrets.hide                     $(creset)| encrypts and hides all the files in the secret list \n"
+	printf "$(ccyanB)secrets.reveal                   $(creset)| decrytps all the files in the secret list \n"
+	printf "$(ccyanB)secrets.remove file=abc.env      $(creset)| removes a file to the secrets \n"
+	printf "$(ccyanB)secrets.remove email=...         $(creset)| removes an authroized user key \n"
+	printf "$(ccyanB)secrets.list                     $(creset)| list files and authorized users \n"
+	printf "$(ccyanB)secrets.clean                    $(creset)| removes all the hidden files \n"
+	printf "\n"
+	printf "$(cbold)If using a git repo as a vault linked the VAULT_URL variable then\n"
+	printf "$(ccyanB)secrets.decrypt-vault   $(creset)| clone in VAULT_DIR and decrypt/reveal. bot.env here is used in other shipkit scripts\n\n"
 
 # Shows the git-secret version
 secrets.show-version: $(GIT_SECRET_SH)
