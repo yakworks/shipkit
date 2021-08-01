@@ -1,3 +1,8 @@
+### v1.0.19
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.18...v1.0.19)
+- feat: add git check so its not required to kick up make. (#11) [link](https://github.com/yakworks/shipkit/commit/1632c20c72816353bf7234d5aeb27b8dbeae27e7)
+
 ### v1.0.18
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.17...v1.0.18)
