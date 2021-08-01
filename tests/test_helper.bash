@@ -24,7 +24,8 @@ fixtures() {
 }
 
 echo_test_name() {
-  echo "# Test $(basename ${BATS_TEST_FILENAME})" >&3
+  clr_blue='\e[34m'
+  echo -e "# ${clr_blue}Test $(basename ${BATS_TEST_FILENAME})" >&3
 }
 
 __debug() {

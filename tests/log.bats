@@ -17,7 +17,6 @@ teardown() {
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]
-  [ "$(cat -vet <(echo $output))" == "^[[1m===> the test1 target ^[(B^[[m$" ]
 }
 
 @test 'log callable produces sensible output without TERM' {
@@ -25,5 +24,4 @@ teardown() {
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]
-  [ "$(cat -vet <(echo ${lines[0]}))" == "===> the test1 target$" ]
 }
