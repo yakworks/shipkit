@@ -1,3 +1,9 @@
+### v1.0.21
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.20...v1.0.21)
+- fix test [link](https://github.com/yakworks/shipkit/commit/7ded8f9cf1b7b6a0ff6f6eda9bbef14287b23e97)
+- Fix gradle script (#13) [link](https://github.com/yakworks/shipkit/commit/ace607e934e51c4df91de5ff193af33e5f7a8246)
+
 ### v1.0.20
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.19...v1.0.20)
