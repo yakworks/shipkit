@@ -1,3 +1,8 @@
+### v1.0.20
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.19...v1.0.20)
+- feat: added VERBOSE flag for running and better logr messages. (#12) [link](https://github.com/yakworks/shipkit/commit/e1e7c24758504d118a38f9b55344ca59e8db6075)
+
 ### v1.0.19
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.18...v1.0.19)
