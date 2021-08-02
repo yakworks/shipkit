@@ -1,3 +1,9 @@
+### v1.0.22
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.21...v1.0.22)
+- move back to old way with shell for init_vars [link](https://github.com/yakworks/shipkit/commit/c2262e95b7a7d18299f66a9c12b6f8a1b86b406c)
+- feat: cleaner VERBOSE now. dependency now on sinclude MAKE_ENV_FILE so its not doing the goofy subshell thing and stays in target (#14) [link](https://github.com/yakworks/shipkit/commit/11c8b90f22a50ab392d2dd7013c8e45aede3436f)
+
 ### v1.0.21
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.20...v1.0.21)
