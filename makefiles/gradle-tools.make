@@ -3,39 +3,42 @@
 # Its opionated based on a springboot or grails app and assumes that codenarc and spotlessCheck are installed
 # Makefile-core.make should be imported before this
 # -------------
-gw := ./gradlew
+gradlew ?= ./gradlew
 gradle_tools := $(SHIPKIT_BIN)/gradle_tools
+gradle_properties ?= gradle.properties
+build_gradle ?= build.gradle
+
 
 ## runs codenarc and spotless
 lint::
-	$(gw) spotlessCheck codenarcMain
+	$(gradlew) spotlessCheck codenarcMain
 
 ## Run the lint and test suite with ./gradlew check
 check::
-	$(gw) check
+	$(gradlew) check
 
 clean::
-	$(gw) clean
+	$(gradlew) clean
 
 compile::
-	$(gw) classes
+	$(gradlew) classes
 
 ## builds jars, gradle assemble
 build::
-	$(gw) assemble
+	$(gradlew) assemble
 
 testArg := $(if $(tests),--tests *$(tests)*, )
 
 test::
-	$(gw) test integrationTest
+	$(gradlew) test integrationTest
 
 ## unit tests with gradle test, tests=PartialTestName will pass --tests *PartialTestName*
 test.unit::
-	$(gw) test $(testArg)
+	$(gradlew) test $(testArg)
 
 ## integration and functional tests, tests=PartialTestName will pass --tests *PartialTestName*
 test.e2e::
-	$(gw) integrationTest $(testArg)
+	$(gradlew) integrationTest $(testArg)
 
 # verifies the snapshot is set
 _verify-snapshot: FORCE
@@ -43,11 +46,11 @@ _verify-snapshot: FORCE
 
 ## publish snapshot(s) jars into you local maven
 publish.snapshot: | _verify-snapshot
-	$(gw) snapshot
+	$(gradlew) snapshot
 
 # here so we can depend on it being there and if not firing assemble
 $(APP_JAR):
-	$(gw) assemble
+	$(gradlew) assemble
 
 ## java runs the APP_JAR
 start.jar: $(APP_JAR)
@@ -57,7 +60,7 @@ start.jar: $(APP_JAR)
 
 # calls `gradlew resolveConfigurations` to download deps without compiling, used mostly for CI cache
 gradle.resolve-dependencies:
-	$(gw) resolveConfigurations --no-daemon
+	$(gradlew) resolveConfigurations --no-daemon
 
 # on multi-project gradles this will merges test results into one spot for a CI build
 gradle.merge-test-results: | _verify_PROJECT_SUBPROJECTS
@@ -68,7 +71,7 @@ gradle.merge-test-results: | _verify_PROJECT_SUBPROJECTS
 # for CI (such as circle) to checksum on a single file to see if there are any changes
 # if any build files change then it will not get cache and gradle will re-download the internet
 gradle.cache-key-file: | _verify_PROJECT_SUBPROJECTS
-	cat gradle.properties build.gradle > cache-key.tmp
+	cat $(gradle_properties) $(build_gradle) > cache-key.tmp
 	for project in $(PROJECT_SUBPROJECTS); do
 		[ -f $$project/build.gradle ] && cat $$project/build.gradle >> cache-key.tmp
 		[ -f $$project/gradle.properties ] && cat $$project/gradle.properties >> cache-key.tmp
@@ -85,7 +88,7 @@ merge-test-results: gradle.merge-test-results
 ## publish the library jar, calls gradle publish
 publish.libs:
 	if [ "$(IS_SNAPSHOT)" ]; then $(logr) "publishing SNAPSHOT"; else $(logr) "publishing release"; fi
-	./gradlew publish
+	$(gradlew) publish
 
 .PHONY: ship.libs publish.libs
 
@@ -97,6 +100,6 @@ ship.libs:: publish.libs
 else
 
 ship.libs::
-	$(logr.done) " - not a RELEASABLE_BRANCH, nothing to do"
+	$(logr.done) " - not a RELEASABLE_BRANCH, nothing to be done"
 
 endif # end RELEASABLE_BRANCH

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo mock-gradlew "$@"
+
+exit 0
