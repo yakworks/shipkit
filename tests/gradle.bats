@@ -37,7 +37,7 @@ teardown() {
 
 @test 'ship.libs' {
   target_name="$BATS_TEST_DESCRIPTION"
-  run make -f $FIXTURE_DIR/Makefile $target_name
+  run make -f $FIXTURE_DIR/Makefile $target_name RELEASABLE_BRANCH=
   assert_success
   assert_output --partial "not a RELEASABLE_BRANCH"
   # assert_equal "${lines[0]}" "mock-gradlew resolveConfigurations --no-daemon"
