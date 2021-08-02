@@ -2,7 +2,7 @@
 # spring and grails targets for building docker
 # Makefile-core.make should be included before this
 # -------------
-# depends on spring-gradle that should be include before this
+# depends on gradle-tools that should be include before this
 
 gw := ./gradlew
 build_docker_dir := $(BUILD_DIR)/docker
@@ -10,7 +10,7 @@ build_docker_dir := $(BUILD_DIR)/docker
 deploy_src_dir := $(APP_DIR)/src/deploy
 
 # rm -rf build/docker
-clean-docker-build:
+docker.clean-build:
 	rm -rf $(build_docker_dir)/*
 
 $(build_docker_dir):
@@ -67,7 +67,7 @@ docker.app-up: build/docker_built_$(APP_KEY)
 docker.app-down:
 	$(APP_COMPOSE_CMD) down $(APP_COMPOSE_CLEAN_FLAGS)
 
-docker.app-shell: docker-app-up
+docker.app-shell: docker.app-up
 	docker exec -it $(APP_NAME) bash -l
 
 ifdef RELEASABLE_BRANCH

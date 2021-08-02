@@ -3,3 +3,4 @@ build/
 !*.secret
 .env
 bot.env
+cache-key.tmp
