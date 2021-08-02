@@ -17,7 +17,7 @@ BATS_EXE         := $(SHIPKIT_INSTALLS)/bats/bin/bats
 ## runs the bat tests
 test-bats: $(BATS_EXE)
 	$(BATS_EXE) $(BATS_OPTS) -f $(TESTS) $(BATS_TEST_DIR)
-	# echo "--- core tests ---"
+	$(logr) " Core tests"
 	$(BATS_EXE) $(BATS_OPTS) -f $(TESTS) $(BATS_TEST_DIR)/core
 
 .PHONY: test-bats

@@ -16,8 +16,8 @@ include $(SHIPKIT_MAKEFILES)/bats-testing.make
 
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
-# can be set here but best to export it in shell so make's $(shell ) function can pick it up
-export LOGR_DEBUG_ENABLED := true
+# can be set here but best do it on command line with make
+# export LOGR_DEBUG_ENABLED := true
 
 # --- Dockers ---
 docker_tools := $(SHIPKIT_BIN)/docker_tools
@@ -60,10 +60,6 @@ test.e2e::
 ## NA builds the libs
 build::
 
-define success_msg =
-echo $@ success
-endef
-
-foo:
-	echo foo
-	$(success_msg)
+fizz:
+	$(logr) "its a foo"
+	$(logr.done)

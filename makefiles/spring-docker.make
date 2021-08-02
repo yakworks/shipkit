@@ -22,13 +22,13 @@ DEPLOY_SOURCES := $(wildcard $(deploy_src_dir)/*)
 # then 'explodes' or unjars the executable jar so dockerfile can iterate on build changes
 # layering docker see https://blog.jdriven.com/2019/08/layered-spring-boot-docker-images/
 $(BUILD_DIR)/docker/Dockerfile: $(build_docker_dir) $(DEPLOY_SOURCES) | _verify_APP_JAR _verify_APP_DIR
-	echo "copy Dockerfile"
+	$(logr) "copy Dockerfile"
 	rm -rf $(build_docker_dir)/*
 	cp -r $(deploy_src_dir)/. $(build_docker_dir);
 
 # copies the jar in and explodes it
 $(BUILD_DIR)/docker/app.jar: $(APP_JAR) build/docker/Dockerfile | _verify_APP_JAR _verify_APP_DIR
-	echo "copy app.jar"
+	$(logr) "copy app.jar"
 	cp $(APP_JAR) $(build_docker_dir)/app.jar
 	cd $(build_docker_dir)
 	"$$JAVA_HOME"/bin/jar -xf app.jar
@@ -73,11 +73,11 @@ docker.app-shell: docker-app-up
 ifdef RELEASABLE_BRANCH
 
 ship.docker:: docker.app-build docker.app-push
-	echo $@ success
+	$(logr.done)
 
 else
 
 ship.docker::
-	echo "$@ not on a RELEASABLE_BRANCH, nothing to do"
+	$(logr.done) " - not on a RELEASABLE_BRANCH, nothing to do"
 
 endif # end RELEASABLE_BRANCH

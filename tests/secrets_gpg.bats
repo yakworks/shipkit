@@ -33,6 +33,5 @@ teardown() {
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]
-  [ "${lines[0]}" == "importing GPG KEY" ]
   [ "${lines[1]}" == "mock-gpg s3cr3t" ]
 }

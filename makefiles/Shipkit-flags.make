@@ -1,12 +1,14 @@
 # The default options and configs for makefile
 # make it a bash shell for recipes
-SHELL := $(SHIPKIT_BIN)/make_shell
+export SHELL := $(SHIPKIT_BIN)/make_shell
 # SHELL := /bin/bash
 
 .DEFAULT_GOAL := help
 
 # no need for @ with this on, will keep it silent, pass something to VERBOSE to show it all
-$(VERBOSE).SILENT:
+# always make it silent. setting VERBOSE = true will tell logr to print out in make_shell wrapper
+.SILENT:
+export VERBOSE ?= false
 
 # the whole target recipe is run, instead of one shell per line
 .ONESHELL:
@@ -27,7 +29,3 @@ ifeq ($(filter undefine,$(value .FEATURES)),)
 	so you can use `make` instead of `gmake`)
 endif
 
-define setVar
-$(eval BUILD_VARS += $(1))
-$(2)
-endef
