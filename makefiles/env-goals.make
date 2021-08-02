@@ -1,6 +1,6 @@
 # ----- setup the BUILD_ENV based on target goals  -------
 # BUILD_ENV is used to to pass to gradle/liquibase and to build the database name etc....
-BUILD_ENV = dev
+export BUILD_ENV = dev
 # MAKECMDGOALS has the list of all target goals that are passed into make cmd
 ifeq (testenv,$(filter testenv,$(MAKECMDGOALS)))
   BUILD_ENV = test
@@ -19,7 +19,7 @@ $(dummy_targets):
 # the main Makefile should specify the default
 ifdef DB
 
-  DBMS ?= mysql
+  export DBMS ?= mysql
   ifeq (sqlserver,$(filter sqlserver,$(MAKECMDGOALS)))
     DBMS = sqlserver
   else ifeq (oracle,$(filter oracle,$(MAKECMDGOALS)))
@@ -27,7 +27,6 @@ ifdef DB
   else ifeq (h2,$(filter h2,$(MAKECMDGOALS)))
     DBMS = h2
   endif
-  SHELL_VARS += DBMS
 
   # dummy targets so we dont get the make[1]: Nothing to be done for `xxx'.
   dummy_db_targets = mysql sqlserver postgres h2

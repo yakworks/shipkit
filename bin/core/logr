@@ -18,7 +18,8 @@ set -euo pipefail # strict mode https://bit.ly/36MvF0T
 # logr [log|notice|info|debug|warn|error] MESSAGE
 # # or default to "user.info" facility
 # logr MESSAGE
-LOGR_DEFAULT_DIR="${HOME}/.logr"
+
+LOGR_DEFAULT_DIR="${BUILD_DIR:-$HOME}/make"
 LOGR_DEFAULT_LOG="${LOGR_DEFAULT_LOG:-shipkit}"
 LOGR_DEBUG_ENABLED=${LOGR_DEBUG_ENABLED:-false}
 

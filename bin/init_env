@@ -205,7 +205,7 @@ function createEnvFile {
       echo "$varName=$val" >> "$env_file"
   done
   echo "BUILD_VARS=$BUILD_VARS" >> "$env_file"
-  echo "created $env_file"
+  logr debug "created $env_file"
 }
 
 # looks for build/vault/bot.env file and loads it in if its there
