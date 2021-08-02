@@ -61,5 +61,5 @@ test.e2e::
 build::
 
 fizz:
-	$(logr) "its a foo"
+	$(logr) "BUILD_VARS $$BUILD_VARS"
 	$(logr.done)

@@ -110,6 +110,7 @@ function init_from_build_yml {
 function init_versions {
   # if nothing passing in the usee the lowercase version that should have come in from version.properties
   # local ver=${1:-$version}
+  logr debug "init_versions version $version, VERSION ${VERSION:-}"
   setVar VERSION "$version"
   setVar PUBLISHED_VERSION "${publishedVersion:-}"
 

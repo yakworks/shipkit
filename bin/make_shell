@@ -26,14 +26,14 @@ if [[ ${VERBOSE:-} = "true" ]]; then
   printf "\e[33m------------------------- \e[0m\n\n"
   # also turn on log and kick to file
   export LOGR_DEBUG_ENABLED=true
-  logr debug "$target_cmds"
   # the following will kick out all declared evn variables so stdout
   # ( set -o posix ; set )
 fi
 
 # if VERBOSE_LOG is set then turn on logr debug and the let it fire to the logfile
-if [[ ${VERBOSE_LOG:-} = "true" ]]; then
-  export LOGR_DEBUG_ENABLED=true
+# we do the goofy check so we can pick up the shell commands that put the variables in front.
+# if [[ ${VERBOSE_LOG:-} = "true" || "$target_cmds" = "VERBOSE_LOG='true'"* ]]; then
+if [[ ${LOGR_DEBUG_ENABLED:-} = "true" ]]; then
   logr debug "$target_cmds"
 fi
 
