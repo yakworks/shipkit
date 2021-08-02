@@ -11,7 +11,7 @@ docmark.publish-prep: docmark.build git.clone-pages
 ## Builds and pushes docmark pages to github pages, CI should call publish-docs which calls this
 pages.deploy-github: docmark.publish-prep
 	$(MAKE) git.push-pages
-	echo "$@ success"
+	$(logr.done)
 
 # TODO at some point we want to look at publishing snapshot version of docs like we once did?
 # NOT_SNAPSHOT := $(if $(IS_SNAPSHOT),,true)
@@ -23,10 +23,10 @@ ifeq (true,$(IS_RELEASABLE))
 
 ship.gh-pages:
 	$(MAKE) pages.deploy-github
-	echo "*** $@ success ***"
+	$(logr.done)
 else
 
 ship.gh-pages:
-	echo "*** $@ IS_RELEASABLE=false as this is either a snapshot or its not on a releasable branch ***"
+	$(logr.done) " - IS_RELEASABLE=false as this is either a snapshot or its not on a releasable branch
 
 endif

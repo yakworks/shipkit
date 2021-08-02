@@ -17,17 +17,25 @@ fi
 # shellcheck disable=SC2124
 target_cmds="$@"
 
-LOGR_DEBUG_ENABLED=${LOGR_DEBUG_ENABLED:-}
-#logr debug "LOGR_DEBUG_ENABLED: ${LOGR_DEBUG_ENABLED:-}"
-if [ "$LOGR_DEBUG_ENABLED" = "true" ]; then
+# if verbose is set then kick the commands to the console
+if [[ ${VERBOSE:-} = "true" ]]; then
+  # pretty print to console
+  printf "\e[33m------ make_shell ------ \e[0m\n"
+  echo "$target_cmds"
+  printf "\e[33m------------------------- \e[0m\n"
+  # also turn on log and kick to file
+  export LOGR_DEBUG_ENABLED=true
+  logr debug "target_commands: $target_cmds"
+  # the following will kick out all declared evn variables so stdout
+  # ( set -o posix ; set )
+fi
+
+# if VERBOSE_LOG is set then turn on logr debug and the let it fire to the logfile
+# we do the goofy check so we can pick up the shell commands that put the variables in front.
+if [[ ${VERBOSE_LOG:-} = "true" || "$target_cmds" = "VERBOSE_LOG='true'"* ]]; then
+  export LOGR_DEBUG_ENABLED=true
   logr debug "target_commands: $target_cmds"
 fi
 
-# if its starts with the @ then thats the quiet thing from make so remove it
-# if [  "$target_cmds" = "@*" ] ; then
-#   target_cmds="${target_cmds%?}" # removes the first character
-# fi
-
-# echo "$target_cmds"
 # strace -f -o `mktemp $RESULTZ/result_XXXXXXX` -e trace=open,stat64,execve,exit_group,chdir /bin/sh -c "$@"  | awk '{if (match("Process PID=\d+ runs in (64|32) bit",$0) == 0) {print $0}}'
 eval "$target_cmds"

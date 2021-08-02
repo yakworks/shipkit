@@ -4,7 +4,7 @@
 # Makefile-core.make should be imported before this
 # -------------
 gw := ./gradlew
-spring_gradle := $(SHIPKIT_BIN)/spring_gradle
+gradle_tools := $(SHIPKIT_BIN)/gradle_tools
 
 ## runs codenarc and spotless
 lint::
@@ -56,28 +56,35 @@ start.jar: $(APP_JAR)
 .PHONY: resolve-dependencies merge-test-results
 
 # calls `gradlew resolveConfigurations` to download deps without compiling, used mostly for CI cache
-resolve-dependencies:
+gradle.resolve-dependencies:
 	$(gw) resolveConfigurations --no-daemon
 
 # on multi-project gradles this will merges test results into one spot for a CI build
-merge-test-results: FORCE | _verify_PROJECT_SUBPROJECTS
-	$(spring_gradle) merge_test_results "$(PROJECT_SUBPROJECTS)"
-	echo $@ success
+gradle.merge-test-results: | _verify_PROJECT_SUBPROJECTS
+	$(gradle_tools) merge_test_results "$(PROJECT_SUBPROJECTS)"
+	$(logr.done)
 
 # for multi-project gradles this cats the props and build.gradle into a single cache-key.tmp file
 # for CI (such as circle) to checksum on a single file to see if there are any changes
 # if any build files change then it will not get cache and gradle will re-download the internet
-cache-key-file: | _verify_PROJECT_SUBPROJECTS
+gradle.cache-key-file: | _verify_PROJECT_SUBPROJECTS
 	cat gradle.properties build.gradle > cache-key.tmp
 	for project in $(PROJECT_SUBPROJECTS); do
 		[ -f $$project/build.gradle ] && cat $$project/build.gradle >> cache-key.tmp
 		[ -f $$project/gradle.properties ] && cat $$project/gradle.properties >> cache-key.tmp
 	done
-	echo $@ success
+	$(logr.done)
+
+# legacy calls with no namespace
+resolve-dependencies: gradle.resolve-dependencies
+
+cache-key-file: gradle.cache-key-file
+
+merge-test-results: gradle.merge-test-results
 
 ## publish the library jar, calls gradle publish
 publish.libs:
-	if [ "$(IS_SNAPSHOT)" ]; then echo "publishing SNAPSHOT"; else echo "publishing release"; fi
+	if [ "$(IS_SNAPSHOT)" ]; then $(logr) "publishing SNAPSHOT"; else $(logr) "publishing release"; fi
 	./gradlew publish
 
 .PHONY: ship.libs publish.libs
@@ -86,10 +93,10 @@ ifdef RELEASABLE_BRANCH
 
 # call for CI
 ship.libs:: publish.libs
-	echo $@ success
+	$(logr.done)
 else
 
 ship.libs::
-	echo "$@ not a RELEASABLE_BRANCH, nothing to do"
+	$(logr.done) " - not a RELEASABLE_BRANCH, nothing to do"
 
 endif # end RELEASABLE_BRANCH

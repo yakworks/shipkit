@@ -17,7 +17,7 @@ secrets.decrypt-vault: secrets.import-gpg-key $(GIT_SECRET_SH) | _verify_VAULT_U
 
 secrets.import-gpg-key: | _verify_BOT_EMAIL
 	@if [ "$(GPG_PRIVATE_KEY)"  ]; then
-		echo "importing GPG KEY"
+		$(logr) "importing GPG KEY"
 		echo "$(GPG_PRIVATE_KEY)" | base64 --decode | gpg -v --batch --import
 	fi
 # gpg above --batch doesn't ask for prompt and -v is verbose
@@ -53,7 +53,7 @@ secrets.add: $(GIT_SECRET_SH)
 	elif [ "$(email)" ]; then
 		$(GIT_SECRET_SH) tell $(email)
 	else
-		echo "must set either the 'file' var or 'email' var"
+		$(logr.error) "must set either the 'file' var or 'email' var"
 	fi
 
 secrets.remove: $(GIT_SECRET_SH)
@@ -62,7 +62,7 @@ secrets.remove: $(GIT_SECRET_SH)
 	elif [ "$(email)" ]; then
 		$(GIT_SECRET_SH) killperson $(email)
 	else
-		echo "must set either the 'file' var or 'email' var"
+		$(logr.error) "must set either the 'file' var or 'email' var"
 	fi
 
 # alias to hide
@@ -78,8 +78,8 @@ secrets.reveal: $(GIT_SECRET_SH)
 	$(GIT_SECRET_SH) reveal -p "$(GPG_PASS)"
 
 secrets.list: $(GIT_SECRET_SH)
-	echo "$(cgreen) -- Secret Files --"
+	printf "$(cgreen) -- Secret Files --\n"
 	$(GIT_SECRET_SH) list
 	echo
-	echo "$(cblue) -- Secret Users --"
+	printf "$(cblue) -- Secret Users --\n"
 	$(GIT_SECRET_SH) whoknows
