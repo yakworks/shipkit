@@ -7,26 +7,22 @@ export BASHKIT_CORE ?= $(SHIPKIT_BIN)/core
 export BUILD_DIR ?= build
 # make a unique makefile using MAKELEVEL, which is incrmented for each make subprocess.
 # so if make calls a make target it doesn't collide, they can be different based on whats passed for DBMS for example
-export MAKE_ENV_FILE = $(BUILD_DIR)/make/makefile$(MAKELEVEL).env
-SHELL_VARS += VERBOSE_LOG BUILD_DIR MAKE_ENV_FILE
+export MAKE_ENV_FILE ?= $(BUILD_DIR)/make/makefile$(MAKELEVEL).env
 
-#shell doesn't get the exported vars so we need to spin the ones we want, which should be in BUILD_VARS
-SHELL_EXPORTS := $(foreach v,$(SHELL_VARS), $(v)='$($(v))')
 # if no build.sh var is not set then use the the init_env script directly
 # if its set then call build.sh and assume it sourced in /init_env and will
 # be setting up variables and/or potentially overriding make_env
 build.sh ?= $(SHIPKIT_BIN)/init_env
-shResults := $(shell $(SHELL_EXPORTS) $(build.sh) make_env $(BUILD_ENV))
-ifneq ($(.SHELLSTATUS),0)
-  $(error error with init_env or build.sh $(shResults))
-endif
-ifeq (true,$(VERBOSE))
-  $(info $(shResults))
-endif
 
-makefile_env := $(MAKE_ENV_FILE)
+# phony to force it every time
+.PHONY: $(MAKE_ENV_FILE)
+# passes the target to var for shell
+$(MAKE_ENV_FILE): export MAKE_TARGET=MAKE_ENV_FILE
+$(MAKE_ENV_FILE):
+	$(build.sh) make_env $(BUILD_ENV)
+
 # import/sinclude the variables file to make it availiable to make as well
-sinclude $(makefile_env)
+sinclude $(MAKE_ENV_FILE)
 # now re-export them so for future shell calls, BUILD_VARS is the list of them all
 export $(BUILD_VARS)
 # export the list too
@@ -36,7 +32,6 @@ export BUILD_VARS
 
 # as shipkit installs stuff on demand this is where it should go, should be absolute so when calling in dif dir it works
 export SHIPKIT_INSTALLS ?= $(abspath $(BUILD_DIR)/installs)
-
 
 HELP_AWK := $(SHIPKIT_MAKEFILES)/help.awk
 
@@ -74,6 +69,7 @@ print-make-vars: FORCE
 #   `my_target: | _program_awk`
 # will fail before running the target named `my_target` if the command `awk` is
 # not found on the system path.
+_program_%: export MAKE_TARGET=$@
 _program_%: FORCE
 	_=$(or $(shell which $* 2> /dev/null),$(error `$*` command not found. Please install `$*` and try again))
 
@@ -83,6 +79,7 @@ _program_%: FORCE
 #   `my_target`: | _verify_FOO`
 #
 # will fail before running `my_target` if the variable `FOO` is not declared.
+_verify_%: export MAKE_TARGET=$@
 _verify_%: FORCE
 	_=$(if $($*),,$(error `$*` is not defined or is empty))
 
