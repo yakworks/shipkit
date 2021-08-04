@@ -1,3 +1,8 @@
+### v1.0.23
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.22...v1.0.23)
+- feat: if package.json exists then will update it with new version too in ship.version (#15) [link](https://github.com/yakworks/shipkit/commit/ef9485db4ebc676a98b631f3ac09db305705c320)
+
 ### v1.0.22
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.21...v1.0.22)
