@@ -28,6 +28,17 @@ function bump_version_file {
   local newVersion=$( bump_patch "$publishingVersion")
   local versionFile=${2:-version.properties}
   updateVersionFile "$newVersion" "$publishingVersion" "$versionFile" "${3}"
+  update_package_json "$newVersion"
+}
+
+# if package.json exists then update it with new version
+# $1 - the new version
+function update_package_json {
+  if [ -f package.json ]; then
+    sed -i.bak -e "s|\"version\":.*|\"version\": \"${1}\",|g" package.json && rm -- "package.json.bak"
+    # add it so it gets picked up in the push
+    git add package.json
+  fi
 }
 
 # Updates version.properties with given version, sets publishedVersion to the $VERSION
