@@ -1,3 +1,8 @@
+### v1.0.24
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.23...v1.0.24)
+- Fixed a typo with one quote missing (#16) [link](https://github.com/yakworks/shipkit/commit/7ee11cd68f95bde81502b61feaf32a0bedf017f3)
+
 ### v1.0.23
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.22...v1.0.23)
