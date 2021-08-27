@@ -27,6 +27,6 @@ ship.gh-pages:
 else
 
 ship.gh-pages:
-	$(logr.done) " - IS_RELEASABLE=false as this is either a snapshot or its not on a releasable branch
+	$(logr.done) " - IS_RELEASABLE=false as this is either a snapshot or its not on a releasable branch"
 
 endif
