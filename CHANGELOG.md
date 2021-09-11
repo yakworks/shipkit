@@ -1,3 +1,8 @@
+### v1.0.25
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.24...v1.0.25)
+- bad var for db docker (#17) [link](https://github.com/yakworks/shipkit/commit/5dff7374f84c16cb6bc3333284ca8b6d3f76d8ed)
+
 ### v1.0.24
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.23...v1.0.24)
