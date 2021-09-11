@@ -39,7 +39,7 @@ db.restart: db.down
 
 ## stop and remove the docker DOCK_DB_BUILD_NAME
 db.pull: db.down ## pulls latest nine-db from dock9 docker hub
-	docker pull $(DOCKER_DB_URL)
+	docker pull $(DB_DOCKER_URL)
 
 
 #----- clean up-------
