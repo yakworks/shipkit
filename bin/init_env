@@ -38,7 +38,7 @@ function init_env {
   # if this is running in circle then this will normailze ENV variables to ours
   circle_init_env
 
-  init_core_defaults # call before init_from_build_yml
+  # init_core_defaults # call before init_from_build_yml
 
   # imports vars from the build.yml
   init_from_build_yml
@@ -52,13 +52,9 @@ function init_env {
 }
 
 # core values, run before
-function init_core_defaults {
-  # shellcheck disable=SC2034
-  IS_RELEASABLE=''
-  if [[ "${RELEASABLE_BRANCH:-}" && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
-    setVar IS_RELEASABLE true
-  fi
-}
+# function init_core_defaults {
+
+# }
 
 # makes sure defaults are setup
 function init_defaults {
@@ -83,6 +79,11 @@ function init_defaults {
   setVar RELEASE_CHANGELOG "CHANGELOG.md"
   if [[ "${ACTIVE_BRANCH:-}" && "${ACTIVE_BRANCH}" =~ ^(${RELEASE_BRANCH_REGEX})$ ]]; then
     setVar RELEASABLE_BRANCH "$ACTIVE_BRANCH"
+  fi
+  # shellcheck disable=SC2034
+  IS_RELEASABLE=''
+  if [[ "${RELEASABLE_BRANCH:-}" && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
+    setVar IS_RELEASABLE true
   fi
 
   # sets up defaults for PAGES if they are not setup already

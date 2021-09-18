@@ -20,10 +20,9 @@ build.sh ?= $(SHIPKIT_BIN)/init_env
 SH_RESULTS := $(shell $(SHELL_EXPORTS) $(build.sh) make_env $(BUILD_ENV))
 ifneq ($(.SHELLSTATUS),0)
   $(error error with init_env or build.sh $(SH_RESULTS))
-  export SH_ERROR=$(SH_RESULTS)
 endif
 ifeq (true,$(VERBOSE))
-  $(info make_env results: $(shResults))
+  $(info make_env results: $(SH_RESULTS))
 endif
 
 # import/sinclude the variables file to make it availiable to make as well
