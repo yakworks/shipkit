@@ -7,7 +7,8 @@ kube_tools := $(SHIPKIT_BIN)/kube_tools
 
 ## removes everything with the app=$(APP_KEY) under $(APP_KUBE_NAMESPACE)
 kube.clean: | _verify_APP_KUBE_NAMESPACE
-	kubectl delete deployment,svc,configmap,ingress --selector="app=$(APP_KEY)" --namespace="$(APP_KUBE_NAMESPACE)"
+	$(kube_tools) ctl delete deployment,svc,configmap,ingress --selector="app=$(APP_KEY)" --namespace="$(APP_KUBE_NAMESPACE)"
+
 
 ## creates the APP_KUBE_NAMESPACE namespace if its doesn't exist
 kube.create-ns: | _verify_APP_KUBE_NAMESPACE

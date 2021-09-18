@@ -1,16 +1,16 @@
 # ---
 # Namespaced helper to run functions, meant to be source imported at end of script.
-# example: add `source build/bin/function_runner.sh` at end of bash script,
-# wrap it in  if [[ "${#BASH_SOURCE[@]}" -eq 1 ]]; then
-# if you want it to be ignored when your script it sourced into another
-# then if you have a set of functions in that script you can run one like so
-# ./tools.sh some_function arg1 arg1
+# example: add following to end of script
 #
-# ---
+# # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+# if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+#   export fn_namespace='kube' && source "${BASHKIT_CORE}/function_runner_ns.sh"
+# fi
+#
 
-# --- boiler plate function runner, keep at end of file ------
 # if declare works then its a valid function
 if declare -f "${fn_namespace}.${1:-}" > /dev/null; then
+  # if this is run from makefile or command line then will prepend the fn_namespace that was exported from script
   "${fn_namespace}.$@" #call function with arguments verbatim
 else
   [ "${1:-}" ] && echo "'${fn_namespace:-}.$1' has empty function or is not a known function name" >&2 && exit 1
