@@ -6,6 +6,7 @@ set -e
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "init_env"
 core.import "sed_tpl"
+core.import "dotenv"
 
 # ---
 # runs sed on the kubernetes tpl.yml and puts in build dir
@@ -13,7 +14,7 @@ core.import "sed_tpl"
 # ---
 function kube.process_tpl {
   # set the variables in BUILD_ENV so we can build the sed replacement for templates
-  parse_env_file "build/make/makefile${MAKELEVEL}.env"
+  dotenv.load "build/make/makefile${MAKELEVEL}.env"
   sed_tpl "$1" "build/kube"
 }
 
@@ -24,20 +25,29 @@ function kube.process_tpl {
 #
 function kube.apply_tpl {
   local processedTplFile=$(kube.process_tpl "$1" "build/kube")
-  # echo "processedTpl $processedTpl"
-  kubectl apply -f "$processedTplFile"
+  echo "processed tpl -> $processedTplFile"
+  kube.ctl apply -f "$processedTplFile"
 }
 
 # creates namespace if it does not exist
 function kube.create_namespace {
   if [ ! "$(kubectl get ns | grep "$1" || true)" ]; then
-    kubectl create namespace "$1"
+    kube.ctl create namespace "$1"
   fi
+}
+
+# wrapper around kubectl so we can intercept execution if dry_run is set
+function kube.ctl {
+  if [ "$dry_run" ]; then
+		echo "🌮 dry_run ->  kubectl $@"
+	else
+		kubectl "$@"
+	fi
 }
 
 # runs kubectl apply on the passed in string
 function kube.apply {
-  echo "$1" | kubectl apply -f -
+  echo "$1" | kube.ctl apply -f -
 }
 
 # --- boiler plate function runner, keep at end of file ------

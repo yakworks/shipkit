@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2034 # appears unused, many are used in templates
+# ---
+# default functions to setup BUILD_VARS
+# BUILD_VARS are used in the build.sh and a makefile.env is created
+# that is imcluded at the start of the Makefile to share vars
+# ---
+set -eo pipefail # strict mode https://bit.ly/36MvF0T
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
+core.import "setVar"
+
+# parses the env file, eval and load into BUILD_VARS
+# $1 - the env file to parse
+# $2 - true if we want to override all variables that might already be set
+# $3 - the regex exclude pattern for keys such as "foo|bar|baz"
+function dotenv.load {
+  local env_file="${1}"
+  local overrideVar="${2:-false}"
+  local exclude_pattern="${3:-}"
+
+  # check if file exists, and return if not
+  if [ ! -f "$env_file" ]; then
+    return 0
+  fi
+
+  local lines=$(cat "$env_file")
+  local line key
+	while IFS= read -r line; do
+    # trim leading whitespace
+		line=${line#"${line%%[![:space:]]*}"}
+    # trim trailing whitespace
+		line=${line%"${line##*[![:space:]]}"}
+    # move on if its a comment
+		if [[ ! "$line" || "$line" == '#'* ]]; then continue ; fi
+    # echo "line $line"
+    var_name="${line%%=*}"
+    val="${line#*=}"
+
+    if [[ "$exclude_pattern" && "$var_name" =~ ^($exclude_pattern).*$ ]]; then
+      echo "$var_name is protected and can not be set in $1. Set in shell cmd or as make parameter if its really neccesary to override"
+      echo -e "example: 'make log-vars $var_name=foo' or '$var_name=foo make log-vars'"
+      return 1
+    fi
+
+    # see if we already have a value set for this var
+    local currentEnvVarVal="${!var_name:-}"
+
+    if [[ "$line" == *"+="* ]]; then
+      #if line is something like "foo+=(bar)" then its an array getting vals added to it so always set it
+      eval "${line}"
+    elif truthy "$overrideVar" ; then
+      eval "${line}"
+    elif [ ! "$currentEnvVarVal" ]; then
+      # its not already set so eval it
+      eval "${line}"
+    fi
+    # now add it to the build vars
+    add_build_vars "$var_name"
+    # if truthy "$overrideVar" ; then
+    #   putVar "$key" "$val"
+    # else
+    #   setVar "$key" "$val"
+    # fi
+	done <<<"$lines"
+  # log-vars
+}
+
+# --- boiler plate function runner, keep at end of file ------
+# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  export fn_namespace='dotenv' && source "${BASHKIT_CORE}/function_runner_ns.sh"
+fi

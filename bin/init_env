@@ -5,12 +5,13 @@
 # BUILD_VARS are used in the build.sh and a makefile.env is created
 # that is imcluded at the start of the Makefile to share vars
 # ---
-set -euo pipefail # strict mode https://bit.ly/36MvF0T
+set -eo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "logr"
 core.import "utils"
 core.import "yaml"
 core.import "git_tools"
+core.import "dotenv"
 core.import "setVar"
 
 # version.properties should be in root dir
@@ -22,38 +23,56 @@ function init_env {
   [ "$version" ] && init_versions
   logr debug "init_env start with version $version"
 
+  # if we passed in a file name
+  load_env "${env:-}"
+
   # if a developer has a local dotenv then bring it in
-  parse_env_file ".env"
+  load_env ".env"
 
   # if build/vault/bot.env has been cloned this will import the vars
   parse_bot_env_file
 
   # check for a build.env
-  parse_env_file "build.env"
+  load_env "build.env"
 
   # if this is running in circle then this will normailze ENV variables to ours
   circle_init_env
 
-  init_defaults # call before init_from_build_yml
+  init_core_defaults # call before init_from_build_yml
 
-  # if gradle project then this imports vars from the build.yml
+  # imports vars from the build.yml
   init_from_build_yml
 
   # defaults
   init_defaults # call again after init_from_build_yml
 
+  # kubernetes wants lower case so to comply we make some of them lower
+  make_some_vals_lowercase
+
+}
+
+# core values, run before
+function init_core_defaults {
+  # shellcheck disable=SC2034
+  IS_RELEASABLE=''
+  if [[ "${RELEASABLE_BRANCH:-}" && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
+    setVar IS_RELEASABLE true
+  fi
 }
 
 # makes sure defaults are setup
 function init_defaults {
+  set +u
   # important to remeber that setVar registers the var in BUILD_VARS
-  # but only sets the passed in value if the variable is unset or empty
+  # but only sets the passed in value when the variable is unset or empty
   PROJECT_FULLNAME="${PROJECT_FULLNAME:-}" # default to empty if not set
   [ ! "$PROJECT_FULLNAME" ] && project_fullname_from_git_remote
   add_build_vars PROJECT_FULLNAME
 
   # defaults the project name to the part after last /, so if fullname is 'foo/bar' then project name will be 'bar'
   setVar PROJECT_NAME "${PROJECT_FULLNAME##*/}"
+
+  # echo "APP_NAME-$APP_NAME"
   setVar APP_NAME "${PROJECT_NAME}"
   # the dir where the app is, defaults to the root of the project
   setVar APP_DIR "."
@@ -65,16 +84,6 @@ function init_defaults {
   if [[ "${ACTIVE_BRANCH:-}" && "${ACTIVE_BRANCH}" =~ ^(${RELEASE_BRANCH_REGEX})$ ]]; then
     setVar RELEASABLE_BRANCH "$ACTIVE_BRANCH"
   fi
-
-  # shellcheck disable=SC2034
-  IS_RELEASABLE=''
-  if [[ "${RELEASABLE_BRANCH:-}" && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
-    setVar IS_RELEASABLE true
-  fi
-
-  # the dir where the app is, defaults to the root of the project
-  setVar APP_DIR "."
-  setVar APP_KEY "${APP_NAME}"
 
   # sets up defaults for PAGES if they are not setup already
   setVar PAGES_BUILD_DIR "$BUILD_DIR/gh-pages"
@@ -89,17 +98,21 @@ function init_from_build_yml {
     # creates the variables from build.yml, exclude certain keys that are for gradle only
     yaml.load "./build.yml" true "" "MAVEN|CODENARC|SPOTLESS"
     BUILD_VARS+=" ${YAML_VARS[*]} "
-
-    set +u
-    # special handling, kubernetes requires all lower case for names so we abide and lower APP_KEY
-    # APP_KEY="${APP_KEY:-$(tolower "$APP_KEY")}"
-    [ "$APP_KEY" ] && APP_KEY=$(tolower "${APP_KEY}")
-    [ "$APP_DOCKER_URL" ] && APP_DOCKER_URL=$(tolower "$APP_DOCKER_URL")
-    [ "$APP_KUBE_INGRESS_URL" ] && APP_KUBE_INGRESS_URL=$(tolower "$APP_KUBE_INGRESS_URL")
-    [ "$APP_KUBE_DB_SERVICE_NAME" ] && APP_KUBE_DB_SERVICE_NAME=$(tolower "$APP_KUBE_DB_SERVICE_NAME")
-    set -u
   fi
   return 0 # I don't understand why this is needed
+}
+
+# ---
+# special handling, kubernetes requires all lower case for names so we abide
+# and lowercase APP_KEY some of the values
+# ---
+function make_some_vals_lowercase {
+  set +u
+  [ "$APP_KEY" ] && APP_KEY=$(tolower "${APP_KEY}")
+  [ "$APP_DOCKER_URL" ] && APP_DOCKER_URL=$(tolower "$APP_DOCKER_URL")
+  [ "$APP_KUBE_INGRESS_URL" ] && APP_KUBE_INGRESS_URL=$(tolower "$APP_KUBE_INGRESS_URL")
+  [ "$APP_KUBE_DB_SERVICE_NAME" ] && APP_KUBE_DB_SERVICE_NAME=$(tolower "$APP_KUBE_DB_SERVICE_NAME")
+  set -u
 }
 
 
@@ -213,58 +226,22 @@ function createEnvFile {
 # normally the flow for CI would be as an early step to clone the git project with the file there
 # then do the process for "git secret reveal" to decrypt it.
 # this is then called in the normal init_env process from projects build.sh
-# right now the default is to parse bot.env and have its varibale OVERRIDE all others in the environment
+# right now the default is to parse bot.env and have its varibale
+# OVERRIDE all others in the environment because we want them to override whats set in circle as env vars
 function parse_bot_env_file {
   local bot_env="build/vault/bot.env"
   if [ -f $bot_env ]; then
     #change this once we have it sqaured away so exported env vars always win
-    parse_env_file $bot_env true
-  fi
-}
-
-# looks for .env file in root of project
-function parse_user_env_file {
-  local env_file=".env"
-  if [ -f $bot_env ]; then
-    #change this once we have it sqaured away so exported env vars always win
-    parse_env_file $bot_env true
+    dotenv.load $bot_env true
   fi
 }
 
 # parses the env file, eval and load into BUILD_VARS
 # $1 - the env file to parse
-# $2 - true if we want to override all variables that might already be set
-function parse_env_file {
-  local env_file="${1}"
-  local overrideVar="${2:-false}"
-
-  # check if file exists, and return if not
-  if [ ! -f "$env_file" ]; then
-    return 0
-  fi
-
-  local lines=$(cat "$env_file")
-  local line key
-	while IFS= read -r line; do
-    # trim leading whitespace
-		line=${line#"${line%%[![:space:]]*}"}
-    # trim trailing whitespace
-		line=${line%"${line##*[![:space:]]}"}
-    # move on if its a comment
-		if [[ ! "$line" || "$line" == '#'* ]]; then continue ; fi
-    # echo "line $line"
-    key="${line%%=*}"
-    val="${line#*=}"
-    if truthy "$overrideVar" ; then
-      putVar "$key" "$val"
-    else
-      setVar "$key" "$val"
-    fi
-	done <<<"$lines"
-  # log-vars
+function load_env {
+  local protectedVars="RELEASABLE_BRANCH|ACTIVE_BRANCH|VERSION|VERSIONX|IS_SNAPSHOT"
+  dotenv.load "$1" false "$protectedVars"
 }
-
-
 
 
 # --- boiler plate function runner, keep at end of file ------

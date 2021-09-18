@@ -9,7 +9,7 @@ export BUILD_DIR ?= build
 # so if make calls a make target it doesn't collide, they can be different based on whats passed for DBMS for example
 export MAKE_ENV_FILE ?= $(BUILD_DIR)/make/makefile$(MAKELEVEL).env
 
-SHELL_VARS += VERBOSE_LOG BUILD_DIR MAKE_ENV_FILE DBMS
+SHELL_VARS += VERBOSE_LOG BUILD_DIR MAKE_ENV_FILE DBMS env
 #shell doesn't get the exported vars so we need to spin the ones we want, which should be in BUILD_VARS
 SHELL_EXPORTS := $(foreach v,$(SHELL_VARS), $(v)='$($(v))')
 # if no build.sh var is not set then use the the init_env script directly
@@ -17,9 +17,10 @@ SHELL_EXPORTS := $(foreach v,$(SHELL_VARS), $(v)='$($(v))')
 # be setting up variables and/or potentially overriding make_env
 build.sh ?= $(SHIPKIT_BIN)/init_env
 # we do this in subshell so it forces the file to be generated before the sindlues happens
-shResults := $(shell $(SHELL_EXPORTS) $(build.sh) make_env $(BUILD_ENV))
+SH_RESULTS := $(shell $(SHELL_EXPORTS) $(build.sh) make_env $(BUILD_ENV))
 ifneq ($(.SHELLSTATUS),0)
-  $(error error with init_env or build.sh $(shResults))
+  $(error error with init_env or build.sh $(SH_RESULTS))
+  export SH_ERROR=$(SH_RESULTS)
 endif
 ifeq (true,$(VERBOSE))
   $(info make_env results: $(shResults))

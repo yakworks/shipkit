@@ -95,6 +95,7 @@ yaml.set_variables() {
     # var_name from line where its either some_name= or some_name+=, so parse up to first = and then drop off +
     var_name=${varline%%=*}
     var_name=${var_name%+}
+    # echo "VAR_NAME: $var_name"
     # echo "$var_name"
     # if var_name matches exclude pattern then move on
     if [[ "$exclude_pattern" && "$var_name" =~ ^($exclude_pattern).*$ ]]; then
@@ -102,7 +103,20 @@ yaml.set_variables() {
     fi
 
     YAML_VARS+=("$var_name")
-    eval "${varline}"
+    # eval "${varline}"
+
+
+    # see if we already have a value set for this var
+    local currentEnvVarVal="${!var_name:-}"
+
+    if [[ "$varline" == *"+="* ]]; then
+      #if line is something like "foo+=(bar)" then its an array getting vals added to it so always set it
+      eval "${varline}"
+    elif [ ! "$currentEnvVarVal" ]; then
+      # if its not already set
+      eval "${varline}"
+    fi
+
     # not sure why this is needed, second pass to evaluate aything that has ${
     # only works for strings not arrays right now
     local varVal="${!var_name}"

@@ -13,7 +13,6 @@ core.import "utils"
 if [  "$1" == "-c" ] ; then
     shift
 fi
-
 # shellcheck disable=SC2124
 target_cmds="$@"
 

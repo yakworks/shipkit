@@ -10,6 +10,8 @@ setup() {
 }
 
 @test 'check with caps and excludes pattern' {
+  APP_NAME="" # null out APP_NAME so yamls sets it
+  APP_KEY=""
   SOME_ENV_VAR="go go go"
   yaml.load "${BATS_TEST_DIRNAME}/fixtures/build.yml" true "" "MAVEN|CODENARC|SECRET"
   # size should be 7 because of what we excluded
