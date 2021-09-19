@@ -1,3 +1,9 @@
+### v1.0.27
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.26...v1.0.27)
+- Tweaks (#20) [link](https://github.com/yakworks/shipkit/commit/76ff51b1fe013075a38f3e467e781577476c69f5)
+- Tweaks (#19) [link](https://github.com/yakworks/shipkit/commit/5fa7d25b52489f53fc83b7366279b8040b179b37)
+
 ### v1.0.26
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.25...v1.0.26)
