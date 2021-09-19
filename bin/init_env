@@ -111,7 +111,7 @@ function init_defaults {
   fi
 
   # RELEASABLE_BRANCH_OR_DRY_RUN can be true even if it is a snapshot
-  if [[ "$dry_run" || "$RELEASABLE_BRANCH" ]]; then
+  if [[ "$dry_run" || "${RELEASABLE_BRANCH:-}" ]]; then
     setVar RELEASABLE_BRANCH_OR_DRY_RUN true
   fi
 
