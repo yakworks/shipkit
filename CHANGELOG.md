@@ -1,3 +1,9 @@
+### v1.0.26
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.25...v1.0.26)
+- fix RELEASABLE_BRANCH variable order [link](https://github.com/yakworks/shipkit/commit/9ffaf5a79348762383b828884483f3ab271db973)
+- added ability to pass in env=some.env to make so to run an env file with it. (#18) [link](https://github.com/yakworks/shipkit/commit/840eed470a943a1521059eb6a3578fa8b63c242e)
+
 ### v1.0.25
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.24...v1.0.25)
