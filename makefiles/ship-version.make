@@ -24,17 +24,22 @@ bump-version-file: | _verify_VERSION
 # updates change log, bumps version, updates the publishingVersion in README
 push-version-bumps:
 	$(logr) "snapshot:false ... bumping versions"
-	git add README.md version.properties "$(RELEASE_CHANGELOG)"
-	git commit -m "v$(VERSION) changelog, version bump [ci skip]"
-	git push -q $(GITHUB_URL) $(RELEASABLE_BRANCH)
-	$(logr.done)
+	if [ "$dry_run" ]; then
+		echo "🌮 dry_run ->  push-version-bumps"
+	else
+		git add README.md version.properties "$(RELEASE_CHANGELOG)"
+		git commit -m "v$(VERSION) changelog, version bump [ci skip]"
+		git push -q $(GITHUB_URL) $(RELEASABLE_BRANCH)
+		$(logr.done)
+	fi
+
 
 
 # -- release --
 ifneq ($(or $(IS_RELEASABLE),$(dry_run)),)
 
  # calls github endpoint to create a release on the RELEASABLE_BRANCH
- ship.github-release: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
+ ship.github-release: | _verify_VERSION _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
 	$(github.sh) create_release  $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
 	$(logr.done)
 
