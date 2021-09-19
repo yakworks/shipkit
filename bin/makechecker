@@ -35,7 +35,7 @@ function makechecker.lint_files {
   local problems=""
   for f in "${targets[@]}"; do
     # echo "checking $f"
-    fourSpaces="$(grep --line-number "^    [^#]" "$f" || true)"
+    fourSpaces="$(grep -n "^    [^#]" "$f" || true)"
     if [ "$fourSpaces" ]; then
       echo "$f has lines that start with 4 spaces instead of a tab"
       echo "$fourSpaces"
