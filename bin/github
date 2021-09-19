@@ -16,6 +16,10 @@ core.import "utils"
 # $3 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
 # $4 - the GITHUB_TOKEN auth token
 function github.create_release {
+  if [ "$dry_run" ]; then
+		echo "🌮 dry_run ->  github.create_release $@"
+    return 0
+	fi
   # get body from
   local body=$(cat "$BUILD_DIR/CHANGELOG_RELEASE.md")
   local body_esc=`escape_json_string "$body"`

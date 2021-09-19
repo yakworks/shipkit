@@ -73,7 +73,7 @@ END {
   for (doc in global_docs)
     print global_docs[doc]
 
-  printf "\nUsage: \033[32mmake \033[36m<target>\n\n"
+  printf "\nUsage: \033[32mmake \033[36m<target> <VARIABLE>=<value>\n\n"
   printf "\033[0mTargets:\n\n"
   n = sortIdx(target_docs, idxs)
   for (j=1; j<=n; j++) {

@@ -15,7 +15,7 @@ pages.deploy-k8s: pages.delete-k8s-deployment
 
 .PHONY: ship.k8s-pages
 
-ifeq (true,$(IS_RELEASABLE))
+ifneq ($(or $(IS_RELEASABLE),$(dry_run)),)
 
 ship.k8s-pages:
 	$(MAKE) pages.deploy-k8s

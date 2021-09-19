@@ -6,53 +6,54 @@
 
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 
+LOGIT_DEFAULT_DIR="${BUILD_DIR:-$HOME}/make"
+LOGIT_DEFAULT_LOG="${LOGIT_DEFAULT_LOG:-shipkit}"
+LOGIT_DEBUG_ENABLED=${LOGIT_DEBUG_ENABLED:-false}
 
-# # First source the script
-# source ~/scripts/logr.bash
+unset LOGIT_LOG_NAME
+unset LOGIT_SCRIPT_LOG
 
-# # Start the logger, generates log name from scripts filename
-# logr start
-# # or define your own
-# logr start LOG_NAME
-#
-# logr [log|notice|info|debug|warn|error] MESSAGE
-# # or default to "user.info" facility
-# logr MESSAGE
+logit.info() {
+  logit info "$@"
+}
+logit.debug() {
+  logit debug "$@"
+}
+logit.warn() {
+  logit warn "$@"
+}
+logit.error() {
+  logit error "$@"
+  echo "$@"
+}
 
-LOGR_DEFAULT_DIR="${BUILD_DIR:-$HOME}/make"
-LOGR_DEFAULT_LOG="${LOGR_DEFAULT_LOG:-shipkit}"
-LOGR_DEBUG_ENABLED=${LOGR_DEBUG_ENABLED:-false}
-
-unset LOGR_LOG_NAME
-unset LOGR_SCRIPT_LOG
-
-logr() {
-  LOGR_DIR="${LOGR_DIR:-$LOGR_DEFAULT_DIR}"
+logit() {
+  LOGIT_DIR="${LOGIT_DIR:-$LOGIT_DEFAULT_DIR}"
 	# default to "user" facility, can be set to local[0-9], etc.
-  LOGR_FACILITY="${LOGR_FACILITY:-user}"
+  LOGIT_FACILITY="${LOGIT_FACILITY:-user}"
 	# default to quiet, no output to STDERR
-  LOGR_VERBOSE="${LOGR_VERBOSE:-false}"
+  LOGIT_VERBOSE="${LOGIT_VERBOSE:-false}"
 	# default log tag and filename to "scripts", changed via logr start command
-  LOGR_LOG_NAME="${LOGR_LOG_NAME:-$LOGR_DEFAULT_LOG}"
+  LOGIT_LOG_NAME="${LOGIT_LOG_NAME:-$LOGIT_DEFAULT_LOG}"
   # the file to log out to
-  LOGR_SCRIPT_LOG="${LOGR_SCRIPT_LOG:-${LOGR_DIR%/}/${LOGR_LOG_NAME}.log}"
+  LOGIT_SCRIPT_LOG="${LOGIT_SCRIPT_LOG:-${LOGIT_DIR%/}/${LOGIT_LOG_NAME}.log}"
 
-	local function_name="${FUNCNAME[1]}"
+	local function_name="${FUNCNAME[2]}"
 
-  if [ ! -e "$LOGR_SCRIPT_LOG" ]; then
-    mkdir -p "${LOGR_DIR}"
-    touch "$LOGR_SCRIPT_LOG"
+  if [ ! -e "$LOGIT_SCRIPT_LOG" ]; then
+    mkdir -p "${LOGIT_DIR}"
+    touch "$LOGIT_SCRIPT_LOG"
   fi
 
   local log_type=$1
   if [[ $log_type =~ (^-v$|^verbose$) ]]; then
-    LOGR_VERBOSE=true
+    LOGIT_VERBOSE=true
     shift
   elif [[ $log_type =~ (^-q$|^quiet$) ]]; then
-    LOGR_VERBOSE=false
+    LOGIT_VERBOSE=false
     shift
-  elif [[ $log_type =~ clea[nr] && $LOGR_LOG_NAME != "$LOGR_DEFAULT_LOG" ]]; then
-		[[ -n $LOGR_SCRIPT_LOG && -f $LOGR_SCRIPT_LOG ]] && echo -n > "$LOGR_SCRIPT_LOG"
+  elif [[ $log_type =~ clea[nr] && $LOGIT_LOG_NAME != "$LOGIT_DEFAULT_LOG" ]]; then
+		[[ -n $LOGIT_SCRIPT_LOG && -f $LOGIT_SCRIPT_LOG ]] && echo -n > "$LOGIT_SCRIPT_LOG"
     return 0
 
   fi
@@ -61,11 +62,11 @@ logr() {
 
   if [[ $log_level == "debug" ]]; then
 
-    if [ "$LOGR_DEBUG_ENABLED" = "true" ]; then
+    if [ "$LOGIT_DEBUG_ENABLED" = "true" ]; then
       # debug type shows full function stack
       # shellcheck disable=SC2141
       function_name=$(IFS="\\"; echo "${FUNCNAME[*]:1}")
-      __logr_exec debug "${LOGR_LOG_NAME}:${function_name}" "${*:2}"
+      __logit_exec debug "${LOGIT_LOG_NAME}:${function_name}" "${*:2}"
     fi
 	# log, notice, info, warn, error set logging level
 	# warn and error go to /var/log/system.log as well as logfile
@@ -79,7 +80,7 @@ logr() {
 			emerg) level="emerg" ;;
 			*) level="info" ;;
 		esac
-		__logr_exec $level "${LOGR_LOG_NAME}:${function_name}" "${*:2}"
+		__logit_exec $level "${LOGIT_LOG_NAME}:${function_name}" "${*:2}"
 	fi
 
 }
@@ -88,18 +89,18 @@ logr() {
 # param 1: (string) [log|notice|info|debug|warn|error] log level
 # param 2: (string) Tag
 # param 3: (string) Message
-__logr_exec() {
+__logit_exec() {
   # local cmd
   local log_level="${1:-}"
-  if [ "$log_level" = "debug" ] && [ ! "$LOGR_DEBUG_ENABLED" = "true" ]; then
+  if [ "$log_level" = "debug" ] && [ ! "$LOGIT_DEBUG_ENABLED" = "true" ]; then
     return 0 # exit fast
   fi
 
-	if [[ $LOGR_VERBOSE == true ]]; then
+	if [[ $LOGIT_VERBOSE == true ]]; then
     # The 2>&1says "redirect file descriptor #2 to the same place #1 is going", and then you can pipe both of them at once.
-		logger -p "${LOGR_FACILITY}.$1" -t "$2" -s "$3" 2>&1 | tee -a "${LOGR_SCRIPT_LOG}" 1>&2
+		logger -p "${LOGIT_FACILITY}.$1" -t "$2" -s "$3" 2>&1 | tee -a "${LOGIT_SCRIPT_LOG}" 1>&2
 	else
-		logger -p "${LOGR_FACILITY}.$1" -t "$2" -s "$3" 2>> "${LOGR_SCRIPT_LOG}"
+		logger -p "${LOGIT_FACILITY}.$1" -t "$2" -s "$3" 2>> "${LOGIT_SCRIPT_LOG}"
 	fi
 }
 

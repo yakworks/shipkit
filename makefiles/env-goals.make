@@ -21,11 +21,11 @@ ifdef DB
 
   export DBMS ?= mysql
   ifeq (sqlserver,$(filter sqlserver,$(MAKECMDGOALS)))
-    DBMS = sqlserver
+   DBMS = sqlserver
   else ifeq (oracle,$(filter oracle,$(MAKECMDGOALS)))
-    DBMS = oracle
+   DBMS = oracle
   else ifeq (h2,$(filter h2,$(MAKECMDGOALS)))
-    DBMS = h2
+   DBMS = h2
   endif
 
   # dummy targets so we dont get the make[1]: Nothing to be done for `xxx'.

@@ -24,28 +24,33 @@ bump-version-file: | _verify_VERSION
 # updates change log, bumps version, updates the publishingVersion in README
 push-version-bumps:
 	$(logr) "snapshot:false ... bumping versions"
-	git add README.md version.properties "$(RELEASE_CHANGELOG)"
-	git commit -m "v$(VERSION) changelog, version bump [ci skip]"
-	git push -q $(GITHUB_URL) $(RELEASABLE_BRANCH)
-	$(logr.done)
+	if [ "$dry_run" ]; then
+		echo "🌮 dry_run ->  push-version-bumps"
+	else
+		git add README.md version.properties "$(RELEASE_CHANGELOG)"
+		git commit -m "v$(VERSION) changelog, version bump [ci skip]"
+		git push -q $(GITHUB_URL) $(RELEASABLE_BRANCH)
+		$(logr.done)
+	fi
+
 
 
 # -- release --
-ifeq (true,$(IS_RELEASABLE))
+ifneq ($(or $(IS_RELEASABLE),$(dry_run)),)
 
-# calls github endpoint to create a release on the RELEASABLE_BRANCH
-ship.github-release: | _verify_VERSION _verify_RELEASABLE_BRANCH _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
+ # calls github endpoint to create a release on the RELEASABLE_BRANCH
+ ship.github-release: | _verify_VERSION _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
 	$(github.sh) create_release  $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
 	$(logr.done)
 
-## If IS_RELEASABLE, bump vesion, update changelong and post tagged release on gitub.
-## Should almost always be last ship/release target
-ship.version: update-changelog update-readme-version bump-version-file ship.github-release push-version-bumps
+ ## If IS_RELEASABLE, bump vesion, update changelong and post tagged release on gitub.
+ ## Should almost always be last ship/release target
+ ship.version: update-changelog update-readme-version bump-version-file ship.github-release push-version-bumps
 	$(logr.done)
 
 else # not IS_RELEASABLE, so its a snapshot or its not on a releasable branch
 
-ship.version:
+ ship.version:
 	$(logr.done) " - IS_RELEASABLE=false as this is either a snapshot or its not on a releasable branch"
 
 endif # end RELEASABLE_BRANCH

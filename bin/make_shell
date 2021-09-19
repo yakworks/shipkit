@@ -6,7 +6,7 @@
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
-core.import "logr"
+core.import "logit"
 core.import "utils"
 
 # its will usually have the -c passed from make
@@ -24,16 +24,13 @@ if [[ ${VERBOSE:-} = "true" ]]; then
   echo "$target_cmds"
   printf "\e[33m------------------------- \e[0m\n\n"
   # also turn on log and kick to file
-  export LOGR_DEBUG_ENABLED=true
+  export LOGIT_DEBUG_ENABLED=true
   # the following will kick out all declared evn variables so stdout
   # ( set -o posix ; set )
 fi
 
-# if VERBOSE_LOG is set then turn on logr debug and the let it fire to the logfile
-# we do the goofy check so we can pick up the shell commands that put the variables in front.
-# if [[ ${VERBOSE_LOG:-} = "true" || "$target_cmds" = "VERBOSE_LOG='true'"* ]]; then
-if [[ ${LOGR_DEBUG_ENABLED:-} = "true" ]]; then
-  logr debug "$target_cmds"
+if [[ ${LOGIT_DEBUG_ENABLED:-} = "true" ]]; then
+  logit.debug "$target_cmds"
 fi
 
 # strace -f -o `mktemp $RESULTZ/result_XXXXXXX` -e trace=open,stat64,execve,exit_group,chdir /bin/sh -c "$@"  | awk '{if (match("Process PID=\d+ runs in (64|32) bit",$0) == 0) {print $0}}'
