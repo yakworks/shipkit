@@ -24,7 +24,7 @@ bump-version-file: | _verify_VERSION
 # updates change log, bumps version, updates the publishingVersion in README
 push-version-bumps:
 	$(logr) "snapshot:false ... bumping versions"
-	if [ "$dry_run" ]; then
+	if [ "$(dry_run)" ]; then
 		echo "🌮 dry_run ->  push-version-bumps"
 	else
 		git add README.md version.properties "$(RELEASE_CHANGELOG)"

@@ -10,7 +10,7 @@ docmark.publish-prep: docmark.build git.clone-pages
 
 ## Builds and pushes docmark pages to github pages, CI should call publish-docs which calls this
 pages.deploy-github: docmark.publish-prep
-	if [ "$dry_run" ]; then
+	if [ "$(dry_run)" ]; then
 		echo "🌮 dry_run ->  $(MAKE) git.push-pages"
 	else
 		$(MAKE) git.push-pages

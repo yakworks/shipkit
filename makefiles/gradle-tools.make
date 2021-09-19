@@ -88,7 +88,7 @@ merge-test-results: gradle.merge-test-results
 ## publish the library jar, calls gradle publish
 publish.libs:
 	if [ "$(IS_SNAPSHOT)" ]; then $(logr) "publishing SNAPSHOT"; else $(logr) "publishing release"; fi
-	if [ "$dry_run" ]; then
+	if [ "$(dry_run)" ]; then
 		echo "🌮 dry_run ->  $(gradlew) publish"
 	else
 		$(gradlew) publish
