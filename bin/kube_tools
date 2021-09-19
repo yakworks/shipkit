@@ -38,7 +38,7 @@ function kube.create_namespace {
 
 # wrapper around kubectl so we can intercept execution if dry_run is set
 function kube.ctl {
-  if [ "$dry_run" ]; then
+  if [ "${dry_run:-}" ]; then
 		echo "🌮 dry_run ->  kubectl $@"
 	else
 		kubectl "$@"
