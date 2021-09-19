@@ -7,6 +7,7 @@ export SHELL := $(SHIPKIT_BIN)/make_shell
 
 # no need for @ with this on, will keep it silent, pass something to VERBOSE to show it all
 # always make it silent. setting VERBOSE = true will tell logr to print out in make_shell wrapper
+# and will turn on debug for logit bash helper in the bash scripts
 .SILENT:
 export VERBOSE ?= false
 

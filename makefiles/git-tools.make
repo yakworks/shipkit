@@ -7,7 +7,7 @@ GITHUB_URL ?= https://$(GITHUB_BASE_URL)
 
 ifdef GITHUB_TOKEN
   GITHUB_URL = https://dummy:$(GITHUB_TOKEN)@$(GITHUB_BASE_URL)
-endif # end RELEASABLE_BRANCH
+endif
 
 # $(info GITHUB_URL $(GITHUB_URL)) # logs out the bash echo from shResults
 
@@ -23,7 +23,7 @@ git.push-pages: | _verify_PAGES_BRANCH _verify_PROJECT_FULLNAME
 	git -C $(PAGES_BUILD_DIR) push -q $(GITHUB_URL) $(PAGES_BRANCH) || true
 
 
-git.config-bot-user: BOT_USER ?= $(shell echo $(BOT_EMAIL) | cut -d "@" -f1)
+git.config-bot-user: export BOT_USER ?= $(shell echo $(BOT_EMAIL) | cut -d "@" -f1)
 git.config-bot-user: | _verify_BOT_EMAIL
 	hasGitUser=`git config --global user.email || true`
 	if [ ! "$$hasGitUser" ] || [ "$(CI)" ]; then

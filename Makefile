@@ -17,7 +17,7 @@ include $(SHIPKIT_MAKEFILES)/bats-testing.make
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
 # can be set here but best do it on command line with make
-# export LOGR_DEBUG_ENABLED := true
+# export LOGIT_DEBUG_ENABLED := true
 
 # --- Dockers ---
 docker_tools := $(SHIPKIT_BIN)/docker_tools
@@ -30,12 +30,15 @@ docker.shell:
 	  $(DOCK_SHELL_URL) /bin/bash
 
 SHELLCHECK_DIRS ?= bin makefiles
-lint::
+lint:: lint.makefiles
 	$(SHIPKIT_BIN)/shellchecker lint $(SHELLCHECK_DIRS)
 
 ## fixes what is can using shellcheck diffs and git apply
 lint.fix:
 	$(SHIPKIT_BIN)/shellchecker lint_fix $(SHELLCHECK_DIRS)
+
+lint.makefiles:
+	$(SHIPKIT_BIN)/makechecker lint makefiles
 
 ## Run the lint and tests
 check:: lint test
@@ -51,7 +54,7 @@ test.core: $(BATS_EXE)
 ## runs all BAT tests
 test.unit:: test.bats test.core
 
-## runs all BAT tests
+## runs all BAT tests. to run a single file make test-bats TESTS=test_file_name*
 test:: test-bats
 
 ## NA runs integration/e2e tests

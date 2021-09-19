@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# ---
+# @module: Makefiles
+# @author: Joshua Burnett (@basejump)
+#
+# Checks makefiles for common issues. The main one being 4 spaces instead of tab to start shell commands
+# ---
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
+
+###
+# Lints a one or more dirs
+# The main issue to check for is lines starting with 4 spaces
+#
+# ``` makechecker lint makefiles ```
+#
+# $@ - {array} one or more dirs
+#
+function makechecker.lint {
+  makechecker.find_targets "$@"
+  makechecker.lint_files "${MAKECHECK_TARGETS[@]}"
+}
+
+###
+# Lint one or more files
+#
+# @arg $@ - {array} list of files
+#
+# @returns
+#  0 - success
+#  1 - bad makefile
+#
+function makechecker.lint_files {
+  local targets=("$@")
+  local problems=""
+  for f in "${targets[@]}"; do
+    # echo "checking $f"
+    fourSpaces="$(grep --line-number "^    [^#]" "$f" || true)"
+    if [ "$fourSpaces" ]; then
+      echo "$f has lines that start with 4 spaces instead of a tab"
+      echo "$fourSpaces"
+      problems="$fourSpaces"
+    fi
+  done
+  if [ "$problems" ]; then
+    return 1
+  fi
+}
+
+###
+# gets all files that either start with Makefile or have .make extension
+#
+# $@ - {array} one or more dirs
+#
+function makechecker.find_targets {
+  MAKECHECK_TARGETS=()
+  for dir in "$@"; do
+    while IFS=  read -r -d $'\0'; do
+      if [[ "$REPLY" == *.make ]]; then
+        MAKECHECK_TARGETS+=("$REPLY")
+        # echo "got $REPLY"
+        # grep "^    " "$REPLY" || true
+      fi
+    done < <(find "${dir}" -type f -print0)
+  done
+}
+
+# --- boiler plate function runner, keep at end of file ------
+# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  export fn_namespace='makechecker' && source "${BASHKIT_CORE}/function_runner_ns.sh"
+fi

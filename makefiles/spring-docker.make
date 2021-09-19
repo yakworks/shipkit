@@ -6,8 +6,6 @@
 
 gw := ./gradlew
 build_docker_dir := $(BUILD_DIR)/docker
-# source dir for deploy with Dockerfile etc..
-deploy_src_dir := $(APP_DIR)/src/deploy
 
 # rm -rf build/docker
 docker.clean-build:
@@ -16,18 +14,18 @@ docker.clean-build:
 $(build_docker_dir):
 	mkdir -p $@
 
-DEPLOY_SOURCES := $(wildcard $(deploy_src_dir)/*)
+DOCKER_DEPLOY_SOURCES := $(wildcard $(APP_DOCKER_SRC)/*)
 
 # sets up the build/docker by copying in the src/deploy files, copy the executable jar
 # then 'explodes' or unjars the executable jar so dockerfile can iterate on build changes
 # layering docker see https://blog.jdriven.com/2019/08/layered-spring-boot-docker-images/
-$(BUILD_DIR)/docker/Dockerfile: $(build_docker_dir) $(DEPLOY_SOURCES) | _verify_APP_JAR _verify_APP_DIR
+$(BUILD_DIR)/docker/Dockerfile: $(build_docker_dir) $(DOCKER_DEPLOY_SOURCES) | _verify_APP_JAR
 	$(logr) "copy Dockerfile"
 	rm -rf $(build_docker_dir)/*
-	cp -r $(deploy_src_dir)/. $(build_docker_dir);
+	cp -r $(APP_DOCKER_SRC)/. $(build_docker_dir);
 
 # copies the jar in and explodes it
-$(BUILD_DIR)/docker/app.jar: $(APP_JAR) build/docker/Dockerfile | _verify_APP_JAR _verify_APP_DIR
+$(BUILD_DIR)/docker/app.jar: $(APP_JAR) build/docker/Dockerfile | _verify_APP_JAR
 	$(logr) "copy app.jar"
 	cp $(APP_JAR) $(build_docker_dir)/app.jar
 	cd $(build_docker_dir)
@@ -44,8 +42,12 @@ docker.app-build: $(BUILD_DIR)/docker_built_$(APP_KEY)
 
 # stamp to track if it was deployed
 build/docker_push_$(APP_KEY): $(BUILD_DIR)/docker_built_$(APP_KEY) | _verify_APP_DOCKER_URL
-	docker push ${APP_DOCKER_URL}
-	touch $(BUILD_DIR)/docker_push_$(APP_KEY)
+	if [ "$(dry_run)" ]; then
+		echo "🌮 dry_run ->  docker push $(APP_DOCKER_URL)"
+	else
+		docker push $(APP_DOCKER_URL)
+		touch $(BUILD_DIR)/docker_push_$(APP_KEY)
+	fi
 
 .PHONY: docker.app-push
 ## builds and deploys whats in the src/deploy for the APP_DOCKER_URL to docker hub
@@ -70,14 +72,14 @@ docker.app-down:
 docker.app-shell: docker.app-up
 	docker exec -it $(APP_NAME) bash -l
 
-ifdef RELEASABLE_BRANCH
+ifdef RELEASABLE_OR_DRY_RUN
 
-ship.docker:: docker.app-build docker.app-push
+ ship.docker:: docker.app-build docker.app-push
 	$(logr.done)
 
 else
 
-ship.docker::
+ ship.docker::
 	$(logr.done) " - not on a RELEASABLE_BRANCH, nothing to do"
 
 endif # end RELEASABLE_BRANCH

@@ -4,7 +4,7 @@
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
-core.import "logr"
+core.import "logit"
 core.import "utils"
 
 # updates the version number in README

@@ -7,7 +7,7 @@
 # ---
 set -eo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
-core.import "logr"
+core.import "logit"
 core.import "utils"
 core.import "yaml"
 core.import "git_tools"
@@ -17,14 +17,37 @@ core.import "setVar"
 # version.properties should be in root dir
 if [ -e "version.properties" ]; then source version.properties; fi
 
+# main make env, this is called early shipkit or can be overriden in build.sh.
+# $1 - BUILD_ENV (test, dev, seed)
+function make_env {
+  make_env_init "${1:-}"
+  createEnvFile
+}
+
+# create build/make_env_db.env for importing into makefile.
+# $1 - BUILD_ENV (test, dev, seed)
+function make_env_init {
+  setVar BUILD_ENV "${1:-test}"
+  init_env
+  init_db_env  #if DBMS env is set
+}
+
 # initializes the environment
 function init_env {
   version=${version:-}
   [ "$version" ] && init_versions
-  logr debug "init_env start with version $version"
+  logit.info "init_env start with version $version"
 
   # if we passed in a file name
-  load_env "${env:-}"
+  # load_env "${env:-}"
+
+  # if we pass in an sh to brute force it
+  load_custom_sh_or_env
+  # sh="${sh:-}"
+  # if [ "${sh}" ]; then
+  #   logit.info "Sourcing file ${sh}"
+  #   source "${sh}"
+  # fi
 
   # if a developer has a local dotenv then bring it in
   load_env ".env"
@@ -38,8 +61,6 @@ function init_env {
   # if this is running in circle then this will normailze ENV variables to ours
   circle_init_env
 
-  # init_core_defaults # call before init_from_build_yml
-
   # imports vars from the build.yml
   init_from_build_yml
 
@@ -49,12 +70,11 @@ function init_env {
   # kubernetes wants lower case so to comply we make some of them lower
   make_some_vals_lowercase
 
+  if declare -f "post_init" > /dev/null; then
+    # call post init function if it exists
+    post_init
+  fi
 }
-
-# core values, run before
-# function init_core_defaults {
-
-# }
 
 # makes sure defaults are setup
 function init_defaults {
@@ -68,10 +88,13 @@ function init_defaults {
   # defaults the project name to the part after last /, so if fullname is 'foo/bar' then project name will be 'bar'
   setVar PROJECT_NAME "${PROJECT_FULLNAME##*/}"
 
-  # echo "APP_NAME-$APP_NAME"
+  # logit.info "APP_NAME-$APP_NAME"
   setVar APP_NAME "${PROJECT_NAME}"
   # the dir where the app is, defaults to the root of the project
-  setVar APP_DIR "."
+  setVar APP_DEPLOY_SRC "./deploy"
+  setVar APP_DOCKER_SRC "${APP_DEPLOY_SRC}/docker"
+  setVar APP_KUBE_SRC "${APP_DEPLOY_SRC}/kube"
+
   setVar APP_KEY "${APP_NAME}"
 
   # default the releasable branch pattern and changelog name
@@ -80,10 +103,22 @@ function init_defaults {
   if [[ "${ACTIVE_BRANCH:-}" && "${ACTIVE_BRANCH}" =~ ^(${RELEASE_BRANCH_REGEX})$ ]]; then
     setVar RELEASABLE_BRANCH "$ACTIVE_BRANCH"
   fi
+
   # shellcheck disable=SC2034
-  IS_RELEASABLE=''
+  IS_RELEASABLE='' #IS_RELEASABLE will be true if its NOT a snapshot and on a releasable branch
   if [[ "${RELEASABLE_BRANCH:-}" && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
     setVar IS_RELEASABLE true
+  fi
+
+  # RELEASABLE_BRANCH_OR_DRY_RUN can be true even if it is a snapshot
+  if [[ "$dry_run" || "$RELEASABLE_BRANCH" ]]; then
+    setVar RELEASABLE_BRANCH_OR_DRY_RUN true
+  fi
+
+  #IS_RELEASABLE will be true if its NOT a snapshot and its on a releasable branch
+  # if dry_run is passed in then do it
+  if [[ "$dry_run" || "$IS_RELEASABLE" ]]; then
+    setVar IS_RELEASABLE_OR_DRY_RUN true
   fi
 
   # sets up defaults for PAGES if they are not setup already
@@ -124,7 +159,7 @@ function make_some_vals_lowercase {
 function init_versions {
   # if nothing passing in the usee the lowercase version that should have come in from version.properties
   # local ver=${1:-$version}
-  logr debug "init_versions version $version, VERSION ${VERSION:-}"
+  logit.debug "init_versions version $version, VERSION ${VERSION:-}"
   setVar VERSION "$version"
   setVar PUBLISHED_VERSION "${publishedVersion:-}"
 
@@ -193,20 +228,6 @@ function init_db_env {
 }
 
 
-# main make env, this is called early shipkit or can be overriden in build.sh.
-# $1 - BUILD_ENV (test, dev, seed)
-function make_env {
-  make_env_init "${1:-}"
-  createEnvFile
-}
-
-# create build/make_env_db.env for importing into makefile.
-# $1 - BUILD_ENV (test, dev, seed)
-function make_env_init {
-  setVar BUILD_ENV "${1:-test}"
-  init_env
-  init_db_env  #if DBMS env is set
-}
 
 # create env file from BUILD_VARS for importing into makefile.
 function createEnvFile {
@@ -214,13 +235,13 @@ function createEnvFile {
   local env_file_dir="$(dirname "$env_file")"
   mkdir -p "$env_file_dir"
 
-  echo "# ----- Generated from build.sh --------" > "$env_file"
+  echo "# ----- Generated from init_env --------" > "$env_file"
   for varName in $BUILD_VARS; do
       val=${!varName}
       echo "$varName=$val" >> "$env_file"
   done
   echo "BUILD_VARS=$BUILD_VARS" >> "$env_file"
-  logr debug "created $env_file"
+  logit.debug "created $env_file"
 }
 
 # looks for build/vault/bot.env file and loads it in if its there
@@ -232,6 +253,7 @@ function createEnvFile {
 function parse_bot_env_file {
   local bot_env="build/vault/bot.env"
   if [ -f $bot_env ]; then
+    logit.info "loading bot.env file $bot_env"
     #change this once we have it sqaured away so exported env vars always win
     dotenv.load $bot_env true
   fi
@@ -241,7 +263,32 @@ function parse_bot_env_file {
 # $1 - the env file to parse
 function load_env {
   local protectedVars="RELEASABLE_BRANCH|ACTIVE_BRANCH|VERSION|VERSIONX|IS_SNAPSHOT"
-  dotenv.load "$1" false "$protectedVars"
+  if [ -f "$1" ]; then
+    logit.info "loading env file $1"
+    dotenv.load "$1" false "$protectedVars"
+  fi
+
+}
+
+# parses the env file, eval and load into BUILD_VARS
+# $1 - the env file to parse
+function load_custom_sh_or_env {
+  # if we pass in an sh to brute force it
+  sh_env="${env:-}"
+  if [ "${sh_env}" ]; then
+    if [ ! -f "$sh_env" ]; then
+      logit.error "[ env file not found:${sh_env} ]"
+      return 1
+    elif [[ "${sh_env}" == *.env ]]; then
+      load_env "${sh_env}"
+    elif [[ "${sh_env}" == *.sh ]]; then
+      logit.info "Sourcing file ${sh_env}"
+      source "${sh_env}"
+    else
+      logit.error "[ invalid env file: file name must end in either .env or .sh ]"
+      return 1
+    fi
+  fi
 }
 
 

@@ -9,7 +9,7 @@ export BUILD_DIR ?= build
 # so if make calls a make target it doesn't collide, they can be different based on whats passed for DBMS for example
 export MAKE_ENV_FILE ?= $(BUILD_DIR)/make/makefile$(MAKELEVEL).env
 
-SHELL_VARS += VERBOSE_LOG BUILD_DIR MAKE_ENV_FILE DBMS env
+SHELL_VARS += VERBOSE_LOG BUILD_DIR MAKE_ENV_FILE DBMS env dry_run
 #shell doesn't get the exported vars so we need to spin the ones we want, which should be in BUILD_VARS
 SHELL_EXPORTS := $(foreach v,$(SHELL_VARS), $(v)='$($(v))')
 # if no build.sh var is not set then use the the init_env script directly
@@ -19,9 +19,10 @@ build.sh ?= $(SHIPKIT_BIN)/init_env
 # we do this in subshell so it forces the file to be generated before the sindlues happens
 SH_RESULTS := $(shell $(SHELL_EXPORTS) $(build.sh) make_env $(BUILD_ENV))
 ifneq ($(.SHELLSTATUS),0)
-  $(error error with init_env or build.sh $(SH_RESULTS))
+  $(error init_env error -> $(SH_RESULTS))
 endif
 ifeq (true,$(VERBOSE))
+  $(info SEE build/make/shipkit.log FOR LOGIT OUTPUT)
   $(info make_env results: $(SH_RESULTS))
 endif
 
@@ -46,7 +47,11 @@ help: _HELP_F := $(firstword $(MAKEFILE_LIST))
 ## default, lists help for targets
 help: | _program_awk
 	@awk -f $(HELP_AWK) $(wordlist 2,$(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)) $(_HELP_F)
-
+	printf "\n$(culine)Common Variables:\n$(creset)"
+	printf "$(ccyanB) VERBOSE=true                 $(creset)| show logit.debug in build/make/shikit.log and shows target output on console \n"
+	printf "$(ccyanB) dry_run=true                 $(creset)| setting this to true will stop certain deployment commands from pushing, such as kubectl and docker \n"
+	printf "$(ccyanB) env=<file.env> or <file.sh>  $(creset)| loads custom variables in from .env file or source 'imports' a custom bash .sh script \n"
+	printf "\n"
 .PHONY: help
 
 ## list all the availible Make targets, including the targets hidden from core help
@@ -62,7 +67,13 @@ FORCE:
 
 ## list the BUILD_VARS in the build/make env
 log-vars: FORCE
-	$(foreach v, $(sort $(BUILD_VARS)), $(info $(v) = $($(v))))
+	printf "$(culine)Variable:\n\n$(creset)"
+	for v in $(sort $(BUILD_VARS)); do
+		printf "$(ccyan)$$v $(creset)=$(cbold) $${!v:-} $(creset)\n"
+	done;
+
+log-make-vars: FORCE
+	$(foreach v, $(sort $(BUILD_VARS)), $(info $(v) = $($(v))) )
 
 # logs all the make variables, get ready for some noise
 print-make-vars: FORCE
