@@ -5,7 +5,7 @@
 set -e
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "init_env"
-core.import "sed_tpl"
+core.import "heredoc_tpl"
 core.import "dotenv"
 
 # ---
@@ -14,8 +14,8 @@ core.import "dotenv"
 # ---
 function kube.process_tpl {
   # set the variables in BUILD_ENV so we can build the sed replacement for templates
-  dotenv.load "build/make/makefile${MAKELEVEL}.env"
-  sed_tpl "$1" "build/kube"
+  # dotenv.load "build/make/makefile${MAKELEVEL}.env"
+  heredoc_tpl "$1" "build/kube"
 }
 
 ###

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+###
+# basic tempalate variable replacement using heredoc
+# runs on a .tpl. file in form some_file.tpl.yml for example
+# replaces variables with values
+#
+# $1 - the tpl.yml file
+# $2 - the output dir to put the processed files with the .tpl. stripped from the name
+#
+# @stdout the processed tpl build file name
+#
+function heredoc_tpl {
+  mkdir -p "$2"
+  # parse just the file name
+  local tplFile=${1##*/}
+  # replace .tpl.yml with .yml or .tpl.any with .any is what `/.tpl./.` is doing
+  local processedTpl="$2/${tplFile/.tpl./.}"
+
+## LEAVE THIS INDENT, heredoc needs to to look this way
+eval "cat << EOF
+$(<"$1")
+EOF
+" > "$processedTpl"
+
+	echo "$processedTpl"
+}
+

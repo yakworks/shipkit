@@ -24,7 +24,7 @@ function github.create_release {
   local body=$(cat "$BUILD_DIR/CHANGELOG_RELEASE.md")
   local body_esc=`escape_json_string "$body"`
 
-## LEAVE THIS INDENT, her docs needs to to look this way
+## LEAVE THIS INDENT, heredoc needs to to look this way
 local api_data=$(cat <<EOF
   {
     "tag_name":         "v$1",
