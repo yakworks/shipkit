@@ -97,6 +97,15 @@ function init_defaults {
 
   setVar APP_KEY "${APP_NAME}"
 
+  # if dry_run then force RELEASABLE_BRANCH to the current git branch.
+  if [[ "${dry_run:-}" ]]; then
+    local cur_branch=$(current_git_branch)
+    setVar RELEASABLE_BRANCH "$cur_branch"
+    # RELEASABLE_BRANCH_OR_DRY_RUN can be true even if it is a snapshot
+    setVar RELEASABLE_BRANCH_OR_DRY_RUN true
+    logit.info "dry_run enabled, current_git_branch=$cur_branch RELEASABLE_BRANCH=$RELEASABLE_BRANCH "
+  fi
+
   # default the releasable branch pattern and changelog name
   setVar RELEASE_BRANCH_REGEX "master|main|release/.+"
   setVar RELEASE_CHANGELOG "CHANGELOG.md"
