@@ -1,3 +1,8 @@
+### v1.0.28
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.27...v1.0.28)
+- dry_run will set the RELEASABLE_BRANCH now so its easier to test (#21) [link](https://github.com/yakworks/shipkit/commit/cec432168808afa92147b983a0fe6d3aa11a1a6d)
+
 ### v1.0.27
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.26...v1.0.27)
