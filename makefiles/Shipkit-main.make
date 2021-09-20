@@ -8,6 +8,7 @@ export BUILD_DIR ?= build
 # make a unique makefile using MAKELEVEL, which is incrmented for each make subprocess.
 # so if make calls a make target it doesn't collide, they can be different based on whats passed for DBMS for example
 export MAKE_ENV_FILE ?= $(BUILD_DIR)/make/makefile$(MAKELEVEL).env
+# $(info MAKE_ENV_FILE: $(MAKE_ENV_FILE))
 
 SHELL_VARS += VERBOSE_LOG BUILD_DIR MAKE_ENV_FILE DBMS env dry_run
 #shell doesn't get the exported vars so we need to spin the ones we want, which should be in BUILD_VARS
@@ -67,6 +68,7 @@ FORCE:
 
 ## list the BUILD_VARS in the build/make env
 log-vars: FORCE
+	printf "$(ccyan)dry_run$(creset) = $(dry_run)\n"
 	printf "$(culine)Variable:\n\n$(creset)"
 	for v in $(sort $(BUILD_VARS)); do
 		printf "$(ccyan)$$v $(creset)=$(cbold) $${!v:-} $(creset)\n"
