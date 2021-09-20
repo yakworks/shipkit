@@ -1,3 +1,8 @@
+### v1.0.29
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.28...v1.0.29)
+- Tpl sed heredoc (#22) [link](https://github.com/yakworks/shipkit/commit/18a130b4c6debbadeadd17e6415a1ed02cc574c8)
+
 ### v1.0.28
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.27...v1.0.28)
