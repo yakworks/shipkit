@@ -1,3 +1,8 @@
+### v1.0.30
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.29...v1.0.30)
+- just unwrapped the releasable check from ship.docker, its not needed (#23) [link](https://github.com/yakworks/shipkit/commit/375840782f9308370d3ef467eb0b418a59d4f9ba)
+
 ### v1.0.29
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.28...v1.0.29)
