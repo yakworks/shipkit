@@ -72,14 +72,6 @@ docker.app-down:
 docker.app-shell: docker.app-up
 	docker exec -it $(APP_NAME) bash -l
 
-ifdef RELEASABLE_OR_DRY_RUN
-
- ship.docker:: docker.app-build docker.app-push
+# Implement or overide in main makefile
+ship.docker:: docker.app-build docker.app-push
 	$(logr.done)
-
-else
-
- ship.docker::
-	$(logr.done) " - not on a RELEASABLE_BRANCH, nothing to do"
-
-endif # end RELEASABLE_BRANCH
