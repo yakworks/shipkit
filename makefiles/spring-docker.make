@@ -72,6 +72,6 @@ docker.app-down:
 docker.app-shell: docker.app-up
 	docker exec -it $(APP_NAME) bash -l
 
-# Implement or overide in main makefile
-ship.docker:: docker.app-build docker.app-push
-	$(logr.done)
+# Implement in main makefile
+# ship.docker:: docker.app-build docker.app-push
+# 	$(logr.done)

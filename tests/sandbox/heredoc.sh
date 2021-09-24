@@ -13,6 +13,6 @@ FOO3=foo3
 # eval "cat <<< \"$(<play.yml)\""
 
 eval "cat <<EOF
-$(<play.yml)
+$(<heredoc.yml)
 EOF
-"
+" > processed.yml
