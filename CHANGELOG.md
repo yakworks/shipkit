@@ -1,3 +1,8 @@
+### v1.0.31
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.30...v1.0.31)
+- just remove the ship.docker and require it to be be implemented in main [link](https://github.com/yakworks/shipkit/commit/cc558902720df902648679b58ed7a2601c13b05e)
+
 ### v1.0.30
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.29...v1.0.30)
