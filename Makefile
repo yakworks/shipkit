@@ -1,7 +1,6 @@
-# tell shipkit where the main build.sh is, not used in test
-# build.sh := ./build.sh
+
 # If setting any vars needed for the $(shell init_vars..) in Shipkit.make then track the MAKE_VARS so those dont get added
-# if not git is installed then need to add the PROJECT_FULLNAME, much easier to add a build.sh and do it there
+# if not git is installed then need to add the PROJECT_FULLNAME, much easier to add a build.yml and do it there
 # export PROJECT_FULLNAME = yakworks/shipkit
 # BUILD_VARS = PROJECT_FULLNAME # need this in order for it to build what vars get passed the $(shell)
 # core include, creates the makefile.env for the BUILD_VARS that evrything else depends on

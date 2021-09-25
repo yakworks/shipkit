@@ -17,7 +17,7 @@ core.import "setVar"
 # version.properties should be in root dir
 if [ -e "version.properties" ]; then source version.properties; fi
 
-# main make env, this is called early shipkit or can be overriden in build.sh.
+# main make env, this is called early.
 # $1 - BUILD_ENV (test, dev, seed)
 function make_env {
   make_env_init "${1:-}"
