@@ -53,7 +53,7 @@ function init_env {
   load_env ".env"
 
   # if build/vault/bot.env has been cloned this will import the vars
-  parse_bot_env_file
+  # parse_bot_env_file
 
   # check for a build.env
   load_env "build.env"

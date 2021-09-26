@@ -1,4 +1,4 @@
-# Opinionated process to clone and decrypt a file using sops
+# Opinionated process to clone and decrypt a github project use as a "vault
 # installs sops if not present on OS, will not be for build dockers, for local dev should already be there
 # clones the github repo in VAULT_DIR, we call it the vault
 
@@ -6,6 +6,18 @@ SOP_VERSION := 3.7.1
 SOP_URL     := https://github.com/mozilla/sops/releases/download/v$(SOP_VERSION)/sops-v$(SOP_VERSION).linux
 VAULT_DIR   ?= $(BUILD_DIR)/vault
 VAULT_FILES ?= bot.enc.env
+VAULT_BOT_ENV_FILE := $(VAULT_DIR)/bot.env
+
+# --- look for build/vault/bot.env , run  sops.decrypt-vault-files --
+# we import it straight into make since these are secrets, dont want them in BUILD_VARS where they can get logged
+
+ifneq ($(wildcard $(VAULT_BOT_ENV_FILE)),)
+  include $(VAULT_BOT_ENV_FILE)
+  VAULT_ENV_VARS := $(shell sed '/^#.*/d; /^$$/d; s/=.*//g;' $(VAULT_BOT_ENV_FILE))
+  # $(info including $(VAULT_ENV_VARS) from $(VAULT_ENV_FILE))
+  export $(VAULT_ENV_VARS)
+endif
+# ---
 
 SOP_SH := $(shell which sops 2> /dev/null)
 
@@ -30,10 +42,10 @@ $(SOP_SH):
 # easier for testing
 sops.install: $(SOP_SH)
 
-clone-vault: | _verify_VAULT_URL
+vault.clone: | _verify_VAULT_URL
 	[ ! -e $(VAULT_DIR) ] && git clone $(VAULT_URL) $(VAULT_DIR) || :;
 
-sops.decrypt-vault-files: $(SOP_SH) gpg.import-private-key clone-vault
+vault.decrypt-files: $(SOP_SH) gpg.import-private-key vault.clone
 	cd $(VAULT_DIR)
 	for vfile in $(VAULT_FILES); do
 		outFile="$${vfile/.enc./.}" # remove .enc.

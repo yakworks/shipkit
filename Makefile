@@ -7,7 +7,8 @@
 include Shipkit.make
 include $(SHIPKIT_MAKEFILES)/base-build.make
 include $(SHIPKIT_MAKEFILES)/docker.make
-include $(SHIPKIT_MAKEFILES)/secrets.make
+# include $(SHIPKIT_MAKEFILES)/secrets.make
+include $(SHIPKIT_MAKEFILES)/vault.make
 include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/ship-version.make
 include $(SHIPKIT_MAKEFILES)/circle.make

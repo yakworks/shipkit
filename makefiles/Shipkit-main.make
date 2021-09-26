@@ -70,8 +70,13 @@ FORCE:
 log-vars: FORCE
 	printf "$(ccyan)dry_run$(creset) = $(dry_run)\n"
 	printf "$(culine)Variable:\n\n$(creset)"
-	for v in $(sort $(BUILD_VARS)); do
-		printf "$(ccyan)$$v $(creset)=$(cbold) $${!v:-} $(creset)\n"
+	printf "$(ccyan)VAULT_ENV_VARS $(creset)= $(cbold) $(VAULT_ENV_VARS) $(creset)\n"
+	for varName in $(sort $(BUILD_VARS)); do
+		varVal=$${!varName:-}
+		if [[ $${varName^^} =~ TOKEN|PASSWORD|GPG.*KEY|REPO.*KEY ]]; then
+			varVal="*********"
+		fi
+		printf "$(ccyan)$$varName $(creset)=$(cbold) "$$varVal"$(creset)\n"
 	done;
 
 log-make-vars: FORCE
