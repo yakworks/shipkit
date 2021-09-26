@@ -3,7 +3,6 @@
 # For a spring project that has a docker builder, docs,
 # -------------
 # --- helper makefiles ---
-include $(SHIPKIT_MAKEFILES)/secrets.make
 include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/docker.make
 include $(SHIPKIT_MAKEFILES)/kubectl-config.make

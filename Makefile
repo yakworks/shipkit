@@ -5,10 +5,9 @@
 # BUILD_VARS = PROJECT_FULLNAME # need this in order for it to build what vars get passed the $(shell)
 # core include, creates the makefile.env for the BUILD_VARS that evrything else depends on
 include Shipkit.make
+include $(SHIPKIT_MAKEFILES)/vault.make
 include $(SHIPKIT_MAKEFILES)/base-build.make
 include $(SHIPKIT_MAKEFILES)/docker.make
-# include $(SHIPKIT_MAKEFILES)/secrets.make
-include $(SHIPKIT_MAKEFILES)/vault.make
 include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/ship-version.make
 include $(SHIPKIT_MAKEFILES)/circle.make
