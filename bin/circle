@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # ---
 # working with CI circle and publishing,
-# should be imported into the main build.sh
 # ---
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main

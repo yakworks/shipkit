@@ -13,12 +13,12 @@ export MAKE_ENV_FILE ?= $(BUILD_DIR)/make/makefile$(MAKELEVEL).env
 SHELL_VARS += VERBOSE_LOG BUILD_DIR MAKE_ENV_FILE DBMS env dry_run
 #shell doesn't get the exported vars so we need to spin the ones we want, which should be in BUILD_VARS
 SHELL_EXPORTS := $(foreach v,$(SHELL_VARS), $(v)='$($(v))')
-# if no build.sh var is not set then use the the init_env script directly
-# if its set then call build.sh and assume it sourced in /init_env and will
+# if no init_env.sh var is not set then use the the init_env script directly
+# if its set then call init_env.sh and assume it sourced in /init_env and will
 # be setting up variables and/or potentially overriding make_env
-build.sh ?= $(SHIPKIT_BIN)/init_env
+init_env.sh ?= $(SHIPKIT_BIN)/init_env
 # we do this in subshell so it forces the file to be generated before the sindlues happens
-SH_RESULTS := $(shell $(SHELL_EXPORTS) $(build.sh) make_env $(BUILD_ENV))
+SH_RESULTS := $(shell $(SHELL_EXPORTS) $(init_env.sh) make_env $(BUILD_ENV))
 ifneq ($(.SHELLSTATUS),0)
   $(error init_env error -> $(SH_RESULTS))
 endif
@@ -70,8 +70,13 @@ FORCE:
 log-vars: FORCE
 	printf "$(ccyan)dry_run$(creset) = $(dry_run)\n"
 	printf "$(culine)Variable:\n\n$(creset)"
-	for v in $(sort $(BUILD_VARS)); do
-		printf "$(ccyan)$$v $(creset)=$(cbold) $${!v:-} $(creset)\n"
+	printf "$(ccyan)VAULT_ENV_VARS $(creset)= $(cbold) $(VAULT_ENV_VARS) $(creset)\n"
+	for varName in $(sort $(BUILD_VARS)); do
+		varVal=$${!varName:-}
+		if [[ $${varName^^} =~ TOKEN|PASSWORD|GPG.*KEY|REPO.*KEY ]]; then
+			varVal="*********"
+		fi
+		printf "$(ccyan)$$varName $(creset)=$(cbold) "$$varVal"$(creset)\n"
 	done;
 
 log-make-vars: FORCE
@@ -215,7 +220,7 @@ endef
 #
 OS ?=
 ifeq (Windows_NT,$(OS))
-OS_NAME := Windows
+OS_NAME := windows
 OS_CPU  := $(call _lower,$(PROCESSOR_ARCHITECTURE))
 OS_ARCH := $(if $(findstring amd64,$(OS_CPU)),x86_64,i686)
 else

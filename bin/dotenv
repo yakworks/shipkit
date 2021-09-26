@@ -2,7 +2,7 @@
 # shellcheck disable=SC2034 # appears unused, many are used in templates
 # ---
 # default functions to setup BUILD_VARS
-# BUILD_VARS are used in the build.sh and a makefile.env is created
+# BUILD_VARS are used to create a makefile.env
 # that is imcluded at the start of the Makefile to share vars
 # ---
 set -eo pipefail # strict mode https://bit.ly/36MvF0T

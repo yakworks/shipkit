@@ -3,6 +3,7 @@
 # The original purpose here was to be able to set a variable that will be tracked and can then be
 # eported back out to a file can be created and included into Make
 set -eo pipefail # strict mode https://bit.ly/36MvF0T
+core.import "logit"
 
 # sets the variable value if its not already set and adds it for tracking in BUILD_VARS
 # args $1 - the variable name
@@ -14,7 +15,7 @@ function setVar {
   # curVal="${!varName}"
   # [[ ! ${!varName+x} ]]
   if [[ -z ${!varName} ]]; then
-    # echo "curVal is empty, adding"
+    # logit.info "$varName=\"\$2\""
     eval "$varName=\"\$2\""
   fi
   add_build_vars "$varName"

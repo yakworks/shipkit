@@ -2,13 +2,14 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: yakworks/builder:bash-make
+      - image: yakworks/builder:k8s
     steps:
       - checkout
       - run: make install-shellcheck-alpine
       - run: make install-file-alpine
       - run: make check
       # test some other stuff
+      - run: make vault.decrypt-files
       - run: make git.config-bot-user
       # if it meets the criteria to be IS_RELEASABLE, this will bump version and tag release on github
       - run: make ship.version

@@ -56,16 +56,4 @@ A target with a variable right after it like `foo : BAR = true`
 - passing through `$` variable references will require a double `$$` to escape it, without it make will think
   its and internal reference
 
-- each line in a target runs in a new shell. To run them together its recomended to create a
-  function in the build.sh and call that as its can get a little ugly in `make`. 
-  if you need to do it in make then each exec should end 
-  with `;` and a `\` if its multiline. for example (note if you copy this example make sure to convert indent spaces to tabs):
-  ```
-  foo: ## shows foos
-      @FOOS="buzz bar bazz"; \
-      for f in $$FOOS; do \
-        echo "$$f"; \
-      done;
-  ```
-
 - `make` can call it self using the `$(MAKE)` built in. so to call a build target `$(MAKE) build` can be used
