@@ -1,3 +1,8 @@
+### v1.0.32
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.31...v1.0.32)
+- add sops.make for mozillas sops encryption. cleaned up comments (#24) [link](https://github.com/yakworks/shipkit/commit/e0f92412b84d112178353569da98aaf82915f714)
+
 ### v1.0.31
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.30...v1.0.31)
