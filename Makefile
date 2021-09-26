@@ -15,6 +15,7 @@ include $(SHIPKIT_MAKEFILES)/bats-testing.make
 
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
+export VAULT_URL = https://github.com/9ci/vault.git
 # can be set here but best do it on command line with make
 # export LOGIT_DEBUG_ENABLED := true
 

@@ -38,13 +38,13 @@ sops.decrypt-vault-files: $(SOP_SH) gpg.import-private-key clone-vault
 	for vfile in $(VAULT_FILES); do
 		outFile="$${vfile/.enc./.}" # remove .enc.
 		outFile="$${outFile/.encrypted./.}" # remove .encrypted.
-		echo "$$vfile > $$outFile"
+		$(logr) "$$vfile > $$outFile"
 		$(SOP_SH) -d $$vfile > $$outFile
 	done
 	$(logr.done)
 
 # to test the gpg stuff set this to the base64 encoded key, DO NOT CHECK IN
-GPG_KEY=ZZZ
+# GPG_KEY=ZZZ
 # set this to the gpg passphrase if needed, not base64
 # GPG_PASS := xxx
 
