@@ -26,7 +26,7 @@ We have normalized on a set of `Bash` scripts and `Make` targets for all of our 
 
 ## Why Bash?
 
-Yes we need it. Its pretty much every where. And when using a small alpine docker image, adding bash only adds about 2.5 mb
+Yes we need it. Its pretty much every where. And when using a small alpine docker image, adding bash only adds about 800k compressed, and 2.2 mb uncompressed.
 
 | Image                                                        | size    | uncompressed |
 |--------------------------------------------------------------|--------:|-------------:|
