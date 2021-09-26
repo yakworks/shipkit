@@ -22,7 +22,7 @@ export VAULT_URL = https://github.com/9ci/vault.git
 
 # --- Dockers ---
 docker_tools := $(SHIPKIT_BIN)/docker_tools
-DOCK_SHELL_URL = yakworks/builder:bash-make
+DOCK_SHELL_URL = yakworks/builder:base
 
 ## docker shell for testing
 docker.shell:

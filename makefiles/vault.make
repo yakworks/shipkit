@@ -63,8 +63,10 @@ vault.decrypt-files: $(SOP_SH) gpg.import-private-key vault.clone
 # imports private key from GPG_PRIVATE_KEY var
 gpg.import-private-key:
 	if [ "$(GPG_KEY)"  ]; then
-		$(logr) "importing GPG KEY"
-		echo "$(GPG_KEY)" | base64 --decode | gpg -v --batch --import
+		echo "$(GPG_KEY)" | base64 --decode | gpg -v --batch --import --quiet --no-verbose
+		$(logr) "GPG_KEY imported"
+	else
+		$(logr) "GPG_KEY not set, no key to import"
 	fi
 
 # encrypts a dummy file so that it doesnt ask again for passphrase when sops is run
