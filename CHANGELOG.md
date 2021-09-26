@@ -1,3 +1,8 @@
+### v1.0.34
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.33...v1.0.34)
+- valult.decrypt to keep it shorter and simpler, update readme for unused gpg.passphrase to clearly indicate its no longer used (#26) [link](https://github.com/yakworks/shipkit/commit/5e95512e9eeb3c18a847ea60d8b4f3231bfbdc90)
+
 ### v1.0.33
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.32...v1.0.33)
