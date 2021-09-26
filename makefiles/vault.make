@@ -45,7 +45,10 @@ sops.install: $(SOP_SH)
 vault.clone: | _verify_VAULT_URL
 	[ ! -e $(VAULT_DIR) ] && git clone $(VAULT_URL) $(VAULT_DIR) || :;
 
-vault.decrypt-files: $(SOP_SH) gpg.import-private-key vault.clone
+# alias for legacy refs
+vault.decrypt-files: vault.decrypt
+
+vault.decrypt: $(SOP_SH) gpg.import-private-key vault.clone
 	cd $(VAULT_DIR)
 	for vfile in $(VAULT_FILES); do
 		outFile="$${vfile/.enc./.}" # remove .enc.
@@ -70,7 +73,8 @@ gpg.import-private-key:
 	fi
 
 # encrypts a dummy file so that it doesnt ask again for passphrase when sops is run
-# this is only needed if using a private key that has passphrase
+# this is only needed if using a private key that has passphrase,
+# kept here for reference but not used right now
 gpg.passphrase:
 	if [ "$(GPG_PASS)" ]; then
 		touch build/dummy.txt
