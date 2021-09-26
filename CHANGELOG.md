@@ -1,3 +1,8 @@
+### v1.0.33
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.32...v1.0.33)
+- removes secrets.make from defaults in spring and k8s-commons.make, need to add vault in separately (#25) [link](https://github.com/yakworks/shipkit/commit/af37bf97309e5bcbbf0de9749202245ca51dce79)
+
 ### v1.0.32
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.31...v1.0.32)
