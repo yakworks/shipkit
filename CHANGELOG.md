@@ -1,3 +1,8 @@
+### v1.0.35
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.34...v1.0.35)
+- escape the $1 and $2 so they dont get piked up and replaced. (#27) [link](https://github.com/yakworks/shipkit/commit/9c9fbe8bdf45b4785bc22ad4611f41a7d297e682)
+
 ### v1.0.34
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.33...v1.0.34)
