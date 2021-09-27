@@ -16,13 +16,14 @@ function heredoc_tpl {
   local tplFile=${1##*/}
   # replace .tpl.yml with .yml or .tpl.any with .any is what `/.tpl./.` is doing
   local processedTpl="$2/${tplFile/.tpl./.}"
-
+  tplFile="$1"
+  # unset $1
+  # unset $2
 ## LEAVE THIS INDENT, heredoc needs to to look this way
 eval "cat << EOF
-$(<"$1")
+$(<"$tplFile")
 EOF
 " > "$processedTpl"
 
 	echo "$processedTpl"
 }
-

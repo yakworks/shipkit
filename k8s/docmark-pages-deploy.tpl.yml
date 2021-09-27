@@ -1,7 +1,7 @@
 # kubernetes deployment for pages generated with docmark.
 # container uses env variables to download git project, build the docs and then start a nginx webserver
 # sets up ingress-nginx services and uses default tls cert that was setup for it.
-# use the heredoc_tpl to process this template for example `apply_tpl build/bin/kube_templates/.tpl.yml`
+# use the heredoc_tpl to process this template for example 'apply_tpl build/bin/kube_templates/.tpl.yml'
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -77,11 +77,12 @@ metadata:
     # takes second capture group in path and send it on to the service web server
     # so /foo/bar/ will request bar/ from service
     # see https://kubernetes.github.io/ingress-nginx/examples/rewrite/
-    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+    nginx.ingress.kubernetes.io/rewrite-target: "/\$2"
     # Rewrite all URLs, not ending with a segment containing . or ?, to have a trailing slash
     # So basically we are making all folder path names to have a trailing slash.
+    #NOTE: we use heredoc to process so the $1 and $2 need to be escaped or they get picked up as function params and replaced
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      rewrite ^([^.?]*[^/])$ $1/ redirect;
+      rewrite ^([^.?]*[^/])$ \$1/ redirect;
   labels:
     pages: ${PAGES_APP_KEY}
 spec:
