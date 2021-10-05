@@ -1,3 +1,8 @@
+### v1.0.36
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.35...v1.0.36)
+- adds postgressql as option for DBMS (#28) [link](https://github.com/yakworks/shipkit/commit/dea305ba0ee60da5b671272c49d1e4f33e94b316)
+
 ### v1.0.35
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.34...v1.0.35)
