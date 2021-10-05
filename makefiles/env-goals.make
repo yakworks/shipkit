@@ -19,17 +19,19 @@ $(dummy_targets):
 # the main Makefile should specify the default
 ifdef DB
 
-  export DBMS ?= mysql
+  export DBMS ?= postgresql
   ifeq (sqlserver,$(filter sqlserver,$(MAKECMDGOALS)))
    DBMS = sqlserver
   else ifeq (oracle,$(filter oracle,$(MAKECMDGOALS)))
    DBMS = oracle
   else ifeq (h2,$(filter h2,$(MAKECMDGOALS)))
    DBMS = h2
+  else ifeq (mysql,$(filter mysql,$(MAKECMDGOALS)))
+   DBMS = mysql
   endif
 
   # dummy targets so we dont get the make[1]: Nothing to be done for `xxx'.
-  dummy_db_targets = mysql sqlserver postgres h2
+  dummy_db_targets = postgresql mysql sqlserver oracle h2
   .PHONY: $(dummy_db_targets)
   $(dummy_db_targets):
 	@:
