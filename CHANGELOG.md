@@ -1,3 +1,8 @@
+### v1.0.38
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.37...v1.0.38)
+- Env goals psql (#30) [link](https://github.com/yakworks/shipkit/commit/f27b70a77195f485db89a6776682b702f70d5352)
+
 ### v1.0.37
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.36...v1.0.37)
