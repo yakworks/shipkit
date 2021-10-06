@@ -28,7 +28,7 @@ logit.error() {
 }
 
 logit() {
-  if [ "$LOGIT_DISABLED" ]; then
+  if [ "${LOGIT_DISABLED:-}" ]; then
     return 0
   fi
   LOGIT_DIR="${LOGIT_DIR:-$LOGIT_DEFAULT_DIR}"
