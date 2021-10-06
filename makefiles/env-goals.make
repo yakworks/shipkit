@@ -34,12 +34,12 @@ ifdef DB
    DBMS = mysql
   else ifeq (postgresql,$(filter postgresql,$(MAKECMDGOALS)))
    DBMS = postgresql
-  else ifeq (postgres,$(filter postgres,$(MAKECMDGOALS)))
+  else ifeq (psql,$(filter psql,$(MAKECMDGOALS)))
    DBMS = postgresql
   endif
 
   # dummy targets so we dont get the make[1]: Nothing to be done for `xxx'.
-  dummy_db_targets = postgresql postgres mysql sqlserver oracle h2
+  dummy_db_targets = postgresql psql mysql sqlserver oracle h2
   .PHONY: $(dummy_db_targets)
   $(dummy_db_targets):
 	@:
