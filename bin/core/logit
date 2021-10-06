@@ -28,6 +28,9 @@ logit.error() {
 }
 
 logit() {
+  if [ "$LOGIT_DISABLED" ]; then
+    return 0
+  fi
   LOGIT_DIR="${LOGIT_DIR:-$LOGIT_DEFAULT_DIR}"
 	# default to "user" facility, can be set to local[0-9], etc.
   LOGIT_FACILITY="${LOGIT_FACILITY:-user}"
