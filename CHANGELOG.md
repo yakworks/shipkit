@@ -1,3 +1,8 @@
+### v1.0.39
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.38...v1.0.39)
+- fix docker stop and added psql as shortcut for postgresql (#31) [link](https://github.com/yakworks/shipkit/commit/5e6f0cdcdfbe5b308c704e6c30390b00b170aaa0)
+
 ### v1.0.38
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.37...v1.0.38)
