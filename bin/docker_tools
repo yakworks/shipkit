@@ -20,7 +20,6 @@ function docker.login {
 # arg $1 - the docker name
 function docker.stop {
   if [ "$(docker ps -aq -f name="${1}")" ]; then
-    # echo "if this following shows errors 'No such container:' next its fine as its doing a force rm"
     docker stop "${1}" || true
   fi
 }
@@ -29,8 +28,9 @@ function docker.stop {
 # arg $1 - the docker name
 function docker.remove {
   if [ "$(docker ps -aq -f name="${1}")" ]; then
-    # echo "if this following shows errors 'No such container:' next its fine as its doing a force rm"
-    ( docker stop "${1}" || true ) && ( docker rm "${1}" || true )
+     docker stop "${1}" || true
+     docker rm "${1}" || true
+     # echo "if this following shows errors 'No such container:' next its fine as its doing a force rm"
   fi
 }
 
