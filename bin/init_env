@@ -222,11 +222,17 @@ function init_db_env {
   # PASS_VAR_NAME is the environment variable name that the docker dbs require. will be different based on vendor
   setVar PASS_VAR_NAME "MYSQL_ROOT_PASSWORD"
 
-  # DBMS overrides for sqlserver
-  if [ "$DBMS" == "sqlserver" ]; then
+  if [ "$DBMS" == "mysql" ]; then
+    PASS_VAR_NAME="MYSQL_ROOT_PASSWORD"
+    DB_PORT=3306
+  elif [ "$DBMS" == "sqlserver" ]; then
     PASS_VAR_NAME="SA_PASSWORD"
     DB_PORT=1433
+  elif [ "$DBMS" == "postgresql" ]; then
+    PASS_VAR_NAME="POSTGRES_PASSWORD"
+    DB_PORT=5432
   fi
+
   if [ "${USE_DOCKER_DB_BUILDER:-}" = "true" ]; then
     setVar DockerDbExec "docker exec ${DOCK_DB_BUILD_NAME}"
     # if /.dockerenv this is inside a docker (such as circleCI) already
