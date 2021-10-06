@@ -1,3 +1,8 @@
+### v1.0.37
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.36...v1.0.37)
+- add testing env as option, easier to recall than testenv, moved mysql back to default for db (#29) [link](https://github.com/yakworks/shipkit/commit/00b125defe6903eebd9aecc5c8bc3a0953fe0b16)
+
 ### v1.0.36
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.35...v1.0.36)
