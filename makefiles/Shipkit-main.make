@@ -19,9 +19,13 @@ SHELL_EXPORTS := $(foreach v,$(SHELL_VARS), $(v)='$($(v))')
 init_env.sh ?= $(SHIPKIT_BIN)/init_env
 # we do this in subshell so it forces the file to be generated before the sindlues happens
 SH_RESULTS := $(shell $(SHELL_EXPORTS) $(init_env.sh) make_env $(BUILD_ENV))
-ifneq ($(.SHELLSTATUS),0)
+
+ifneq ($(.SHELLSTATUS),)
+ ifneq ($(.SHELLSTATUS),0)
   $(error init_env error -> $(SH_RESULTS))
+ endif
 endif
+
 ifeq (true,$(VERBOSE))
   $(info SEE build/make/shipkit.log FOR LOGIT OUTPUT)
   $(info make_env results: $(SH_RESULTS))
