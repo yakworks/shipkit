@@ -229,7 +229,13 @@ function init_db_env {
   fi
   if [ "${USE_DOCKER_DB_BUILDER:-}" = "true" ]; then
     setVar DockerDbExec "docker exec ${DOCK_DB_BUILD_NAME}"
+    # if /.dockerenv this is inside a docker (such as circleCI) already
+    # then we don't want to run docker in dockers, so blank it out
+    if [ -f /.dockerenv ] || [ "${CI:-}" == "true" ]; then
+      DockerDbExec=""
+    fi
   fi
+
   # if we are inside the docker builder but not in circleCI force the DB_HOST
   if [ -f /.dockerenv ] && [ "${CI:-}" != "true" ]; then
     setVar DB_HOST "${DOCK_DB_BUILD_NAME}"
