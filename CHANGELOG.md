@@ -1,3 +1,8 @@
+### v1.0.40
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.39...v1.0.40)
+- if then check on databases fro default ports (#32) [link](https://github.com/yakworks/shipkit/commit/9b35866b2152feb20d32e7270f7e968cc3b5c495)
+
 ### v1.0.39
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.38...v1.0.39)
