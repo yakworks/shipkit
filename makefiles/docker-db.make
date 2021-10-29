@@ -47,3 +47,4 @@ db.pull: db.down ## pulls latest nine-db from dock9 docker hub
 docker.remove-all: builder-remove
 	$(MAKE) mysql db.down
 	$(MAKE) sqlserver db.down
+	${MAKE} postgresql db.down
