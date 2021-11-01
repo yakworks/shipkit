@@ -1,3 +1,8 @@
+### v1.0.41
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.40...v1.0.41)
+- Adds support for postgresql (#33) [link](https://github.com/yakworks/shipkit/commit/737428ea7c15c39b5487301119a9d06c7bc1e122)
+
 ### v1.0.40
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.39...v1.0.40)
