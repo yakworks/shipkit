@@ -23,7 +23,7 @@ $(dummy_targets):
 # the main Makefile should specify the default
 ifdef DB
 
-  export DBMS ?= mysql
+  export DBMS ?= postgresql
   ifeq (sqlserver,$(filter sqlserver,$(MAKECMDGOALS)))
    DBMS = sqlserver
   else ifeq (oracle,$(filter oracle,$(MAKECMDGOALS)))

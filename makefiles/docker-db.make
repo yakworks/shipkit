@@ -40,10 +40,3 @@ db.restart: db.down
 ## stop and remove the docker DOCK_DB_BUILD_NAME
 db.pull: db.down ## pulls latest nine-db from dock9 docker hub
 	docker pull $(DB_DOCKER_URL)
-
-
-#----- clean up-------
-# runs `make db.down` for sqlserver and mysql and
-docker.remove-all: builder-remove
-	$(MAKE) mysql db.down
-	$(MAKE) sqlserver db.down
