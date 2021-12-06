@@ -1,3 +1,8 @@
+### v1.0.42
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.41...v1.0.42)
+- can have dev releasebale dev branches that only release snapshots, make sure they can't ever get set to snapshot=false (#34) [link](https://github.com/yakworks/shipkit/commit/7ca65efb89a64e2f87aac12f3d2ad65e6c823430)
+
 ### v1.0.41
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.40...v1.0.41)
