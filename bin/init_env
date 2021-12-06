@@ -36,6 +36,7 @@ function make_env_init {
 function init_env {
   version=${version:-}
   [ "$version" ] && init_versions
+
   logit.info "init_env start with version $version"
 
   # if we passed in a file name
@@ -106,11 +107,20 @@ function init_defaults {
     logit.info "dry_run enabled, current_git_branch=$cur_branch RELEASABLE_BRANCH=$RELEASABLE_BRANCH "
   fi
 
+
   # default the releasable branch pattern and changelog name
   setVar RELEASE_BRANCH_REGEX "master|main|release/.+"
   setVar RELEASE_CHANGELOG "CHANGELOG.md"
   if [[ "${ACTIVE_BRANCH:-}" && "${ACTIVE_BRANCH}" =~ ^(${RELEASE_BRANCH_REGEX})$ ]]; then
     setVar RELEASABLE_BRANCH "$ACTIVE_BRANCH"
+  fi
+
+  # can have dev releasebale dev branches that only release snapshots,
+  # make sure they can't ever get set to snapshot=false
+  setVar RELEASE_DEV_BRANCH_REGEX "dev"
+  if [[ "${ACTIVE_BRANCH:-}" =~ ^(${RELEASE_DEV_BRANCH_REGEX})$ && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
+    echo "version.snapshot MUST ALWAYS BE FALSE on dev branch"
+    return 1
   fi
 
   # shellcheck disable=SC2034
