@@ -11,11 +11,13 @@ build_gradle ?= build.gradle
 
 ## runs codenarc and spotless
 lint::
-	$(gradlew) spotlessCheck codenarcMain
+	$(gradlew) spotlessApply
+	$(gradlew) codenarcMain
 
 ## Run the lint and test suite with ./gradlew check
-check::
-	$(gradlew) check
+# check::
+# 	$(gradlew) spotlessApply
+# 	$(gradlew) check
 
 clean::
 	$(gradlew) clean
