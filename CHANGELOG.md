@@ -1,3 +1,8 @@
+### v1.0.44
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.43...v1.0.44)
+- add secret as we use the on the fly certs now (#36) [link](https://github.com/yakworks/shipkit/commit/47300fab5a7df156302bafbc1f0189d1e73052ec)
+
 ### v1.0.43
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.42...v1.0.43)
