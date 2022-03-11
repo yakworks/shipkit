@@ -98,6 +98,6 @@ spec:
             port:
               number: 80
   tls:
-  - hosts:
+  - secretName: ${APP_KEY}-tls
+    hosts:
       - ${PAGES_KUBE_URL}
-
