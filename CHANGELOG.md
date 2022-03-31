@@ -1,3 +1,8 @@
+### v1.0.45
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.44...v1.0.45)
+- change so vault requires the GITHUB_TOKEN (#37) [link](https://github.com/yakworks/shipkit/commit/1dbcb1787d7c0aa97a702f9c68a869c9765f6544)
+
 ### v1.0.44
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.43...v1.0.44)
