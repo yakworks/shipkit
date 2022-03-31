@@ -8,6 +8,14 @@ VAULT_DIR   ?= $(BUILD_DIR)/vault
 VAULT_FILES ?= bot.enc.env
 VAULT_BOT_ENV_FILE := $(VAULT_DIR)/bot.env
 
+VAULT_BASE_URL ?= github.com/$(VAULT_REPO).git
+VAULT_GITHUB_URL ?= https://$(VAULT_BASE_URL)
+
+ifdef GITHUB_TOKEN
+  VAULT_GITHUB_URL = https://dummy:$(GITHUB_TOKEN)@$(VAULT_BASE_URL)
+endif
+
+
 # --- look for build/vault/bot.env , run  sops.decrypt-vault-files --
 # we import it straight into make since these are secrets, dont want them in BUILD_VARS where they can get logged
 
@@ -42,8 +50,8 @@ $(SOP_SH):
 # easier for testing
 sops.install: $(SOP_SH)
 
-vault.clone: | _verify_VAULT_URL
-	[ ! -e $(VAULT_DIR) ] && git clone $(VAULT_URL) $(VAULT_DIR) || :;
+vault.clone: | _verify_VAULT_GITHUB_URL
+	[ ! -e $(VAULT_DIR) ] && git clone $(VAULT_GITHUB_URL) $(VAULT_DIR) || :;
 
 # alias for legacy refs
 vault.decrypt-files: vault.decrypt
