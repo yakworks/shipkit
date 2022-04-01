@@ -55,9 +55,3 @@ push-snapshot-false:
 	git push $(GITHUB_BOT_URL)
 	$(logr.done)
 
-foo:
-	sed -i.bak -e "s/^snapshot=.*/snapshot=zzz/g" version.properties && rm version.properties.bak
-	git add version.properties
-	git commit -m "foo"
-	git push $(GITHUB_BOT_URL)
-	$(logr.done)
