@@ -17,6 +17,9 @@ include $(SHIPKIT_MAKEFILES)/bats-testing.make
 export BOT_EMAIL ?= 9cibot@9ci.com
 export BOT_SIGN_COMMITS = true
 export VAULT_REPO = 9ci/vault
+# after release, will set version.properties back to snapshot=true
+export VERSION_SET_SNAPSHOT = true
+
 # can be set here but best do it on command line with make
 # export LOGIT_DEBUG_ENABLED := true
 
