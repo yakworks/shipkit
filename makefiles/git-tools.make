@@ -40,5 +40,6 @@ git.config-signed-commits:
 	if [ "$$BOT_SIGN_COMMITS" = "true" ] ; then
 		git config --global commit.gpgsign true
 		secKeyId=$$(gpg --list-secret-keys --keyid-format=long | grep sec | cut -d'/' -f 2 | cut -d' ' -f 1)
+		echo "signing commits with key id $$secKeyId"
 		git config --global user.signingkey "$$secKeyId"
 	fi
