@@ -7,6 +7,7 @@ setup() {
   export PATH=$FIXTURE_DIR/bin:$PATH
   export GITHUB_TOKEN=s3cr3t
   export BOT_EMAIL=9cibot@9ci.com
+  export BOT_SIGN_COMMITS=false
 }
 
 teardown() {
@@ -35,6 +36,6 @@ teardown() {
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]
-  [ "${lines[2]}" == "mock-git config --global user.name 9cibot" ]
+  [ "${lines[1]}" == "mock-git config --global user.name 9cibot" ]
 }
 
