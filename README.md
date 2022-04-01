@@ -40,7 +40,7 @@ Yes we need it. Its pretty much every where. And when using an alpine docker ima
 
 From [The Lost Art of the Makefile](https://www.olioapps.com/blog/the-lost-art-of-the-makefile/)
 
-> Make is a general-purpose build tool that has been improved upon and refined continuously since its introduction over forty years ago. Make is great at expressing build steps concisely and is not specific to (insert language here) projects. It is very good at incremental builds, which can save a lot of time when you rebuild after changing one or two files in a large project.
+> Make is a general-purpose build tool that has been improved upon and refined continuously since its introduction over forty years ago. Make is great at expressing build steps concisely and is not specific to (insert language here) projects. It is very good at incremental builds, which can save a lot of time when you rebuild after changing one or two files in a large project. G
 
 > Make has been around long enough to have solved problems that newer build tools are only now discovering for themselves.
 
