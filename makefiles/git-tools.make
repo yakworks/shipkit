@@ -43,3 +43,21 @@ git.config-signed-commits:
 		git config --global user.signingkey "$$secKeyId"
 		$(logr) "signing commits with key id $${secKeyId::-6}******"
 	fi
+
+GITHUB_BOT_URL = https://dummy:$(GITHUB_BOT_TOKEN)@$(GITHUB_BASE_URL)
+# foo:
+# 	echo $(GITHUB_BOT_URL)
+## changes verison.properties to snapshot=false and force pushes commit with release message to git.
+push-snapshot-false:
+	sed -i.bak -e "s/^snapshot=.*/snapshot=false/g" version.properties && rm version.properties.bak
+	git add version.properties
+	git commit -m "trigger release"
+	git push $(GITHUB_BOT_URL)
+	$(logr.done)
+
+foo:
+	sed -i.bak -e "s/^snapshot=.*/snapshot=zzz/g" version.properties && rm version.properties.bak
+	git add version.properties
+	git commit -m "foo"
+	git push $(GITHUB_BOT_URL)
+	$(logr.done)
