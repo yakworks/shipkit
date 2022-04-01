@@ -30,7 +30,7 @@ push-version-bumps:
 		git add README.md version.properties "$(RELEASE_CHANGELOG)"
 		git commit -m "v$(VERSION) changelog, version bump [ci skip]"
 		# incase needed uses --force
-		git push --force -q $(GITHUB_URL) $(RELEASABLE_BRANCH)
+		git push --force $(GITHUB_URL) $(RELEASABLE_BRANCH)
 		$(logr.done)
 	fi
 
