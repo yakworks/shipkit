@@ -30,7 +30,7 @@ push-version-bumps:
 		git add README.md version.properties "$(RELEASE_CHANGELOG)"
 		git commit -m "v$(VERSION) changelog, version bump [ci skip]"
 		# incase needed uses --force
-		git push --force $(GITHUB_URL) $(RELEASABLE_BRANCH)
+		git push $(GITHUB_URL) $(RELEASABLE_BRANCH)
 		$(logr.done)
 	fi
 
@@ -59,5 +59,5 @@ push-snapshot-false:
 	sed -i.bak -e "s/^snapshot=.*/snapshot=false/g" version.properties && rm version.properties.bak
 	git add version.properties
 	git commit -m "trigger release"
-	git push --force
+	git push
 	$(logr.done)
