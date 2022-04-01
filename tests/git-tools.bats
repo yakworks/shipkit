@@ -35,6 +35,6 @@ teardown() {
   __debug "${status}" "${output}" "${lines[@]}"
 
   [ "$status" -eq 0 ]
-  [ "${lines[2]}" == "mock-git config --global user.name 9cibot" ]
+  [ "${lines[3]}" == "mock-git config --global user.name 9cibot" ]
 }
 
