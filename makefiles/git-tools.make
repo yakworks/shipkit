@@ -41,5 +41,5 @@ git.config-signed-commits:
 		git config --global commit.gpgsign true
 		secKeyId=$$(gpg --list-secret-keys --keyid-format=long | grep sec | cut -d'/' -f 2 | cut -d' ' -f 1)
 		git config --global user.signingkey "$$secKeyId"
-		$(logr) "signing commits with key id $$secKeyId"
+		$(logr) "signing commits with key id $${secKeyId::-6}******"
 	fi
