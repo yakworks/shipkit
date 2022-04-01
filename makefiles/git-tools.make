@@ -24,11 +24,17 @@ git.push-pages: | _verify_PAGES_BRANCH _verify_PROJECT_FULLNAME
 
 
 git.config-bot-user: export BOT_USER ?= $(shell echo $(BOT_EMAIL) | cut -d "@" -f1)
-git.config-bot-user: | _verify_BOT_EMAIL
+git.config-bot-user: git.config-signed-commits | _verify_BOT_EMAIL
 	hasGitUser=`git config --global user.email || true`
 	if [ ! "$$hasGitUser" ] || [ "$(CI)" ]; then
 		git config credential.helper 'cache --timeout=120'
 		git config --global user.name "$(BOT_USER)"
 		git config --global user.email "$(BOT_EMAIL)"
 		$(logr) "git.config-bot-user for $(BOT_USER)<$(BOT_EMAIL)>"
+	fi
+
+# assumes that the gpg.import-key has been run already and name matches.
+git.config-signed-commits:
+	if [ "$$BOT_SIGN_COMMITS" = "true" ] ; then
+		git config --global commit.gpgsign true
 	fi
