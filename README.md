@@ -10,6 +10,7 @@ For a standardized way to build, test and deploy across projects that stays out 
 
 ## Why?
 
+
 From https://github.blog/2015-06-30-scripts-to-rule-them-all/
 
 > We have a lot of software running our products and company. We also have a lot of potential contributing members. Being able to get from git clone to an up-and-running project in a development environment is imperative for fast, reliable contributions. A consistent bootstrapping experience across all our projects reduces friction and encourages contribution.
