@@ -29,11 +29,10 @@ push-version-bumps:
 	else
 		git add README.md version.properties "$(RELEASE_CHANGELOG)"
 		git commit -m "v$(VERSION) changelog, version bump [ci skip]"
-		git push -q $(GITHUB_URL) $(RELEASABLE_BRANCH)
+		# incase needed uses --force
+		git push --force $(GITHUB_URL) $(RELEASABLE_BRANCH)
 		$(logr.done)
 	fi
-
-
 
 # -- release --
 ifneq ($(or $(IS_RELEASABLE),$(dry_run)),)
@@ -54,3 +53,11 @@ else # not IS_RELEASABLE, so its a snapshot or its not on a releasable branch
 	$(logr.done) " - IS_RELEASABLE=false as this is either a snapshot or its not on a releasable branch"
 
 endif # end RELEASABLE_BRANCH
+
+## changes verison.properties to snapshot=false and force pushes commit with release message to git.
+push-snapshot-false:
+	sed -i.bak -e "s/^snapshot=.*/snapshot=false/g" version.properties && rm version.properties.bak
+	git add version.properties
+	git commit -m "trigger release"
+	git push --force
+	$(logr.done)
