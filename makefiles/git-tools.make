@@ -45,13 +45,20 @@ git.config-signed-commits:
 	fi
 
 GITHUB_BOT_URL = https://dummy:$(GITHUB_BOT_TOKEN)@$(GITHUB_BASE_URL)
-# foo:
-# 	echo $(GITHUB_BOT_URL)
+
 ## changes verison.properties to snapshot=false and force pushes commit with release message to git.
 push-snapshot-false:
-	sed -i.bak -e "s/^snapshot=.*/snapshot=false/g" version.properties && rm version.properties.bak
-	git add version.properties
-	git commit -m "trigger release"
-	git push $(GITHUB_BOT_URL)
-	$(logr.done)
+	changed_files=$$(git status --porcelain --untracked-files=no | wc -l)
+	unpushed=$$(git cherry -v)
+	if [ $$changed_files -gt 0 ] || [ "$$unpushed" ] ; then
+		$(logr.error) "uncommitted changes detected. must be in a clean state"
+		git status
+	else
+		sed -i.bak -e "s/^snapshot=.*/snapshot=false/g" version.properties && rm version.properties.bak
+		git add version.properties
+		git commit -m "trigger release"
+		git push $(GITHUB_BOT_URL)
+		$(logr.done)
+	fi
 
+trigger-release: push-snapshot-false
