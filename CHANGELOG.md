@@ -1,3 +1,23 @@
+### v1.0.46
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.45...v1.0.46)
+- trigger release [link](https://github.com/yakworks/shipkit/commit/b87938947f658b599efff87964b51017fdf6a36a)
+- Push release thing (#43) [link](https://github.com/yakworks/shipkit/commit/556921f2a12138f8c668d4e506c19a1188026595)
+- back to true [link](https://github.com/yakworks/shipkit/commit/9cbe5ced2772a5c0c05c40a1946a314e13064e47)
+- should not work [link](https://github.com/yakworks/shipkit/commit/9a9a61bc7758469a569f6b106de4ded50303f3d5)
+- remove foo target [link](https://github.com/yakworks/shipkit/commit/ffd2321d68d7365df81ae32a5bc9b3101755cc60)
+- back to true [link](https://github.com/yakworks/shipkit/commit/f1e324ff43478027d7498cbd914f5869f0d8f9d5)
+- foo [link](https://github.com/yakworks/shipkit/commit/fc29a020bf0e9a2eeb2d4a3ea160530589846551)
+- try to get push working with bot key [link](https://github.com/yakworks/shipkit/commit/2d7d44ee6afb33acef21bccda6e0a5e60c4260c0)
+- remove force [link](https://github.com/yakworks/shipkit/commit/3f0005c9e3e34dc88f7f4a95ff0ecdb2022d2f40)
+- snapshot true [link](https://github.com/yakworks/shipkit/commit/0f33ab454e6254379a336eb1c4435055106e1b3e)
+- trigger release [link](https://github.com/yakworks/shipkit/commit/c7b2ba22d71af3bfce32d74d8910b21081527560)
+- snapshot by default (#41) [link](https://github.com/yakworks/shipkit/commit/13e45e9516333fb423ce5dfefdb39482ee2949fb)
+- read sec key and use that for git (#39) [link](https://github.com/yakworks/shipkit/commit/7c52c276285722f472e786c0fbba0f3b8abe46eb)
+- Sign commits (#38) [link](https://github.com/yakworks/shipkit/commit/5fa3163bc9f1be8b77bb85c62c2dd78f2a009edf)
+- readme [link](https://github.com/yakworks/shipkit/commit/7e8e91f2708bdf5693278cb42f6cdb60c451b15c)
+- update readme [link](https://github.com/yakworks/shipkit/commit/aa6aae0f3d0a9f7e64f3b051923d95448fd38bac)
+
 ### v1.0.45
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.44...v1.0.45)
