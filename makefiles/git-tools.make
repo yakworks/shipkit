@@ -61,4 +61,4 @@ push-snapshot-false:
 		$(logr.done)
 	fi
 
-push-release: push-snapshot-false
+trigger-release: push-snapshot-false
