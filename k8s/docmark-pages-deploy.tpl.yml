@@ -71,6 +71,8 @@ metadata:
   name: ${PAGES_APP_KEY}
   namespace: ${PAGES_KUBE_NAMESPACE}
   annotations:
+    # use the autogeneration issuer
+    cert-manager.io/cluster-issuer: "letsencrypt-issuer"
     # snippet redirects *.9ci.io/docs to *.9ci.io/docs/ with the trailing slash
     # https://github.com/kubernetes/ingress-nginx/issues/646
     kubernetes.io/ingress.class: "nginx"
