@@ -1,3 +1,9 @@
+### v1.0.47
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.46...v1.0.47)
+- triugger release [link](https://github.com/yakworks/shipkit/commit/e4f39647156deab15364f1fce974855c7a609706)
+- use issuer (#44) [link](https://github.com/yakworks/shipkit/commit/968b2c113a7f3b32cd3827fddee03335f8db5e9f)
+
 ### v1.0.46
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.45...v1.0.46)
