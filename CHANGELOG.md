@@ -1,3 +1,8 @@
+### v1.0.49
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.48...v1.0.49)
+- change from VERSION_POSTFIX to VERSION_SUFFIX [link](https://github.com/yakworks/shipkit/commit/c03b977f29869f7e5433a295724224916cb61aef)
+
 ### v1.0.48
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.47...v1.0.48)
