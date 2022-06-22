@@ -1,3 +1,9 @@
+### v1.0.48
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.47...v1.0.48)
+- publish [link](https://github.com/yakworks/shipkit/commit/8971a9e4afa8d2ca39a82f7bc08526e88a5c21c8)
+- fix vaul_dir (#45) [link](https://github.com/yakworks/shipkit/commit/ed2348ecd8dca67e6f29be3a0721e1d38bc3a416)
+
 ### v1.0.47
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.46...v1.0.47)
