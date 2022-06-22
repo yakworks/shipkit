@@ -54,9 +54,9 @@ vault.clone: | _verify_VAULT_GITHUB_URL
 	[ ! -e $(VAULT_DIR) ] && git clone $(VAULT_GITHUB_URL) $(VAULT_DIR) || :;
 
 # alias for legacy refs
-vault.decrypt-files: vault.decrypt
+vault.decrypt: $(VAULT_DIR)
 
-vault.decrypt: $(SOP_SH) gpg.import-private-key vault.clone
+$(VAULT_DIR): | $(SOP_SH) gpg.import-private-key vault.clone
 	cd $(VAULT_DIR)
 	for vfile in $(VAULT_FILES); do
 		outFile="$${vfile/.enc./.}" # remove .enc.
@@ -77,7 +77,7 @@ gpg.import-private-key:
 		echo "$(GPG_KEY)" | base64 --decode | gpg -v --batch --import --quiet --no-verbose
 		$(logr) "GPG_KEY imported"
 	else
-		$(logr) "GPG_KEY not set, no key to import"
+		$(logr.warn) "GPG_KEY not set, no key was imported"
 	fi
 
 # encrypts a dummy file so that it doesnt ask again for passphrase when sops is run
@@ -91,3 +91,6 @@ gpg.passphrase:
 	fi
 
 # gpg above --batch doesn't ask for prompt and -v is verbose
+
+clean.vault:
+	rm -rf $(VAULT_DIR)

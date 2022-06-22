@@ -54,7 +54,7 @@ else # not IS_RELEASABLE, so its a snapshot or its not on a releasable branch
 
 endif # end RELEASABLE_BRANCH
 
-## changes verison.properties to snapshot=false and force pushes commit with release message to git.
+# changes verison.properties to snapshot=false and force pushes commit with release message to git.
 # push-snapshot-false:
 # 	sed -i.bak -e "s/^snapshot=.*/snapshot=false/g" version.properties && rm version.properties.bak
 # 	git add version.properties
