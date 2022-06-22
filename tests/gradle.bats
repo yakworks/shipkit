@@ -23,7 +23,7 @@ teardown() {
   target_name="$BATS_TEST_DESCRIPTION"
   run make -f $FIXTURE_DIR/Makefile $target_name
   assert_success
-  assert_output --partial "[$target_name] finished"
+  assert_output --partial "[$target_name] completed"
   # assert_equal "${lines[0]}" "mock-gradlew resolveConfigurations --no-daemon"
 }
 
@@ -31,7 +31,7 @@ teardown() {
   target_name="$BATS_TEST_DESCRIPTION"
   run make -f $FIXTURE_DIR/Makefile $target_name
   assert_success
-  assert_output --partial "[$target_name] finished"
+  assert_output --partial "[$target_name] completed"
   # assert_equal "${lines[0]}" "mock-gradlew resolveConfigurations --no-daemon"
 }
 
@@ -47,6 +47,6 @@ teardown() {
   target_name=ship.libs
   run make -f $FIXTURE_DIR/Makefile $target_name RELEASABLE_BRANCH=true
   assert_success
-  assert_output --partial "[ship.libs] finished"
+  assert_output --partial "[ship.libs] completed"
 }
 
