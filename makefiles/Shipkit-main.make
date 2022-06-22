@@ -80,7 +80,7 @@ log-vars: FORCE
 		if [[ $${varName^^} =~ TOKEN|PASSWORD|GPG.*KEY|REPO.*KEY ]]; then
 			varVal="*********"
 		fi
-		printf "$(ccyan)$$varName $(creset)=$(cbold) "$$varVal"$(creset)\n"
+		printf "$(ccyan)$$varName$(creset)=$(cbold)""$$varVal""$(creset)\n"
 	done;
 
 log-make-vars: FORCE
@@ -152,7 +152,7 @@ endef
 
 # target wtih check mark
 define logr.done =
-printf '$(cgreen)✔︎ [$@] finished %s $(creset)\n'
+printf '$(cgreen)✔︎ [$@] completed %s $(creset)\n'
 endef
 
 define logr =
