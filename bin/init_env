@@ -196,7 +196,7 @@ function init_versions {
 
   # if its a snapshot then append the SNAPSHOT
   if truthy "${snapshot:-}"; then
-    putVar VERSION_POSTFIX "-SNAPSHOT"
+    putVar VERSION_SUFFIX "-SNAPSHOT"
     putVar IS_SNAPSHOT true
     BUILD_VERSION+="-SNAPSHOT"
     VERSIONX_DOTLESS+="-SNAPSHOT"
