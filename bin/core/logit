@@ -99,6 +99,13 @@ __logit_exec() {
     return 0 # exit fast
   fi
 
+  # hack so wont fail for now on debian with no logger
+  if [ ! -e /dev/log ]; then
+    # echo "this is a log message" >> "${LOGIT_SCRIPT_LOG}"
+    echo "${LOGIT_FACILITY}.$1" "$2" "$3" >> "${LOGIT_SCRIPT_LOG}"
+    return 0 # exit fast
+  fi
+
 	if [[ $LOGIT_VERBOSE == true ]]; then
     # The 2>&1says "redirect file descriptor #2 to the same place #1 is going", and then you can pipe both of them at once.
 		logger -p "${LOGIT_FACILITY}.$1" -t "$2" -s "$3" 2>&1 | tee -a "${LOGIT_SCRIPT_LOG}" 1>&2
