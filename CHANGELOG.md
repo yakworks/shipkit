@@ -1,3 +1,10 @@
+### v1.0.50
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.49...v1.0.50)
+- Merge branch 'release/1.0.x' of https://github.com/yakworks/shipkit into release/1.0.x [link](https://github.com/yakworks/shipkit/commit/77150399c073f3b876e48280790f12ea52bcc3a1)
+- publish [link](https://github.com/yakworks/shipkit/commit/128f49e6b0f82f3dbba9a7b7dbad9d1e4bbd2e42)
+- fix logging on debian (#46) [link](https://github.com/yakworks/shipkit/commit/d6f9666de2c759be5cb015c9ab774ba259bdb093)
+
 ### v1.0.49
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.48...v1.0.49)
