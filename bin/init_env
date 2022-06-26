@@ -119,8 +119,9 @@ function init_defaults {
   # make sure they can't ever get set to snapshot=false
   setVar RELEASE_DEV_BRANCH_REGEX "dev"
   if [[ "${ACTIVE_BRANCH:-}" =~ ^(${RELEASE_DEV_BRANCH_REGEX})$ && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
-    echo "version.snapshot MUST ALWAYS BE FALSE on dev branch"
-    return 1
+    echo "****** version.snapshot SHOULD BE FALSE on dev branch"
+    echo "****** Setting IS_SNAPSHOT=true since on dev branch"
+    set_snapshot
   fi
 
   # shellcheck disable=SC2034
@@ -196,13 +197,17 @@ function init_versions {
 
   # if its a snapshot then append the SNAPSHOT
   if truthy "${snapshot:-}"; then
-    putVar VERSION_SUFFIX "-SNAPSHOT"
-    putVar IS_SNAPSHOT true
-    BUILD_VERSION+="-SNAPSHOT"
-    VERSIONX_DOTLESS+="-SNAPSHOT"
+    set_snapshot
   fi
 
   return 0
+}
+
+function set_snapshot {
+  putVar VERSION_SUFFIX "-SNAPSHOT"
+  putVar IS_SNAPSHOT true
+  BUILD_VERSION+="-SNAPSHOT"
+  VERSIONX_DOTLESS+="-SNAPSHOT"
 }
 
 # Checks for CIRCLECI and normalizes some ENV vars that are availiable
