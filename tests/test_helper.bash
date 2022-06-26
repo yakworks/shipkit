@@ -1,7 +1,9 @@
 #!/bin/bash
 # Load dependencies.
-load "build/installs/bats-support/load.bash"
-load "build/installs/bats-assert/load.bash"
+# load "build/installs/bats-support/load.bash"
+# load "build/installs/bats-assert/load.bash"
+bats_load_library bats-support
+bats_load_library bats-assert
 
 source "$SHIPKIT_BIN/core/main"
 
@@ -23,10 +25,11 @@ fixtures() {
   export PATH=$FIXTURES_ROOT/bin:$PATH
 }
 
-echo_test_name() {
-  clr_blue='\e[34m'
-  echo -e "# ${clr_blue}Test $(basename ${BATS_TEST_FILENAME})" >&3
-}
+# BATS 1.7 prints the test name now, so this is not needed.
+# echo_test_name() {
+#   clr_blue='\e[34m'
+#   echo -e "# ${clr_blue}Test $(basename ${BATS_TEST_FILENAME})" >&3
+# }
 
 __debug() {
   printf '===> status <===\n%s\n' "$1"

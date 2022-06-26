@@ -2,8 +2,6 @@
 source "$SHIPKIT_BIN/makechecker"
 load test_helper
 
-setup_file() { echo_test_name; }
-
 setup() {
   export FIXTURE_DIR="$BATS_TEST_DIRNAME/fixtures/versions"
 }

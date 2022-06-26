@@ -48,7 +48,7 @@ core.rel_path() {
     local common_part="$source" # for now
     local result="" # for now
 
-    while [[ "${target#$common_part}" == "${target}" ]]; do
+    while [[ "${target#"$common_part"}" == "${target}" ]]; do
         # no match, means that candidate common part is not correct
         # go up one level (reduce common part)
         common_part="$(dirname "$common_part")"
@@ -67,7 +67,7 @@ core.rel_path() {
 
     # since we now have identified the common part,
     # compute the non-common part
-    local forward_part="${target#$common_part}"
+    local forward_part="${target#"$common_part"}"
 
     # and now stick all parts together
     if [[ -n $result ]] && [[ -n $forward_part ]]; then

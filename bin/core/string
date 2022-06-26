@@ -63,7 +63,7 @@ string::split() {
 # @stdout Returns the modified string.
 string::lstrip() {
     [[ $# -lt 2 ]] && printf "%s: Missing arguments\n" "${FUNCNAME[0]}" && return 2
-    printf '%s\n' "${1##$2}"
+    printf '%s\n' "${1##"$2"}"
 }
 
 # @description Strip characters from the end of a string.
@@ -82,7 +82,7 @@ string::lstrip() {
 # @stdout Returns the modified string.
 string::rstrip() {
     [[ $# -lt 2 ]] && printf "%s: Missing arguments\n" "${FUNCNAME[0]}" && return 2
-    printf '%s\n' "${1%%$2}"
+    printf '%s\n' "${1%%"$2"}"
 }
 
 # @description Make a string lowercase.

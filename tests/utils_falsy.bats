@@ -2,7 +2,6 @@
 source "$SHIPKIT_BIN/core/utils"
 
 load test_helper
-setup_file() { echo_test_name; }
 
 @test 'truthy when someVal=any value' {
   someVal="any value"
