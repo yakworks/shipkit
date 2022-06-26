@@ -37,15 +37,15 @@ teardown() {
 
 @test 'ship.libs' {
   target_name="$BATS_TEST_DESCRIPTION"
-  run make -f $FIXTURE_DIR/Makefile $target_name RELEASABLE_BRANCH=
+  run make -f $FIXTURE_DIR/Makefile $target_name PUBLISHABLE_BRANCH=
   assert_success
-  assert_output --partial "not a RELEASABLE_BRANCH"
+  assert_output --partial "not a PUBLISHABLE_BRANCH"
   # assert_equal "${lines[0]}" "mock-gradlew resolveConfigurations --no-daemon"
 }
 
 @test 'ship.libs-relesabale' {
   target_name=ship.libs
-  run make -f $FIXTURE_DIR/Makefile $target_name RELEASABLE_BRANCH=true
+  run make -f $FIXTURE_DIR/Makefile $target_name PUBLISHABLE_BRANCH=true
   assert_success
   assert_output --partial "[ship.libs] completed"
 }

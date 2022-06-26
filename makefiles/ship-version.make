@@ -30,16 +30,16 @@ push-version-bumps:
 		git add README.md version.properties "$(RELEASE_CHANGELOG)"
 		git commit -m "v$(VERSION) changelog, version bump [ci skip]"
 		# incase needed uses --force
-		git push $(GITHUB_URL) $(RELEASABLE_BRANCH)
+		git push $(GITHUB_URL) $(PUBLISHABLE_BRANCH)
 		$(logr.done)
 	fi
 
 # -- release --
 ifneq ($(or $(IS_RELEASABLE),$(dry_run)),)
 
- # calls github endpoint to create a release on the RELEASABLE_BRANCH
+ # calls github endpoint to create a release on the PUBLISHABLE_BRANCH
  ship.github-release: | _verify_VERSION _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
-	$(github.sh) create_release  $(VERSION) $(RELEASABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
+	$(github.sh) create_release  $(VERSION) $(PUBLISHABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
 	$(logr.done)
 
  ## If IS_RELEASABLE, bump vesion, update changelong and post tagged release on gitub.
@@ -52,7 +52,7 @@ else # not IS_RELEASABLE, so its a snapshot or its not on a releasable branch
  ship.version:
 	$(logr.done) " - IS_RELEASABLE=false as this is either a snapshot or its not on a releasable branch"
 
-endif # end RELEASABLE_BRANCH
+endif # end PUBLISHABLE_BRANCH
 
 # changes verison.properties to snapshot=false and force pushes commit with release message to git.
 # push-snapshot-false:

@@ -8,6 +8,19 @@ BAM (Bash And Make) Bash scripts and makefiles based CI/CD tool.
 
 For a standardized way to build, test and deploy across projects that stays out of your way, no matter what the language.
 
+## Verisons
+
+Follow semantic verioning. 
+
+## 2.0 upgrade notes
+
+- terminology on variables changed. 
+  - IS_RELEASABLE stays the same and means its not a snapshot version and its on a branch that can be released (a publishable branch)
+  - in 1.x PUBLISHABLE brnaches were called RELEASABLE_BRANCH, created confusion for snapshots which are not releasable but 
+    should be published to the snapshot repo. so RELEASABLE_BRANCH renamed to PUBLISHABLE_BRANCH, 
+    RELEASE_BRANCH_REGEX -> PUBLISHABLE_BRANCH_REGEX RELEASABLE_BRANCH_OR_DRY_RUN -> PUBLISHABLE_BRANCH_OR_DRY_RUN etc.. 
+    search across app for PUBLISHABLE_BRANCH and update accordingly.
+
 ## Why?
 
 From https://github.blog/2015-06-30-scripts-to-rule-them-all/
