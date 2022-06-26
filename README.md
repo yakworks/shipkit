@@ -14,12 +14,29 @@ Follow semantic verioning.
 
 ## 2.0 upgrade notes
 
-- terminology on variables changed. 
-  - IS_RELEASABLE stays the same and means its not a snapshot version and its on a branch that can be released (a publishable branch)
-  - in 1.x PUBLISHABLE brnaches were called RELEASABLE_BRANCH, created confusion for snapshots which are not releasable but 
+terminology. 
+- **publishable** : publishable means it will be publish a lib to a repository, such as maven or npm. 
+  It can also mean it will deploy a docker image or push a deploment to kuberenetes. 
+  It can be a snapshot or a production release. In k8s terms it can be something that is staging, qa or production. 
+  a PUBLISHABLE_BRANCH means its a branch that will push something somewhere. 
+  PUBLISH_BRANCH_DEVREGEX can be set so it matches banch names that can ONLY publish development/snapshot versions
+  IE: release=false , snapshot=true, IS_SNAPSHOT=true. 
+
+- **release** or **releasable**: A `release` or `releasable` means its a production or frozen version. Such as in maven or npm
+  its cant be overriten once it published. If is a release then its will also of course have to be publishable. 
+  Something that is released will also publish or deploy as exmplained above. but it will NOT even be a snapshot/dev version. 
+  A release goes through a full release process cycle to automatically bump version, push a v tag/release to github and 
+  roll the version number in version.properties. 
+
+- variable names changed. 
+  - IS_RELEASABLE stays the same and means its not a snapshot version, its on a branch that can be released (a publishable branch), not on a dev branch and user has permissions to do release. 
+  - in 1.x PUBLISHABLE branches were called RELEASABLE_BRANCH, created confusion for snapshots which are not releasable but 
     should be published to the snapshot repo. so RELEASABLE_BRANCH renamed to PUBLISHABLE_BRANCH, 
-    RELEASE_BRANCH_REGEX -> PUBLISHABLE_BRANCH_REGEX RELEASABLE_BRANCH_OR_DRY_RUN -> PUBLISHABLE_BRANCH_OR_DRY_RUN etc.. 
-    search across app for PUBLISHABLE_BRANCH and update accordingly.
+    RELEASE_BRANCH_REGEX -> PUBLISH_BRANCH_REGEX,  RELEASABLE_BRANCH_OR_DRY_RUN -> PUBLISHABLE_BRANCH_OR_DRY_RUN etc.. 
+    search across app for RELEASABLE_BRANCH and change build.yml for new var name.
+- change version.properties snapshot=true to release=false. operates in affirmative, when release=false, then IS_SNAPSHOT
+  will still be true. when release=true then IS_SNAPSHOT=false and if on PUBLISHABLE_BRANCH will do full release cycle.  
+- the property version_set_snapshot should be changed to release_reset_flag=true
 
 ## Why?
 

@@ -22,7 +22,6 @@ function replace_version {
 # bumps the current version and updates the version.properties
 # $1 - the current dev version that will be moved to publishedVersion, should be the version in the version.props
 # $2 - the version file, defaults to version.properties
-# $3 - (optional) whether to set snapshot back to true
 function bump_version_file {
   local publishingVersion="${1}"
   local newVersion=$( bump_patch "$publishingVersion")
@@ -46,7 +45,6 @@ function update_package_json {
 # $1 - the new version
 # $2 - the published version
 # $3 - the version file
-# $4 - snapshot value, whether to set snapshot back to true
 function updateVersionFile {
   local versionFile=${3:-version.properties}
   if [ -n "$1" ] ; then
@@ -58,9 +56,13 @@ function updateVersionFile {
     rm -f "${versionFile}.bak"
 
     # if snapshot was passed
-    if truthy "$4"; then
-      sed -i.bak -e "s/^snapshot=.*/snapshot=$4/g" "$versionFile" && rm "${versionFile}.bak"
+    if truthy "$VERSION_SET_SNAPSHOT" && grep -q ^snapshot= "$versionFile"; then
+      sed -i.bak -e "s/^snapshot=.*/snapshot=true/g" "$versionFile" && rm "${versionFile}.bak"
     fi
+    if truthy "$RELEASE_RESET_FLAG" && grep -q ^release= "$versionFile"; then
+      sed -i.bak -e "s/^release=.*/release=false/g" "$versionFile" && rm "${versionFile}.bak"
+    fi
+
 
   else
     echo "ERROR: missing version parameter " >&2

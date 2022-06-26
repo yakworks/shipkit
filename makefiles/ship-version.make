@@ -7,7 +7,8 @@ semver := $(SHIPKIT_BIN)/semver
 changelog := $(SHIPKIT_BIN)/changelog
 
 VERSION_FILENAME ?= version.properties
-VERSION_SET_SNAPSHOT ?= false
+# VERSION_SET_SNAPSHOT ?= false
+# RELEASE_RESET_FLAG ?= false
 
 update-changelog: | _verify_VERSION _verify_PUBLISHED_VERSION _verify_RELEASE_CHANGELOG _verify_PROJECT_FULLNAME
 	$(changelog) update_changelog "$(VERSION)" "$(PUBLISHED_VERSION)" "$(RELEASE_CHANGELOG)" "$(PROJECT_FULLNAME)"
@@ -18,7 +19,7 @@ update-readme-version: | _verify_VERSION
 	$(logr.done)
 
 bump-version-file: | _verify_VERSION
-	$(semver) bump_version_file "$(VERSION)" "$(VERSION_FILENAME)" "$(VERSION_SET_SNAPSHOT)"
+	$(semver) bump_version_file "$(VERSION)" "$(VERSION_FILENAME)"
 	$(logr.done) " with $(VERSION_FILENAME) for v:$(VERSION)"
 
 # updates change log, bumps version, updates the publishingVersion in README
