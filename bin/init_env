@@ -119,8 +119,8 @@ function init_defaults {
   # make sure they can't ever get set to snapshot=false
   setVar RELEASE_DEV_BRANCH_REGEX "dev"
   if [[ "${ACTIVE_BRANCH:-}" =~ ^(${RELEASE_DEV_BRANCH_REGEX})$ && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
-    echo "****** version.snapshot SHOULD BE FALSE on dev branch"
-    echo "****** Setting IS_SNAPSHOT=true since on dev branch"
+    logit.info "****** version.snapshot SHOULD BE FALSE on dev branch"
+    logit.info "****** Setting IS_SNAPSHOT=true since on dev branch"
     set_snapshot
   fi
 
