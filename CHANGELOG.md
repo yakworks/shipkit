@@ -1,3 +1,8 @@
+### v2.0.1
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.0...v2.0.1)
+- fix bad make help [link](https://github.com/yakworks/shipkit/commit/638185c2b07afdfefa5ab68f7ba7c256ce7805bf)
+
 ### v2.0.0
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.50...v2.0.0)
