@@ -1,3 +1,8 @@
+### v2.0.0
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.50...v2.0.0)
+- PUBLISHABLE branch rename and version variable changes (#52) [link](https://github.com/yakworks/shipkit/commit/bbe9b57bfea32e582c56e0cba34a7433fd86404d)
+
 ### v2.0.3
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.0...v2.0.3)
