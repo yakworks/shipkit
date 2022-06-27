@@ -56,10 +56,10 @@ function updateVersionFile {
     rm -f "${versionFile}.bak"
 
     # if snapshot was passed
-    if truthy "$VERSION_SET_SNAPSHOT" && grep -q ^snapshot= "$versionFile"; then
+    if truthy "${VERSION_SET_SNAPSHOT:-}" && grep -q ^snapshot= "$versionFile"; then
       sed -i.bak -e "s/^snapshot=.*/snapshot=true/g" "$versionFile" && rm "${versionFile}.bak"
     fi
-    if truthy "$RELEASE_RESET_FLAG" && grep -q ^release= "$versionFile"; then
+    if truthy "${RELEASE_RESET_FLAG:-}" && grep -q ^release= "$versionFile"; then
       sed -i.bak -e "s/^release=.*/release=false/g" "$versionFile" && rm "${versionFile}.bak"
     fi
 
