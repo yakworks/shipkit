@@ -40,12 +40,14 @@ ifneq ($(or $(IS_RELEASABLE),$(dry_run)),)
 
  # calls github endpoint to create a release on the PUBLISHABLE_BRANCH
  ship.github-release: | _verify_VERSION _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
-	$(github.sh) create_release  $(VERSION) $(PUBLISHABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
+	$(github.sh) create_release  $(PUBLISHED_VERSION) $(PUBLISHABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
 	$(logr.done)
 
  ## If IS_RELEASABLE, bump vesion, update changelong and post tagged release on gitub.
  ## Should almost always be last ship/release target
- ship.version: update-changelog update-readme-version bump-version-file ship.github-release push-version-bumps
+ ship.version: update-changelog update-readme-version bump-version-file push-version-bumps
+	# do the ship.github-release in new make so it reloads and picks up the changed PUBLISHED_VERSION
+	$(MAKE) ship.github-release
 	$(logr.done)
 
 else # not IS_RELEASABLE, so its a snapshot or its not on a releasable branch
