@@ -21,7 +21,10 @@ g.branch.new:
 # adds all changes, commits and push
 g.commit.push:
 	git status
-	read -p "The files above will be commited. Commit Message: " msg
+	echo "---------------------------------------------------------------"
+	echo "The Unstaged and Untracked files above will be added to commit."
+	echo "Enter a commit message"
+	read -p ":" msg
 	git add -A
 	git commit -m "$$msg"
 	# -u @ does the work of creating branch on github if it doesnt exist
