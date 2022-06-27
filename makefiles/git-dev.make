@@ -2,7 +2,7 @@
 # helpers for git dev
 # -------------
 
-# git checkout branch and pull, set b=<branch>
+# git checkout branch and pull, b=<branch>
 g.switch-pull:
 	git switch $(b)
 	git fetch --prune origin
@@ -11,15 +11,17 @@ g.switch-pull:
 g.dev.switch-pull:
 	make g.switch-pull b=dev
 
+# switch to master and pull
 g.master.switch-pull:
 	make g.switch-pull b=master
 
+# prompt for a new branch to create then switch to it after creation
 g.branch.new:
 	read -p "branch name: " bname
 	git switch -c "$$bname"
 
 # adds all changes, commits and push
-g.commit.push:
+g.commit:
 	git status
 	echo "---------------------------------------------------------------"
 	echo "The Unstaged and Untracked files above will be added to commit."
@@ -29,6 +31,8 @@ g.commit.push:
 	git commit -m "$$msg"
 	# -u @ does the work of creating branch on github if it doesnt exist
 	git push origin -u @
+
+g.commit.pr: g.commit g.pr.new
 
 # new pull request for current branch against dev
 g.pr.new:
@@ -65,3 +69,22 @@ g.master-dev-reset:
 	git pull --no-commit --no-rebase --no-ff origin dev
 	git commit -m "hard reset to master HEAD"
 	git push origin refs/heads/dev:refs/heads/dev
+
+git.check-changes:
+	changed_files=$$(git status --porcelain --untracked-files=no | wc -l)
+	unpushed=$$(git cherry -v)
+	if [ $$changed_files -gt 0 ] || [ "$$unpushed" ] ; then
+		$(logr.error) "uncommitted changes detected. must be in a clean state"
+		git status
+		exit 1 # not 0 so considred error and should halt
+	fi
+
+# update release=true in version.properties and pushes the changes.
+g.update-release: GITHUB_BOT_URL = https://dummy:$(GITHUB_BOT_TOKEN)@github.com/$(PROJECT_FULLNAME).git
+g.update-release: VERSION_FILE = version.properties
+g.update-release:
+	sed -i.bak -e "s/^release=.*/release=false/g" $(VERSION_FILE) && rm "$(VERSION_FILE).bak"
+	git add $(VERSION_FILE)
+	git commit -m "trigger release"
+	git push $(GITHUB_BOT_URL)
+	$(logr.done)

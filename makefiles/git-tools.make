@@ -44,21 +44,31 @@ git.config-signed-commits:
 		$(logr) "signing commits with key id $${secKeyId::-6}******"
 	fi
 
-GITHUB_BOT_URL = https://dummy:$(GITHUB_BOT_TOKEN)@$(GITHUB_BASE_URL)
+# GITHUB_BOT_URL = https://dummy:$(GITHUB_BOT_TOKEN)@$(GITHUB_BASE_URL)
 
 ## changes verison.properties to snapshot=false and force pushes commit with release message to git.
-push-snapshot-false:
-	changed_files=$$(git status --porcelain --untracked-files=no | wc -l)
-	unpushed=$$(git cherry -v)
-	if [ $$changed_files -gt 0 ] || [ "$$unpushed" ] ; then
-		$(logr.error) "uncommitted changes detected. must be in a clean state"
-		git status
-	else
-		sed -i.bak -e "s/^snapshot=.*/snapshot=false/g" version.properties && rm version.properties.bak
-		git add version.properties
-		git commit -m "trigger release"
-		git push $(GITHUB_BOT_URL)
-		$(logr.done)
-	fi
+# git.update-release:
+# 	echo $(GITHUB_BOT_URL)
+# 	# changed_files=$$(git status --porcelain --untracked-files=no | wc -l)
+# 	# unpushed=$$(git cherry -v)
+# 	# if [ $$changed_files -gt 0 ] || [ "$$unpushed" ] ; then
+# 	# 	$(logr.error) "uncommitted changes detected. must be in a clean state"
+# 	# 	git status
+# 	# else
+# 		sed -i.bak -e "s/^release=.*/release=true/g" version.properties && rm version.properties.bak
+# 		git add version.properties
+# 		git commit -m "trigger release"
+# 		git push $(GITHUB_BOT_URL)
+# 		$(logr.done)
+# 	# fi
 
-trigger-release: push-snapshot-false
+# git.update-release:
+# 	echo $(GITHUB_BOT_URL)
+# 	sed -i.bak -e "s/^release=.*/release=true/g" version.properties && rm version.properties.bak
+# 	git add version.properties
+# 	git commit -m "trigger release"
+# 	git push $(GITHUB_BOT_URL)
+# 	$(logr.done)
+
+# trigger-release: push-snapshot-false
+
