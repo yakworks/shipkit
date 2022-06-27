@@ -1,3 +1,14 @@
+### v2.0.3
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.0...v2.0.3)
+- pub [link](https://github.com/yakworks/shipkit/commit/6b54822abe0cca7d0f8d9187fa064268b2f0d041)
+- pub [link](https://github.com/yakworks/shipkit/commit/98f6f806d9451f6de7b7fb2d0e7415e728509cb9)
+- make the commit-push a bit nicer [link](https://github.com/yakworks/shipkit/commit/616e6c23f2eb9959c8fe43133d76a7013570d15c)
+- git dev helpers. [link](https://github.com/yakworks/shipkit/commit/134192ad71369002ed8478a3a6d41fe536c335d6)
+- move github-release out of if [link](https://github.com/yakworks/shipkit/commit/833a217e1c5ec85475e7673562f1d0231c52f890)
+- release [link](https://github.com/yakworks/shipkit/commit/b15ba0130f0556c0eb9c27316a7dc5ad1bfe3df9)
+- ship.github-release to run after push-version-bumps [link](https://github.com/yakworks/shipkit/commit/0c16d3fc1cbbd9e3e94800157ebc2b6f670b23c6)
+
 ### v2.0.2
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.0...v2.0.2)
