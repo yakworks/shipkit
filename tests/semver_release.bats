@@ -14,23 +14,23 @@ setup() {
   [ "$version" = "1.2.3-RC.2" ]
 }
 
-@test 'update version snapshot file' {
+@test 'update version file' {
   mkdir -p build/semver_tests
-  semverFile=build/semver_tests/version1.properties
+  semverFile=build/semver_tests/version.properties
   echo "version=1.0.1" > $semverFile
   echo "publishedVersion=1.0.0" >> $semverFile
-  echo "snapshot=false" >> $semverFile
+  echo "release=true" >> $semverFile
 
-  export VERSION_SET_SNAPSHOT=false
-  bump_version_file "1.2.3" $semverFile false
+  export RELEASE_RESET_FLAG=false
+  bump_version_file "1.2.3" $semverFile
   grep "version=1.2.4" $semverFile
   grep "publishedVersion=1.2.3" $semverFile
-  grep "snapshot=false" $semverFile
+  grep "release=true" $semverFile
 
-  export VERSION_SET_SNAPSHOT=true
-  bump_version_file "1.2.5" $semverFile true
+  export RELEASE_RESET_FLAG=true
+  bump_version_file "1.2.5" $semverFile
   grep "version=1.2.6" $semverFile
   grep "publishedVersion=1.2.5" $semverFile
-  grep "snapshot=true" $semverFile
+  grep "release=false" $semverFile
 
 }

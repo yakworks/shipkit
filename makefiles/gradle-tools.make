@@ -98,7 +98,7 @@ publish.libs:
 
 .PHONY: ship.libs publish.libs
 
-ifdef RELEASABLE_BRANCH
+ifdef PUBLISHABLE_BRANCH
 
 # call for CI
 ship.libs:: publish.libs
@@ -106,6 +106,6 @@ ship.libs:: publish.libs
 else
 
 ship.libs::
-	$(logr.done) " - not a RELEASABLE_BRANCH, nothing to be done"
+	$(logr.done) " - not a PUBLISHABLE_BRANCH, nothing to be done"
 
-endif # end RELEASABLE_BRANCH
+endif # end PUBLISHABLE_BRANCH

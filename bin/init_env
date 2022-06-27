@@ -98,47 +98,42 @@ function init_defaults {
 
   setVar APP_KEY "${APP_NAME}"
 
-  # if dry_run then force RELEASABLE_BRANCH to the current git branch.
+  # if dry_run then force PUBLISHABLE_BRANCH to the current git branch.
   if [[ "${dry_run:-}" ]]; then
     local cur_branch=$(current_git_branch)
-    setVar RELEASABLE_BRANCH "$cur_branch"
-    # RELEASABLE_BRANCH_OR_DRY_RUN can be true even if it is a snapshot
-    setVar RELEASABLE_BRANCH_OR_DRY_RUN true
-    logit.info "dry_run enabled, current_git_branch=$cur_branch RELEASABLE_BRANCH=$RELEASABLE_BRANCH "
+    setVar PUBLISHABLE_BRANCH "$cur_branch"
+    # PUBLISHABLE_BRANCH_OR_DRY_RUN can be true even if it is a snapshot
+    setVar PUBLISHABLE_BRANCH_OR_DRY_RUN true
+    logit.info "dry_run enabled, current_git_branch=$cur_branch PUBLISHABLE_BRANCH=$PUBLISHABLE_BRANCH "
   fi
 
 
   # default the releasable branch pattern and changelog name
-  setVar RELEASE_BRANCH_REGEX "master|main|release/.+"
+  setVar PUBLISH_BRANCH_REGEX "master|dev|release/.+"
   setVar RELEASE_CHANGELOG "CHANGELOG.md"
-  if [[ "${ACTIVE_BRANCH:-}" && "${ACTIVE_BRANCH}" =~ ^(${RELEASE_BRANCH_REGEX})$ ]]; then
-    setVar RELEASABLE_BRANCH "$ACTIVE_BRANCH"
+  if [[ "${ACTIVE_BRANCH:-}" && "${ACTIVE_BRANCH}" =~ ^(${PUBLISH_BRANCH_REGEX})$ ]]; then
+    setVar PUBLISHABLE_BRANCH "$ACTIVE_BRANCH"
   fi
 
-  # can have dev releasebale dev branches that only release snapshots,
-  # make sure they can't ever get set to snapshot=false
-  setVar RELEASE_DEV_BRANCH_REGEX "dev"
-  if [[ "${ACTIVE_BRANCH:-}" =~ ^(${RELEASE_DEV_BRANCH_REGEX})$ && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
-    echo "version.snapshot MUST ALWAYS BE FALSE on dev branch"
-    return 1
+  # can have dev publishable dev or snapshot branches that only release snapshots,
+  # make sure they always set it snapshot
+  setVar PUBLISH_BRANCH_DEVREGEX "dev"
+  if [[ "${PUBLISHABLE_BRANCH:-}" =~ ^(${PUBLISH_BRANCH_DEVREGEX})$ && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
+    logit.info "****** version.snapshot SHOULD BE FALSE on dev branch"
+    logit.info "****** Setting IS_SNAPSHOT=true since on dev branch"
+    set_snapshot
   fi
 
   # shellcheck disable=SC2034
   IS_RELEASABLE='' #IS_RELEASABLE will be true if its NOT a snapshot and on a releasable branch
-  if [[ "${RELEASABLE_BRANCH:-}" && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
+  if [[ "${PUBLISHABLE_BRANCH:-}" && $(bool "${IS_SNAPSHOT:-}") = false ]]; then
     setVar IS_RELEASABLE true
   fi
 
-  # RELEASABLE_BRANCH_OR_DRY_RUN can be true even if it is a snapshot
-  if [[ "${dry_run:-}" || "${RELEASABLE_BRANCH:-}" ]]; then
-    setVar RELEASABLE_BRANCH_OR_DRY_RUN true
+  # PUBLISHABLE_BRANCH_OR_DRY_RUN can be true even if it is a snapshot
+  if [[ "${dry_run:-}" || "${PUBLISHABLE_BRANCH:-}" ]]; then
+    setVar PUBLISHABLE_BRANCH_OR_DRY_RUN true
   fi
-
-  #IS_RELEASABLE will be true if its NOT a snapshot and its on a releasable branch
-  # if dry_run is passed in then do it
-  # if [[ "$dry_run" || "$IS_RELEASABLE" ]]; then
-  #   setVar IS_RELEASABLE_OR_DRY_RUN true
-  # fi
 
   # sets up defaults for PAGES if they are not setup already
   setVar PAGES_BUILD_DIR "$BUILD_DIR/gh-pages"
@@ -195,14 +190,18 @@ function init_versions {
   putVar BUILD_VERSION "$VERSION"
 
   # if its a snapshot then append the SNAPSHOT
-  if truthy "${snapshot:-}"; then
-    putVar VERSION_SUFFIX "-SNAPSHOT"
-    putVar IS_SNAPSHOT true
-    BUILD_VERSION+="-SNAPSHOT"
-    VERSIONX_DOTLESS+="-SNAPSHOT"
+  if truthy "${snapshot:-}" || falsy "${release:-}"; then
+    set_snapshot
   fi
 
   return 0
+}
+
+function set_snapshot {
+  putVar VERSION_SUFFIX "-SNAPSHOT"
+  putVar IS_SNAPSHOT true
+  BUILD_VERSION+="-SNAPSHOT"
+  VERSIONX_DOTLESS+="-SNAPSHOT"
 }
 
 # Checks for CIRCLECI and normalizes some ENV vars that are availiable
@@ -214,6 +213,9 @@ function circle_init_env {
     setVar ACTIVE_BRANCH "$CIRCLE_BRANCH"
     setVar PROJECT_FULLNAME "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
     # setVar GIT_REPO_URL "$CIRCLE_REPOSITORY_URL"
+  elif truthy "${SUPER_DEV:-}"; then
+    local cur_branch=$(current_git_branch)
+    setVar ACTIVE_BRANCH "$cur_branch"
   fi
 }
 
@@ -293,7 +295,7 @@ function parse_bot_env_file {
 # parses the env file, eval and load into BUILD_VARS
 # $1 - the env file to parse
 function load_env {
-  local protectedVars="RELEASABLE_BRANCH|ACTIVE_BRANCH|VERSION|VERSIONX|IS_SNAPSHOT"
+  local protectedVars="PUBLISHABLE_BRANCH|ACTIVE_BRANCH|VERSION|VERSIONX|IS_SNAPSHOT"
   if [ -f "$1" ]; then
     logit.info "loading env file $1"
     dotenv.load "$1" false "$protectedVars"

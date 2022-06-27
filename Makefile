@@ -12,26 +12,34 @@ include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/ship-version.make
 include $(SHIPKIT_MAKEFILES)/circle.make
 include $(SHIPKIT_MAKEFILES)/bats-testing.make
+include $(SHIPKIT_MAKEFILES)/git-dev.make
 
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
 export BOT_SIGN_COMMITS = true
 export VAULT_REPO = 9ci/vault
 # after release, will set version.properties back to snapshot=true
-export VERSION_SET_SNAPSHOT = true
+# export VERSION_SET_SNAPSHOT = true
+export RELEASE_RESET_FLAG = true
 
 # can be set here but best do it on command line with make
 # export LOGIT_DEBUG_ENABLED := true
 
 # --- Dockers ---
 docker_tools := $(SHIPKIT_BIN)/docker_tools
-DOCK_SHELL_URL = yakworks/builder:base
+DOCK_SHELL_URL = yakworks/bullseye:base
+DOCK_SHELL_DEB_URL = yakworks/bullseye:jdk11
 
 ## docker shell for testing
 docker.shell:
 	$(docker_tools) start shipkit-shell -it \
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
+
+docker.shell.deb:
+	$(docker_tools) start shipkit-shell -it \
+	  -v `pwd`:/project:delegated  \
+	  $(DOCK_SHELL_DEB_URL) /bin/bash
 
 SHELLCHECK_DIRS ?= bin makefiles
 lint:: lint.makefiles

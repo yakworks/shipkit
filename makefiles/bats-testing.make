@@ -1,7 +1,7 @@
 # goals to install bats and support and assert
 
 # --- BATS Testing ---
-BATS_VERSION ?= 1.3.0
+BATS_VERSION ?= 1.7.0
 # BATS_TESTS   ?= . 3>&1
 
 BATS_TEST_DIR ?= tests
@@ -13,6 +13,8 @@ BATS_URL         := $(BATS_GH_URL)/bats-core/archive/refs/tags/v$(BATS_VERSION).
 BATS_SUPPORT_URL := $(BATS_GH_URL)/bats-support/archive/refs/tags/v0.3.0.tar.gz
 BATS_ASSERT_URL  := $(BATS_GH_URL)/bats-assert/archive/refs/tags/v2.0.0.tar.gz
 BATS_EXE         := $(SHIPKIT_INSTALLS)/bats/bin/bats
+
+export BATS_LIB_PATH=$(abspath $(BUILD_DIR)/installs)
 
 ## runs the bat tests
 test-bats: $(BATS_EXE)

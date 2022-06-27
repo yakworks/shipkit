@@ -11,7 +11,7 @@ pages.deploy-k8s: pages.delete-k8s-deployment
 
 # TODO at some point we want to look at publishing snapshot version of docs like we once did?
 # NOT_SNAPSHOT := $(if $(IS_SNAPSHOT),,true)
-# ifneq (,$(and $(RELEASABLE_BRANCH),$(NOT_SNAPSHOT)))
+# ifneq (,$(and $(PUBLISHABLE_BRANCH),$(NOT_SNAPSHOT)))
 
 .PHONY: ship.k8s-pages
 

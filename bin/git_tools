@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # -----------------
 # Github and git helpers.
+# MOSTLY HERE FOR REF, SEE git-tools.make as that the core of it.
 # uses the variables set from gradle/build.yml
 # ------------------
 set -euo pipefail # strict mode https://bit.ly/36MvF0T

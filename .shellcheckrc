@@ -15,3 +15,4 @@ disable=SC2139 # expansion in definition
 disable=SC2143 # Use grep -q instead of comparing output with
 disable=SC2145 # use $@
 disable=SC2153 # mispellings
+# disable=SC2295 # Expansions

@@ -1,7 +1,6 @@
 #!/usr/bin/env bats
 source "$SHIPKIT_BIN/core/utils"
 load test_helper
-setup_file() { echo_test_name; }
 
 @test 'tolower' {
   FOO="MaKe LoWeR"

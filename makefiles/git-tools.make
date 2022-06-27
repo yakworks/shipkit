@@ -37,28 +37,38 @@ git.config-bot-user: git.config-signed-commits | _verify_BOT_EMAIL
 # hack that looks for line from gpg like 'sec#  rsa4096/F8E8B580302AAEFA 2021-07-15 [SC] [expires: 2028-07-15]'
 # and parses out the F8E8B580302AAEFA part. Then uses that to tell git what to use in case keys dont match
 git.config-signed-commits:
-	if [ "$$BOT_SIGN_COMMITS" = "true" ] ; then
+	if [ "$${BOT_SIGN_COMMITS:-}" = "true" ] ; then
 		git config --global commit.gpgsign true
 		secKeyId=$$(gpg --list-secret-keys --keyid-format=long | grep sec | cut -d'/' -f 2 | cut -d' ' -f 1)
 		git config --global user.signingkey "$$secKeyId"
 		$(logr) "signing commits with key id $${secKeyId::-6}******"
 	fi
 
-GITHUB_BOT_URL = https://dummy:$(GITHUB_BOT_TOKEN)@$(GITHUB_BASE_URL)
+# GITHUB_BOT_URL = https://dummy:$(GITHUB_BOT_TOKEN)@$(GITHUB_BASE_URL)
 
 ## changes verison.properties to snapshot=false and force pushes commit with release message to git.
-push-snapshot-false:
-	changed_files=$$(git status --porcelain --untracked-files=no | wc -l)
-	unpushed=$$(git cherry -v)
-	if [ $$changed_files -gt 0 ] || [ "$$unpushed" ] ; then
-		$(logr.error) "uncommitted changes detected. must be in a clean state"
-		git status
-	else
-		sed -i.bak -e "s/^snapshot=.*/snapshot=false/g" version.properties && rm version.properties.bak
-		git add version.properties
-		git commit -m "trigger release"
-		git push $(GITHUB_BOT_URL)
-		$(logr.done)
-	fi
+# git.update-release:
+# 	echo $(GITHUB_BOT_URL)
+# 	# changed_files=$$(git status --porcelain --untracked-files=no | wc -l)
+# 	# unpushed=$$(git cherry -v)
+# 	# if [ $$changed_files -gt 0 ] || [ "$$unpushed" ] ; then
+# 	# 	$(logr.error) "uncommitted changes detected. must be in a clean state"
+# 	# 	git status
+# 	# else
+# 		sed -i.bak -e "s/^release=.*/release=true/g" version.properties && rm version.properties.bak
+# 		git add version.properties
+# 		git commit -m "trigger release"
+# 		git push $(GITHUB_BOT_URL)
+# 		$(logr.done)
+# 	# fi
 
-trigger-release: push-snapshot-false
+# git.update-release:
+# 	echo $(GITHUB_BOT_URL)
+# 	sed -i.bak -e "s/^release=.*/release=true/g" version.properties && rm version.properties.bak
+# 	git add version.properties
+# 	git commit -m "trigger release"
+# 	git push $(GITHUB_BOT_URL)
+# 	$(logr.done)
+
+# trigger-release: push-snapshot-false
+

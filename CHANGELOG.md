@@ -1,3 +1,45 @@
+### v2.0.3
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.0...v2.0.3)
+- pub [link](https://github.com/yakworks/shipkit/commit/6b54822abe0cca7d0f8d9187fa064268b2f0d041)
+- pub [link](https://github.com/yakworks/shipkit/commit/98f6f806d9451f6de7b7fb2d0e7415e728509cb9)
+- make the commit-push a bit nicer [link](https://github.com/yakworks/shipkit/commit/616e6c23f2eb9959c8fe43133d76a7013570d15c)
+- git dev helpers. [link](https://github.com/yakworks/shipkit/commit/134192ad71369002ed8478a3a6d41fe536c335d6)
+- move github-release out of if [link](https://github.com/yakworks/shipkit/commit/833a217e1c5ec85475e7673562f1d0231c52f890)
+- release [link](https://github.com/yakworks/shipkit/commit/b15ba0130f0556c0eb9c27316a7dc5ad1bfe3df9)
+- ship.github-release to run after push-version-bumps [link](https://github.com/yakworks/shipkit/commit/0c16d3fc1cbbd9e3e94800157ebc2b6f670b23c6)
+
+### v2.0.2
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.0...v2.0.2)
+- pub [link](https://github.com/yakworks/shipkit/commit/98f6f806d9451f6de7b7fb2d0e7415e728509cb9)
+- make the commit-push a bit nicer [link](https://github.com/yakworks/shipkit/commit/616e6c23f2eb9959c8fe43133d76a7013570d15c)
+- git dev helpers. [link](https://github.com/yakworks/shipkit/commit/134192ad71369002ed8478a3a6d41fe536c335d6)
+- move github-release out of if [link](https://github.com/yakworks/shipkit/commit/833a217e1c5ec85475e7673562f1d0231c52f890)
+- release [link](https://github.com/yakworks/shipkit/commit/b15ba0130f0556c0eb9c27316a7dc5ad1bfe3df9)
+- ship.github-release to run after push-version-bumps [link](https://github.com/yakworks/shipkit/commit/0c16d3fc1cbbd9e3e94800157ebc2b6f670b23c6)
+
+### v2.0.1
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.0...v2.0.1)
+- release [link](https://github.com/yakworks/shipkit/commit/b15ba0130f0556c0eb9c27316a7dc5ad1bfe3df9)
+- ship.github-release to run after push-version-bumps [link](https://github.com/yakworks/shipkit/commit/0c16d3fc1cbbd9e3e94800157ebc2b6f670b23c6)
+
+### v2.0.0
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.50...v2.0.0)
+- pub [link](https://github.com/yakworks/shipkit/commit/4a07ac036cf09a91d6b82bc309280c5959a3e8cd)
+- pub [link](https://github.com/yakworks/shipkit/commit/a12c6f12b41edd68ccb6cbed804f6cfd371b86a5)
+- release [link](https://github.com/yakworks/shipkit/commit/ad6b21bcbce688c552e598bdb52c1b28926de874)
+- debian installs for shellcheck and file [link](https://github.com/yakworks/shipkit/commit/19d94b80244bec756e3013dd8cb1c015a9556372)
+- use new bullseye [link](https://github.com/yakworks/shipkit/commit/35113177951e76b54743ab95120f732750c6513e)
+- change builder to bullseye [link](https://github.com/yakworks/shipkit/commit/0716d88a60f0dd377105b64a57a6125a3486763d)
+- upgrade bats to 1.7 and fix tests and use new bats_load_library [link](https://github.com/yakworks/shipkit/commit/7f437d952bbf92a007260a891273a3d7ee28d93d)
+- rename vars per README [link](https://github.com/yakworks/shipkit/commit/c9eb06e5dab78bca85715a9b2e2e35a61a26102f)
+- rename RELEASABLE_BRANCH PUBLISHABLE_BRANCH [link](https://github.com/yakworks/shipkit/commit/753c5a0cc3068a1b08617507ac5b34a31d2efe8f)
+- logit vs echo [link](https://github.com/yakworks/shipkit/commit/b8621ef0f70f08ad5559db3df71f7b37d30a2416)
+- refactor to a set_snapshot branch [link](https://github.com/yakworks/shipkit/commit/801c65a1078fda96bd84e0a4d4f172b68e196704)
+
 ### v1.0.50
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.49...v1.0.50)

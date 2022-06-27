@@ -2,11 +2,11 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: yakworks/builder:k8s
+      - image: yakworks/bullseye:k8s
     steps:
       - checkout
-      - run: make install-shellcheck-alpine
-      - run: make install-file-alpine
+      # - run: make install-shellcheck-alpine
+      - run: make debian.install-circle-deps
       - run: make check
       # test some other stuff
       - run: make vault.decrypt
