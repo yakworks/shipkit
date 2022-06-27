@@ -19,6 +19,14 @@ install-shellcheck-alpine:
 	rm -rf shellcheck*
 	ls -laF /usr/bin/shellcheck
 
+install-shellcheck-debian:
+	apt-get -qq -y --no-install-recommends install shellcheck
+
 # install the file command for alpine, file is used to get meta data on files to know if we should run in shellcheck
 install-file-alpine:
 	apk add file
+
+install-file-debian:
+	apt-get -qq -y --no-install-recommends install file
+
+debian.install-circle-deps: install-file-debian install-shellcheck-debian
