@@ -12,7 +12,7 @@ For a standardized way to build, test and deploy across projects that stays out 
 
 Follow semantic verioning. 
 
-## 2.0 upgrade notes
+### 2.0 upgrade notes
 
 terminology. 
 - **publishable** : publishable means it will be publish a lib to a repository, such as maven or npm. 
@@ -37,7 +37,8 @@ terminology.
 - change version.properties snapshot=true to release=false. operates in affirmative, when release=false, then IS_SNAPSHOT
   will still be true. when release=true then IS_SNAPSHOT=false and if on PUBLISHABLE_BRANCH will do full release cycle.  
 - the property version_set_snapshot should be changed to release_reset_flag=true
-
+- is using with gradle plugin `org.yakworks:gradle-plugins` version must be >= 2.7.3
+ 
 ## Why?
 
 From https://github.blog/2015-06-30-scripts-to-rule-them-all/

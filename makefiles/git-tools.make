@@ -37,7 +37,7 @@ git.config-bot-user: git.config-signed-commits | _verify_BOT_EMAIL
 # hack that looks for line from gpg like 'sec#  rsa4096/F8E8B580302AAEFA 2021-07-15 [SC] [expires: 2028-07-15]'
 # and parses out the F8E8B580302AAEFA part. Then uses that to tell git what to use in case keys dont match
 git.config-signed-commits:
-	if [ "$$BOT_SIGN_COMMITS" = "true" ] ; then
+	if [ "$${BOT_SIGN_COMMITS:-}" = "true" ] ; then
 		git config --global commit.gpgsign true
 		secKeyId=$$(gpg --list-secret-keys --keyid-format=long | grep sec | cut -d'/' -f 2 | cut -d' ' -f 1)
 		git config --global user.signingkey "$$secKeyId"
