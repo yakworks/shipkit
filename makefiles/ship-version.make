@@ -37,7 +37,7 @@ push-version-bumps:
 
 # calls github endpoint to create a release on the PUBLISHABLE_BRANCH
 ship.github-release: | _verify_VERSION _verify_PROJECT_FULLNAME _verify_GITHUB_TOKEN
-	$(github.sh) create_release  $(PUBLISHED_VERSION) $(PUBLISHABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
+	$(github.sh) create_release  $(VERSION) $(PUBLISHABLE_BRANCH) $(PROJECT_FULLNAME) $(GITHUB_TOKEN)
 	$(logr.done)
 
 # -- release --
