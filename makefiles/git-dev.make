@@ -9,11 +9,11 @@ g.switch-pull:
 	git pull
 
 g.dev.switch-pull:
-	make g.switch-pull b=dev
+	$(MAKE) g.switch-pull b=dev
 
 # switch to master and pull
 g.master.switch-pull:
-	make g.switch-pull b=master
+	$(MAKE) g.switch-pull b=master
 
 # prompt for a new branch to create then switch to it after creation
 g.branch.new:
@@ -36,7 +36,14 @@ g.commit.pr: g.commit g.pr.new
 
 # new pull request for current branch against dev
 g.pr.new:
-	hub pull-request -o -b dev
+	if [ "$(b)" ]; then
+		hub pull-request -o --no-edit $(pr_opts) -b $(b)
+	else
+		hub pull-request -o --no-edit $(pr_opts)
+	fi
+
+g.pr.draft: pr_opts = -d
+g.pr.draft: g.pr.new
 
 # pull request for current branch.
 g.pr.show:
