@@ -90,7 +90,7 @@ git.check-changes:
 g.update-release: GITHUB_BOT_URL = https://dummy:$(GITHUB_BOT_TOKEN)@github.com/$(PROJECT_FULLNAME).git
 g.update-release: VERSION_FILE = version.properties
 g.update-release:
-	sed -i.bak -e "s/^release=.*/release=false/g" $(VERSION_FILE) && rm "$(VERSION_FILE).bak"
+	sed -i.bak -e "s/^release=.*/release=true/g" $(VERSION_FILE) && rm "$(VERSION_FILE).bak"
 	git add $(VERSION_FILE)
 	git commit -m "trigger release"
 	git push $(GITHUB_BOT_URL)

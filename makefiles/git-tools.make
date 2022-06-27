@@ -46,7 +46,7 @@ git.config-signed-commits:
 
 # GITHUB_BOT_URL = https://dummy:$(GITHUB_BOT_TOKEN)@$(GITHUB_BASE_URL)
 
-## changes verison.properties to snapshot=false and force pushes commit with release message to git.
+# changes verison.properties to snapshot=false and force pushes commit with release message to git.
 # git.update-release:
 # 	echo $(GITHUB_BOT_URL)
 # 	# changed_files=$$(git status --porcelain --untracked-files=no | wc -l)
