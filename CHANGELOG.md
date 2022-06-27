@@ -1,3 +1,9 @@
+### v2.0.1
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.0...v2.0.1)
+- release [link](https://github.com/yakworks/shipkit/commit/b15ba0130f0556c0eb9c27316a7dc5ad1bfe3df9)
+- ship.github-release to run after push-version-bumps [link](https://github.com/yakworks/shipkit/commit/0c16d3fc1cbbd9e3e94800157ebc2b6f670b23c6)
+
 ### v2.0.0
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v1.0.50...v2.0.0)
