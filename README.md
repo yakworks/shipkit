@@ -30,14 +30,18 @@ terminology.
 
 - variable names changed. 
   - IS_RELEASABLE stays the same and means its not a snapshot version, its on a branch that can be released (a publishable branch), not on a dev branch and user has permissions to do release. 
-  - in 1.x PUBLISHABLE branches were called RELEASABLE_BRANCH, created confusion for snapshots which are not releasable but 
-    should be published to the snapshot repo. so RELEASABLE_BRANCH renamed to PUBLISHABLE_BRANCH, 
+  - in 1.x PUBLISHABLE branches were called RELEASABLE_BRANCH
+    so RELEASABLE_BRANCH renamed to PUBLISHABLE_BRANCH, 
     RELEASE_BRANCH_REGEX -> PUBLISH_BRANCH_REGEX,  RELEASABLE_BRANCH_OR_DRY_RUN -> PUBLISHABLE_BRANCH_OR_DRY_RUN etc.. 
     search across app for RELEASABLE_BRANCH and change build.yml for new var name.
-- change version.properties snapshot=true to release=false. operates in affirmative, when release=false, then IS_SNAPSHOT
-  will still be true. when release=true then IS_SNAPSHOT=false and if on PUBLISHABLE_BRANCH will do full release cycle.  
-- the property version_set_snapshot should be changed to release_reset_flag=true
-- is using with gradle plugin `org.yakworks:gradle-plugins` version must be >= 2.7.3
+
+  - change version.properties snapshot=true to release=false. operates in affirmative, 
+    when release=false, then IS_SNAPSHOT will still be true. when release=true then IS_SNAPSHOT=false and 
+    if on PUBLISHABLE_BRANCH will do full release cycle.  
+
+  - the property version_set_snapshot should be changed to release_reset_flag=, check build.yml
+
+  - is using with gradle plugin `org.yakworks:gradle-plugins` version must be >= 2.7.3
  
 ## Why?
 
