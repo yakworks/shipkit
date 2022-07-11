@@ -74,7 +74,3 @@ test.e2e::
 
 ## NA builds the libs
 build::
-
-fizz:
-	$(logr) "BUILD_VARS $$BUILD_VARS"
-	$(logr.done)
