@@ -31,6 +31,8 @@ function kube.apply_tpl {
 
 # creates namespace if it does not exist
 function kube.create_namespace {
+  [ "${dry_run:-}" ] && echo "🌮 dry_run ->  kube.ctl create namespace $1" && return 0
+
   if [ ! "$(kubectl get ns | grep "$1" || true)" ]; then
     kube.ctl create namespace "$1"
   fi

@@ -14,7 +14,7 @@ lint::
 	$(gradlew) spotlessApply
 	$(gradlew) codenarcMain
 
-## Run the lint and test suite with ./gradlew check
+# Run the lint and test suite with ./gradlew check
 # check::
 # 	$(gradlew) spotlessApply
 # 	$(gradlew) check
