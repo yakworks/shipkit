@@ -27,8 +27,8 @@ export RELEASE_RESET_FLAG = true
 
 # --- Dockers ---
 docker_tools := $(SHIPKIT_BIN)/docker_tools
-DOCK_SHELL_URL = yakworks/bullseye:base
-DOCK_SHELL_DEB_URL = yakworks/bullseye:jdk11
+DOCK_SHELL_URL = yakworks/builder:base
+DOCK_SHELL_DEB_URL = yakworks/bullseye:base
 
 ## docker shell for testing
 docker.shell:
@@ -66,7 +66,7 @@ test.core: $(BATS_EXE)
 ## runs all BAT tests
 test.unit:: test.bats test.core
 
-## runs all BAT tests. to run a single file make test-bats TESTS=test_file_name*
+## runs all BAT tests. to run tests matching a regex do `make test-bats TESTS=test_names.*`
 test:: test-bats
 
 ## NA runs integration/e2e tests

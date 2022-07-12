@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-
-source ../setVar
-source ../utils
+source "$(dirname "${BASH_SOURCE[0]}")"/../bin/core/main
+core.import "utils"
 
 VarName=FOO
-
+set +u #allow unbound
 echo "-- When FOO is unset --"
 [ -z "$FOO" ] && echo "FOO unset and empty 1"
 [ ! "$FOO" ] && echo "FOO unset and empty 2a" # works too
@@ -23,13 +22,16 @@ echo "-- When FOO is unset --"
 [ "${!VarName}" ] && echo "** should not show"
 [ ${!VarName+set} ] && echo "** should not show"
 # truthy falsy
-falsy "$FOO" && echo "FOO is falsy 6"
+falsy "$FOO" && {
+  echo "FOO is falsy 6"
+}
 truthy "$FOO" && echo "** should not show"
 
 [[ "${FOO:-}" = "BOO" ]] && echo "** should not show"
-[[ "$FOO" = "" ]] && echo "** should not show"
+[[ $FOO = "" ]] && echo "** should not show"
+[[ "$FOO" = "" ]] && echo "shows it because in quotes"
 
-echo
+echo "-------should have show 6 -------"
 
 echo "-- When FOO is empty string --"
 FOO=""
@@ -133,6 +135,6 @@ echo -e "\nCombo falsy FOO=false and BAR=42"; FOO="0"; BAR=42
 [[ $(isFalsy "$FOO") && $BAR = 42 ]] && echo "FOO is falsy && BAR is 42 2"
 [[ $(isFalsy "$FOO") && (($BAR > 40)) ]] && echo "FOO is falsy && ((BAR > 40)) 3"
 [[ ! $(isFalsy "$FOO") && $BAR = 42 ]] && echo "** should not show"
-[[ truthy "$FOO" && $BAR = 42 ]] && echo "** should not show"
+# [[ truthy "$FOO" && $BAR = 42 ]] && echo "** should not show"
 
 echo; echo

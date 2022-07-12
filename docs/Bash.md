@@ -374,3 +374,45 @@ bash has no Boolean data type, and so no keywords representing true and false. T
 
 ## SED
 https://edoras.sdsu.edu/doc/sed-oneliners.html
+
+
+Links
+https://unix.stackexchange.com/questions/224548/how-to-use-call-by-reference-on-an-argument-in-a-bash-function
+http://rus.har.mn/blog/2010-07-05/subshells/
+https://www.ackama.com/what-we-think/the-best-way-to-store-your-dotfiles-a-bare-git-repository-explained/
+https://github.com/dylanaraps/pure-bash-bible
+
+functions
+http://rus.har.mn/blog/2010-07-05/subshells/
+https://unix.stackexchange.com/questions/224548/how-to-use-call-by-reference-on-an-argument-in-a-bash-function
+https://github.com/tests-always-included/wick
+https://mezzantrop.wordpress.com/2018/06/27/a-nice-way-to-return-string-values-from-functions-in-bash/
+https://www.linuxjournal.com/content/return-values-bash-functions
+
+bash modules and loader
+https://github.com/vlisivka/bash-modules
+https://github.com/basherpm/basher
+
+Other CMD line tools from here
+https://www.reddit.com/r/commandline/comments/vrmbfa/what_are_some_useful_cli_tools_that_arent_popular/
+https://github.com/ranger/ranger is pretty awesone
+https://rclone.org/
+https://osxfuse.github.io/
+https://github.com/costis94/bookcut
+https://github.com/bulletmark/edir/blob/master/edir.py
+https://wtfutil.com/
+https://github.com/Nukesor/pueue
+https://github.com/sharkdp/fd
+
+
+nginx bash scripts
+https://www.gushiciku.cn/pl/pQ4H/zh-hk
+https://stackoverflow.com/questions/60757496/how-to-run-bash-script-from-nginx
+https://serverfault.com/questions/679180/nginx-how-to-run-shell-script-on-page-load-via-lua-module-os-execute-and-then-se
+
+bash and python
+https://medium.com/capital-one-tech/bashing-the-bash-replacing-shell-scripts-with-python-d8d201bc0989
+https://unix.stackexchange.com/questions/184726/how-to-include-python-script-inside-a-bash-script
+https://www.educba.com/bash-shell-programming-with-python/
+https://towardsdatascience.com/different-ways-to-run-bash-scripts-in-your-python-file-8aeb721bc3d1
+https://www.freecodecamp.org/news/python-for-system-administration-tutorial/

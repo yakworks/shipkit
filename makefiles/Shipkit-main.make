@@ -1,4 +1,7 @@
 # --- init_env and the makefile.env generation and BUILD_VARS-----
+# see: https://stackoverflow.com/questions/18136918/how-to-get-current-relative-directory-of-your-makefile/18137056#18137056
+MAKEFILE_PATH 	:= $(abspath $(lastword $(MAKEFILE_LIST)))
+CURRENT_DIR 	:= $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
 
 # path to core scripts
 export BASHKIT_CORE ?= $(SHIPKIT_BIN)/core
@@ -230,10 +233,18 @@ OS_ARCH := $(if $(findstring amd64,$(OS_CPU)),x86_64,i686)
 else
 OS_NAME := $(shell uname -s)
 OS_ARCH := $(shell uname -m)
-OS_CPU  := $(if $(findstring 64,$(OS_ARCH)),amd64,x86)
+ # supports aarch64 on linux arm64 on mac,
+ ifeq (aarch64,$(filter aarch64,$(OS_ARCH)))
+  OS_ARCH = arm64
+ else ifeq (x86_64,$(filter x86_64,$(OS_ARCH)))
+  OS_ARCH = amd64
+ endif
+
 endif
 
 test-logging-os: FORCE
+	$(logr) "CURDIR $(CURDIR)"
+	$(logr) "MAKEFILE_PATH $(MAKEFILE_PATH)"
 	$(logr) "OS_NAME $(OS_NAME)"
 	$(logr) "OS_ARCH $(OS_ARCH)"
 	$(logr.warn) "OS_CPU $(OS_CPU)"
