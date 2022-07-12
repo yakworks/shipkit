@@ -1,3 +1,9 @@
+### v2.0.2
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.1...v2.0.2)
+- Kube create ns dry run (#53) [link](https://github.com/yakworks/shipkit/commit/f08eb5185871015ceb8c9a7cc8a4242c59700131)
+- tweak the readme [link](https://github.com/yakworks/shipkit/commit/4e36d4d5d1d38658ca83dbc0fce0610af8261d47)
+
 ### v2.0.1
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.0...v2.0.1)
