@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# vim: ft=bash
+# shellcheck disable=SC1000-SC9999
 
 # @file is.sh
 # @description Various validations and asserts that can be chained
@@ -126,25 +126,25 @@ function validations.end() {
 # Part 2. "is" validations — no output, just return code
 #------------------------------------------------------------------
 
-# @description is.not-blank <arg> 
+# @description is.not-blank <arg>
 # @return true if the first argument is not blank
 function is.not-blank() {
   [[ -n "${1}" ]]
 }
 
-# @description is.blank <arg> 
+# @description is.blank <arg>
 # @return true if the first argument is blank
 function is.blank() {
   [[ -z "${1}" ]]
 }
 
-# @description is.empty <arg> 
+# @description is.empty <arg>
 # @return true if the first argument is blank or empty
 function is.empty() {
   is.blank "$@"
 }
 
-# @description is.not-a-blank-var <var-name> 
+# @description is.not-a-blank-var <var-name>
 # @return true if varaible passed by name is not blank
 function is.not-a-blank-var() {
   local var="$1"
@@ -203,7 +203,7 @@ function is.a-variable() {
     ;;
   zsh)
     eval "[[ -v ${var_name} ]]" && return 0
-    ;; 
+    ;;
   *)
     return 1
     ;;
@@ -248,7 +248,7 @@ function is.an-integer() {
 }
 
 # @description returns success if the argument is numeric, eg. float
-function is.numeric() { 
+function is.numeric() {
   [[ $1 =~ ^[+-]?([0-9]+([.][0-9]*)?|\.[0-9]+)$ ]]
 }
 
@@ -274,12 +274,12 @@ function is.alias() {
 
 # @description returns success if the argument is a numerical zero
 function is.zero() {
-  [[ $1 -eq 0 ]] 
+  [[ $1 -eq 0 ]]
 }
 
 # @description returns success if the argument is not a zero
 function is.non.zero() {
-  [[ $1 -ne 0 ]] 
+  [[ $1 -ne 0 ]]
 }
 
 #------------------------------------------------------------------

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# shellcheck disable=SC1000-SC9999
 ############
 #
 # Motivation to rewrite a simple alternative to doctoc: How Much Do You Trust That Package? Understanding The Software Supply Chain https://www.youtube.com/watch?v=fnELtqE6mMM
