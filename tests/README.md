@@ -1,6 +1,19 @@
 Uses bats https://github.com/bats-core/bats-core
 
-`make test` will run the tests
+`make test` or `make test-bats` will run the tests
+
+To run test with glob or single test file then 
+
+```bash
+# runs all tests starting with util on tests dir
+make test-bats TESTS=util*
+
+# runs only tests in the core dir
+make test-bats TESTS=core
+
+# runs only tests named array.bats in core dir
+make test-bats TESTS=core/array.bats
+```
 
 ## Test Examples
 

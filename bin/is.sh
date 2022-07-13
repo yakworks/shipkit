@@ -4,13 +4,12 @@
 # @file is.sh
 # @description Various validations and asserts that can be chained
 # and be explicit in a DSL-like way.
-# @example
 #
-#
+#   ```bash
 #     source lib/is.sh
 #     is.begin "Checking for file validity"
 #     is.not-blank "$1" && is.non-empty
-
+#   ```
 declare -a Bashmatic__IsErrors
 declare -a Bashmatic__IsValues
 export Bashmatic__IsSessionName

@@ -59,13 +59,6 @@ check:: lint test
 clean::
 	rm -rf $(BUILD_DIR)
 
-## runs the bashkit core tests
-test.core: $(BATS_EXE)
-	$(BATS_EXE) $(BATS_OPTS) -f $(TESTS) $(BATS_TEST_DIR)/core
-
-## runs all BAT tests
-test.unit:: test.bats test.core
-
 ## runs all BAT tests. to run tests matching a regex do `make test-bats TESTS=test_names.*`
 test:: test-bats
 
@@ -74,3 +67,13 @@ test.e2e::
 
 ## NA builds the libs
 build::
+
+docs.bin:
+	./bin/bashdoc/generate.sh
+
+docs.gen:
+	./bin/bashdoc/gen-usage-docs.sh generate
+
+build/usage/is.md: bin/is.sh
+	mkdir -p $(@D)
+	./bin/bashdoc/shdocs.sh file $< $@

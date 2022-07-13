@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
-# ---
-# @module: Makefiles
-# @author: Joshua Burnett (@basejump)
+
+# @file makechecker
 #
 # Checks makefiles for common issues. The main one being 4 spaces instead of tab to start shell commands
-# ---
-set -euo pipefail # strict mode https://bit.ly/36MvF0T
+
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 
 ###
 # Lints a one or more dirs
 # The main issue to check for is lines starting with 4 spaces
 #
-# ``` makechecker lint makefiles ```
+# ```
+#   makechecker lint makefiles
+# ```
 #
-# $@ - {array} one or more dirs
-#
+# @arg $@ - {array} one or more dirs
+
 function makechecker.lint {
   makechecker.find_targets "$@"
   makechecker.lint_files "${MAKECHECK_TARGETS[@]}"
@@ -50,7 +50,7 @@ function makechecker.lint_files {
 ###
 # gets all files that either start with Makefile or have .make extension
 #
-# $@ - {array} one or more dirs
+# @arg $@ - {array} one or more dirs
 #
 function makechecker.find_targets {
   MAKECHECK_TARGETS=()
@@ -68,5 +68,6 @@ function makechecker.find_targets {
 # --- boiler plate function runner, keep at end of file ------
 # BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  set -euo pipefail # strict mode https://bit.ly/36MvF0T
   export fn_namespace='makechecker' && source "${BASHKIT_CORE}/function_runner_ns.sh"
 fi

@@ -18,7 +18,7 @@ BATS_EXE         := $(SHIPKIT_INSTALLS)/bats/bin/bats
 
 export BATS_LIB_PATH=$(abspath $(BUILD_DIR)/installs)
 
-## runs the bat tests
+## runs the bat tests. To run a single test do 'make test-bats TESTS=someFile*'
 test-bats: $(BATS_EXE)
 	$(BATS_EXE) $(BATS_OPTS) -f $(BATS_FILTER) $(BATS_TEST_DIR)/$(TESTS)
 	# $(logr) " Core tests"
@@ -26,6 +26,7 @@ test-bats: $(BATS_EXE)
 
 .PHONY: test-bats
 
+#
 test-bats-single:
 	$(BATS_EXE) $(BATS_OPTS) $(BATS_TEST_DIR)/utils_trim.bats
 

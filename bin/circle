@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# ---
-# working with CI circle and publishing,
-# ---
-set -euo pipefail # strict mode https://bit.ly/36MvF0T
+
+# @file circle
+# Utils for working with CI circle and publishing,
+
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 
 ###
@@ -16,19 +16,20 @@ circle.trigger(){
 		--header 'Content-Type: application/json' \
 		-u "$2:"
 }
-# ---
+
+# @ignore
 # circle orb compare-url/reconstruct makes a CIRCLE_COMPARE_URL.txt and this will
 # returns the commit range like 911ff1ea1fa5...a883787c2f50
 # !deprecated
-# ---
 function circleCommitRange {
   CIRCLE_COMPARE_URL=$(cat CIRCLE_COMPARE_URL.txt || true)
   # echo "CIRCLE_COMPARE_URL $CIRCLE_COMPARE_URL"
   echo "$CIRCLE_COMPARE_URL" | rev | cut -d/ -f1 | rev
 }
 
-# --- boiler plate function runner, keep at end of file ------
-# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+# boiler plate function runner, keep at end of file
+# BASH_SOURCE will be true if this file is run as a script, otherwise does nothing if sourced in.
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  set -euo pipefail # strict mode https://bit.ly/36MvF0T
   export fn_namespace='circle' && source "${BASHKIT_CORE}/function_runner_ns.sh"
 fi

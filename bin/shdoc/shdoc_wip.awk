@@ -1,4 +1,5 @@
 #!/usr/bin/awk -f
+# modified from https://github.com/reconquest/shdoc/blob/master/shdoc
 
 # Varibles
 # style = readme or doc
