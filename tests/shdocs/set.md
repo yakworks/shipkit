@@ -2,7 +2,7 @@
 
 Brief
 
-## Overview
+## Description
 
 a
 
@@ -10,11 +10,11 @@ a
 
 * [b()](#b)
 
-### b()
+## b()
 
 func b
 
-#### Variables set
+### Variables set
 
 * **FOO** (int): Error code if an erorr occured
 * **BAR** (array): Some array thing

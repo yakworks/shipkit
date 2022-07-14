@@ -1,8 +1,20 @@
+#!/usr/bin/env gawk -f
+# SPDX-License-Identifier: MIT
+
 # Awk program for automatically generating help text from those ludicrous makefiles.
 # imported into
 
+BEGIN {
+
+    debug_enable = ENVIRON["HELP_DEBUG"] == "1"
+    debug_fd = ENVIRON["HELP_DEBUG_FD"]
+    debug_file = ENVIRON["HELP_DEBUG_FILE"]
+    if (!debug_fd) debug_fd = "stderr"
+    if (!debug_file) debug_file = "/dev/fd/" debug_fd
+}
+
 # sort from here https://unix.stackexchange.com/a/609885
-function sortIdx (origArray, idxs,        j, i, Local, tx, e, cmd) {
+function sortIdx (origArray, idxs, j, i, Local, tx, e, cmd) {
     for (j in origArray) str = str j "\n"
     # The \047s in the code represent 's which shell does not allow to be included in '-delimited
     cmd = "printf \047%s\047 \047" str "\047 |sort " args
@@ -14,12 +26,12 @@ function sortIdx (origArray, idxs,        j, i, Local, tx, e, cmd) {
     return i;
 }
 
-function len(a,    i, k) {
+function len(a, i, k) {
   for (i in a) k++
   return k
 }
 
-function join(a, sep) {
+function join(a,sep) {
   result = ""
   if (sep == "")
     sep = SUBSEP
@@ -43,22 +55,41 @@ function extend(a, b) {
     append(a, b[item])
 }
 
-/^## / {
-  comments[++comments_counter] = substr($0, 4)
-}
-
-/^[^: \t]*:[^;]*;?/ {
-  split($0, recipe_firstline, ":")
-  target = recipe_firstline[1]
-
-  if ( substr(lastline, 1, 2) == "##" ) {
-    width = length(target)
-    max_width = (max_width > width) ? max_width : width + 1
-    target_docs[target] = join(comments, "#")
-    delete comments
+function debug(msg) {
+  if (debug_enable) {
+    print (NR-1 + 1) " : " FILENAME ":" msg
+    # > debug_file
   }
 }
 
+/^## / {
+  comments[++comments_counter] = substr($0, 4)
+  debug("→ added comment line [" comments[comments_counter] "]")
+}
+
+# matches the makefile target
+/^[^: \t]*:[^;]*;?/ {
+  split($0, recipe_firstline, ":")
+  target = recipe_firstline[1]
+  includeThis = 1
+  # target_regex = "^test\\."
+  if (target_regex){
+    includeThis = false # not include by default
+    if (match(target, target_regex)) includeThis = 1
+  }
+
+  if ( includeThis && substr(lastline, 1, 2) == "##" ) {
+    debug("→ found target [" target "]")
+    width = length(target)
+    # track the max  width for formatting
+    max_width = (max_width > width) ? max_width : width + 1
+    target_docs[target] = join(comments, "~")
+    # delete comments
+  }
+  delete comments
+}
+
+# not a comment line, append and resets
 !/^##/ {
   if (len(comments) > 0) {
     extend(global_docs, comments)
@@ -78,7 +109,7 @@ END {
   n = sortIdx(target_docs, idxs)
   for (j=1; j<=n; j++) {
     target = idxs[j]
-    unjoin(help, target_docs[target], "#")
+    unjoin(help, target_docs[target], "~")
     printf "\033[36m%-" max_width "s\033[0m│  %s\n", target, help[1]
     for (i = 2; i <= len(help); i++)
       printf "%-" max_width "s│  %s\n", "", help[i]

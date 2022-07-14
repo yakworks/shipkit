@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 # @name example.sh
-# @brief Brief description here
+# @brief Brief here, can be usage
 # @description more here
 #  * with lists
 #  * of things
+#
+# ```bash
+#   example.sh something -f text.txt
+# ```
 
 ###
 # Multiline description goes here
@@ -27,21 +31,25 @@
 #
 # @see some.other.func()
 do.something() {
+  # func comment
   echo
+# @description bad comment will not get picked up or heredoc
+# heredoc fine too
+  eval cat << EOF
+# @description foo
+EOF
+# bad formatting
+foo || {
+  echo
+}
 }
 
 # @description can use description tag too
 # @example
 #   echo "using example tag"
 #   echo 2
-b() {
-  echo
-}
-
-# @description func b
-# ab
 # @noargs
-c() {
+noargs() {
   echo
 }
 

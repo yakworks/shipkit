@@ -1,89 +1,87 @@
 # example.sh
 
-Brief description here
+Brief here, can be usage
 
-## Overview
+## Description
 
 more here
 * with lists
 * of things
 
+```bash
+example.sh something -f text.txt
+```
+
 ## Index
 
 * [do.something()](#dosomething)
-* [b()](#b)
-* [c()](#c)
+* [noargs()](#noargs)
 * [c()](#c)
 * [trip()](#trip)
 
-### do.something()
+## do.something()
 
 Multiline description goes here
 and here
 
-#### Example
+### Example
 
 ```bash
 some:other:func a b c
 echo 123
 ```
 
-#### Arguments
+### Arguments
 
 * **$1** (string): Some arg.
 * **...** (any): Rest of arguments.
 
-#### Variables set
+### Variables set
 
 * **RETVAL** (string): Variable was set
 
-#### Exit codes
+### Exit codes
 
 * **0**:  If successfull.
 * **>0**: Failure
 * **5**:  some specific error.
 
-#### Input on stdin
+### Input on stdin
 
 * Path to something.
 
-#### Output on stdout
+### Output on stdout
 
 * Path to something.
 
-#### See also
+### See also
 
 * [some.other.func()](#someotherfunc)
 
-### b()
+## noargs()
 
 can use description tag too
 
-#### Example
+### Example
 
 ```bash
 echo "using example tag"
 echo 2
 ```
 
-### c()
-
-func b
-ab
-
 _Function has no arguments._
 
-### c()
+## c()
 
 func c
 
-#### Example
+### Example
 
 ```bash
 echo 1
 echo 2
 ```
 
-### trip()
+## trip()
 
 triple desc

@@ -54,8 +54,9 @@ help: _HELP_F := $(firstword $(MAKEFILE_LIST))
 
 ## default, lists help for targets
 help: | _program_awk
-	@awk -f $(HELP_AWK) $(wordlist 2,$(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)) $(_HELP_F)
-	printf "\n$(culine)Common Variables:\n$(creset)"
+	echo "wordlist $(wordlist 2,$(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))"
+	awk -v pref=1 -f $(HELP_AWK) $(wordlist 2,$(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)) $(_HELP_F)
+	printf "\n$(culine)Common Variables Options:\n$(creset)"
 	printf "$(ccyanB) VERBOSE=true                 $(creset)| show logit.debug in build/make/shikit.log and shows target output on console \n"
 	printf "$(ccyanB) dry_run=true                 $(creset)| setting this to true will stop certain deployment commands from pushing, such as kubectl and docker \n"
 	printf "$(ccyanB) env=<file.env> or <file.sh>  $(creset)| loads custom variables in from .env file or source 'imports' a custom bash .sh script \n"
@@ -64,7 +65,7 @@ help: | _program_awk
 
 ## list all the availible Make targets, including the targets hidden from core help
 help-all:
-	LC_ALL=C $(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort -u | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
+	$(MAKE) -pRrq | awk -F':' '/^[a-zA-Z0-9][^$$#\/\t=]*:([^=]|$$)/ {split($$1,A,/ /);for(i in A)print A[i]}' | sort -u
 
 .PHONY: help-all
 

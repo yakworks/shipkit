@@ -3,12 +3,12 @@
 * [tests.value()](#testsvalue)
 * [foo()](#foo)
 
-### tests.value()
+## tests.value()
 
 Same, as `tests.eval`, but writes stdout into given variable and
 return stderr as expected.
 
-#### Example
+### Example
 
 ```bash
 _x() {
@@ -18,16 +18,16 @@ tests:value response _x a b c
 tests:assert-equals "$response" "y [a b c]"
 ```
 
-#### Arguments
+### Arguments
 
 * **$1** (string): Variable name.
 * **...** (string): String to evaluate.
 
-#### See also
+### See also
 
 * [tests.eval](#testseval)
 * [foo()](#foo)
 
-### foo()
+## foo()
 
 foo should work

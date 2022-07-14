@@ -1,69 +1,40 @@
-#!/usr/bin/awk -f
+#!/usr/bin/env gawk -f
+# SPDX-License-Identifier: MIT
 
 BEGIN {
-    if (! style) {
-        style = "github"
-    }
-    if (! toc) {
-        toc = 1
-    }
+    if (!style) style = "github"
+
     if (! hlevel) {
-        hlevel = ""
+      hlevel = ""
     }
+    # starting header level
+    HEADING_LEVEL = "1"
 
+    # labels for the headings
+    DESC_TITLE = "Description"
+    TOC_TITLE = "Index"
+    EXAMPLE_TITLE = "Example"
+    ARG_TITLE = "Arguments"
+    VARS_TITLE = "Variables set"
 
-    styles["github", "h1", "from"] = ".*"
-    styles["github", "h1", "to"] = "# &"
+    SEE_TITLE = "See also"
+    OUTPUT_TITLE = "Output on stdout"
+    INPUT_TITLE = "Input on stdin"
+    EXIT_TITLE = "Exit codes"
 
-    styles["github", "h2", "from"] = ".*"
-    styles["github", "h2", "to"] = "## &"
-
-    styles["github", "h3", "from"] = ".*"
-    styles["github", "h3", "to"] = "### &"
-
-    styles["github", "h4", "from"] = ".*"
-    styles["github", "h4", "to"] = "#### &"
-
-    styles["github", "code", "from"] = ".*"
-    styles["github", "code", "to"] = "```&"
-
-    styles["github", "/code", "to"] = "```"
-
-    # styles["github", "argN", "from"] = "^(\\$[0-9]) (\\S+)"
-    # styles["github", "argN", "to"] = "**\\1** (\\2):"
-
-    styles["github", "argN", "from"] = "^(\\$[0-9])[ -:]*\\(?+(\\w+)\\)?+"
-    styles["github", "argN", "to"] = "**\\1** (\\2):"
-    # styles["github", "argN", "to"] = "**\\1** | (\\2) | "
-
-    styles["github", "argN_notype", "from"] = "^(\\$[0-9])[ -:]*"
-    # styles["argN_notype", "to"] = "**\\1** | (string) | "
-    styles["github", "argN_notype", "to"] = "**\\1** (string): "
-
-    styles["github", "arg@", "from"] = "^\\$@ (\\S+)"
-    styles["github", "arg@", "to"] = "**...** (\\1):"
-
-    styles["github", "set", "from"] = "^(\\S+) (\\S+)"
-    styles["github", "set", "to"] = "**\\1** (\\2):"
-
-    styles["github", "li", "from"] = ".*"
-    styles["github", "li", "to"] = "* &"
-
-    styles["github", "i", "from"] = ".*"
-    styles["github", "i", "to"] = "_&_"
-
-    styles["github", "anchor", "from"] = ".*"
-    styles["github", "anchor", "to"] = "[&](#&)"
-
-    styles["github", "exitcode", "from"] = "([>!]?[0-9]{1,3}) (.*)"
-    styles["github", "exitcode", "to"] = "**\\1**: \\2"
+    FUNCTION_DIVIDER = "---"
+    # whether to generate toc, default to true
+    TOC = "1"
+    # TOC = false
+    if(ENVIRON["SHDOC_TOC"] == "0") TOC = false
 
     debug_enable = ENVIRON["SHDOC_DEBUG"] == "1"
     debug_fd = ENVIRON["SHDOC_DEBUG_FD"]
-    if (!debug_fd) {
-        debug_fd = 2
-    }
-    debug_file = "/dev/fd/" debug_fd
+    debug_file = ENVIRON["SHDOC_DEBUG_FILE"]
+    if (!debug_fd) debug_fd = "stderr"
+    if (!debug_file) debug_file = "/dev/fd/" debug_fd
+
+    split("", commentLines)
 }
 
 function render(type, text) {
@@ -72,6 +43,33 @@ function render(type, text) {
     return gensub( styleFrom, styleTo, "g", text )
 }
 
+# uses the heading_level and the passed in leve to build the prefix for the headers
+# ` headingPrefix(2) -> "##" `
+function headingPrefix(level){
+  headerPrefix = ""
+  useLevel = HEADING_LEVEL + level - 1
+  for (i=1;i<=useLevel;i++) headerPrefix = headerPrefix "#"
+  return headerPrefix
+}
+
+# builds the heading
+# ` renderHeading(2, "Foo") -> "## Foo" `
+function renderHeading(level, text){
+  return headingPrefix(level) " " text
+}
+
+function renderFunctionHeading(text) {
+    useLevel = 2
+    return headingPrefix(useLevel) " " text
+}
+
+function renderFunctionSubHeading(text) {
+    useLevel = 3
+    return headingPrefix(useLevel) " " text
+}
+
+# renders the toc link
+# ` render_toc_link("foo.bar()") == "[foo.bar()](#foobar)" `
 function render_toc_link(title) {
     url = title
     if (style == "github") {
@@ -84,10 +82,7 @@ function render_toc_link(title) {
     return "[" title "](#" url ")"
 }
 
-function render_toc_item(title) {
-    return "* " render_toc_link(title)
-}
-
+# fixed indenting for example code blocks
 function unindent(text) {
     split(text, text_lines, "\n")
 
@@ -135,6 +130,12 @@ function reset() {
     description = ""
 }
 
+function init() {
+    debug("→ is_initialized set()")
+    is_initialized = 1
+}
+
+
 function handle_description() {
     debug("→ handle_description")
     if (description == "") {
@@ -143,20 +144,23 @@ function handle_description() {
     }
 
     if (file_description == "") {
-        debug("→ → description: added")
+        debug("→ → file_description: set to description")
         file_description = description
         return;
     }
 }
 
-function concat(x, text) {
-    if (x == "") {
-        x = text
+# concats text to source with a `\n`
+# if source is empty then just sets it to text
+# `concat("foo", "bar") == "foo\nbar"` or `concat("", "bar") == "bar"`
+function concat(source, text) {
+    if (source == "") {
+        source = text
     } else {
-        x = x "\n" text
+        source = source "\n" text
     }
 
-    return x
+    return source
 }
 
 function push(arr, value) {
@@ -196,13 +200,14 @@ function render_docblock(func_name, description, docblock) {
     debug("→ → func_name: [" func_name "]")
     debug("→ → description: [" description "]")
 
-    lines[0] = render("h3", func_name)
+    lines[0] = renderFunctionHeading(func_name)
+
     if (description != "") {
         push(lines, description)
     }
 
     if ("example" in docblock) {
-        push(lines, render("h4", "Example"))
+        push(lines, renderFunctionSubHeading(EXAMPLE_TITLE))
         push(lines, "\n" render("code", "bash"))
         push(lines, unindent(docblock["example"]))
         push(lines, render("/code"))
@@ -210,7 +215,7 @@ function render_docblock(func_name, description, docblock) {
     }
 
     if ("arg" in docblock) {
-        push(lines, render("h4", "Arguments") "\n")
+        push(lines, renderFunctionSubHeading(ARG_TITLE) "\n")
         for (i in docblock["arg"]) {
             item = docblock["arg"][i]
             if(match(item, /\(\w+\)/)) {
@@ -239,7 +244,7 @@ function render_docblock(func_name, description, docblock) {
     }
 
     if ("set" in docblock) {
-        push(lines, render("h4", "Variables set") "\n")
+        push(lines, renderFunctionSubHeading(VARS_TITLE) "\n")
         for (i in docblock["set"]) {
             item = docblock["set"][i]
             item = render("set", item)
@@ -252,7 +257,7 @@ function render_docblock(func_name, description, docblock) {
     }
 
     if ("exitcode" in docblock) {
-        push(lines, render("h4", "Exit codes") "\n")
+        push(lines, renderFunctionSubHeading(EXIT_TITLE) "\n")
         for (i in docblock["exitcode"]) {
             item = render("li", render("exitcode", docblock["exitcode"][i]))
             if (i == length(docblock["exitcode"])) {
@@ -263,7 +268,7 @@ function render_docblock(func_name, description, docblock) {
     }
 
     if ("stdin" in docblock) {
-        push(lines, render("h4", "Input on stdin") "\n")
+        push(lines, renderFunctionSubHeading(INPUT_TITLE) "\n")
         for (i in docblock["stdin"]) {
             item = render("li", docblock["stdin"][i])
             if (i == length(docblock["stdin"])) {
@@ -274,7 +279,7 @@ function render_docblock(func_name, description, docblock) {
     }
 
     if ("stdout" in docblock) {
-        push(lines, render("h4", "Output on stdout") "\n")
+        push(lines, renderFunctionSubHeading(OUTPUT_TITLE) "\n")
         for (i in docblock["stdout"]) {
             item = render("li", docblock["stdout"][i])
             if (i == length(docblock["stdout"])) {
@@ -285,7 +290,7 @@ function render_docblock(func_name, description, docblock) {
     }
 
     if ("see" in docblock) {
-        push(lines, render("h4", "See also") "\n")
+        push(lines, renderFunctionSubHeading(SEE_TITLE) "\n")
         for (i in docblock["see"]) {
             item = render("li", render_toc_link(docblock["see"][i]))
             if (i == length(docblock["see"])) {
@@ -301,31 +306,115 @@ function render_docblock(func_name, description, docblock) {
     return join(lines)
 }
 
+function doDescriptionSub() {
+  debug("→ → in_description: concat")
+  sub(/^[[:space:]]*# @description[[:space:]]*/, "")
+  sub(/^[[:space:]]*#[[:space:]]*/, "")
+  sub(/^[[:space:]]*#$/, "")
+  sub(/^[[:space:]]*#\s*-{3,}\s*/, "")
+  sub(/^[[:space:]]*# /, "")
+  sub(/^[[:space:]]*#\s?#/, "")
+
+  description = concat(description, $0)
+  next
+}
+
+function trackCommentLine(){
+  if(is_initialized) {
+    # if(!commentLines) {
+      # commentLines[0] = $0
+    # } else {
+      # push(commentLines, $0)
+    # }
+    push(commentLines, $0)
+    debug("→ ******************** trackCommentLine " $0)
+    # debug("→ trackCommentLine " join(commentLines))
+  }
+}
+
 function debug(msg) {
     if (debug_enable) {
-        print "DEBUG: " msg > debug_file
+        print (NR-1 + 1) " : " msg # > debug_file
     }
+}
+
+function start_man_doc() {
+    init()
+    in_file_header_docs = 1
+    is_man_doc = 1
+    # commentLines[0] = ""
 }
 
 {
     debug("line: [" $0 "]")
 }
 
-/^[[:space:]]*# @internal/ {
+/^[[:space:]]*# @(internal|ignore)/ {
     debug("→ @internal")
     is_internal = 1
 
     next
 }
 
-/^[[:space:]]*# @(name|file)/ {
-    debug("→ @name|@file")
-    sub(/^[[:space:]]*# @(name|file) /, "")
-    file_title = $0
+#=== Man(ish) Based File Headers ===
 
+# there are a few way to indicate we have started the file docs.
+# using the @name|file is the original default way
+# another is to use ## like hashd.awk uses and we use for the func docs to keep it cleaner.
+# license header could come first so we dont want to trigger on that. recomened to keep licence headers simple with https://spdx.dev/ids/
+# example:
+# ###
+# # script_name.sh - some description
+/^###*$/ && !is_initialized {
+    debug("→ first ## for file header docs " )
+    start_man_doc()
+    next
+}
+# First line with word is the file_title
+# MAN DOC file_title
+/^#\s\w+/ && in_file_header_docs && !file_title {
+    debug("→ MAN DOC file_title " )
+    sub(/^[[:space:]]*#\s?/, "")
+    file_title = $0
+    # next line can be
+    title_line_num = (NR-1 + 1)
     next
 }
 
+# MAN DOC file_title seperator
+/^#\s?=*$/ && in_file_header_docs && file_title && !in_description {
+    # old if && !is_title_seperator_done && title_line_num == NR-1
+    debug("→ MAN DOC === separator and Description start ")
+    is_title_seperator_done = 1
+    in_description = 1
+    next
+}
+
+# blank line or not a comment
+/^[^#]*$/ && in_file_header_docs {
+    debug("→ file_header break line [" $0 "]")
+    handle_description()
+    reset()
+    in_file_header_docs = 0
+    next
+}
+
+# /^#/ && in_file_header_docs {
+#     debug("→ file header next # " FILENAME)
+# }
+
+#=== TAG Based File Headers ===
+
+# @name|@file TAGS
+/^[[:space:]]*# @(name|file)/ {
+    debug("→ @name|@file")
+    sub(/^[[:space:]]*# @(name|file|module|filename) /, "")
+    file_title = $0
+    init()
+    # start_file_doc()
+    next
+}
+# @brief TAGS
 /^[[:space:]]*# @brief/ {
     debug("→ @brief")
     sub(/^[[:space:]]*# @brief /, "")
@@ -335,18 +424,18 @@ function debug(msg) {
 }
 
 /^[[:space:]]*# @description/ {
-    debug("→ @description")
+    debug("→ @description detected")
     in_description = 1
     in_example = 0
-
+    init()
     handle_description()
 
     reset()
 }
 
 # function docs start with ###
-/^\s*#\s?##/ {
-    debug("→ @description")
+/^\s*#\s?##/ && is_initialized{
+    debug("→ ### block description detected")
     in_description = 1
     in_example = 0
 
@@ -356,9 +445,11 @@ function debug(msg) {
 }
 
 in_description {
+    debug("→ in_description")
     # any one of these will stop the decription flow.
-    # not a `# `, any `# @` thats not a @desc, any `# example` and any line thats not a `# ` comment
-    if (/^[^\s*#]/ || /^\s*# @[^d]/ || /^\s*# @example/ || /^\s*# [\`]{3}/ || /^\s*[^#]/) {
+    # not a `# `, any `# @` thats not a @desc, any `# example` and blank line
+    # if (/^[^\s*#]/ || /^\s*# @[^d]/ || /^\s*# @example/ || /^\s*# [\`]{3}/ || /^\s*[^#]/ ) {
+    if (/^[^[[:space:]]*#]|^[[:space:]]*# @[^d]|^[[:space:]]*[^#]|^[[:space:]]*$/) {
         debug("→ → in_description: leave")
 
         if (!match(description, /\n$/)) {
@@ -369,16 +460,8 @@ in_description {
 
         handle_description()
     } else {
-        debug("→ → in_description: concat")
-        sub(/^[[:space:]]*# @description[[:space:]]*/, "")
-        sub(/^[[:space:]]*#[[:space:]]*/, "")
-        sub(/^[[:space:]]*#$/, "")
-        sub(/^[[:space:]]*#\s*-{3,}\s*/, "")
-        sub(/^[[:space:]]*# /, "")
-        sub(/^[[:space:]]*#\s?#/, "")
-
-        description = concat(description, $0)
-        next
+        debug("→ calling doDescriptionSub")
+        doDescriptionSub()
     }
 }
 
@@ -482,12 +565,21 @@ in_example {
     next
 }
 
+# grabbing function assumes that your function is formatted some what sane according to best practices.
+# use shfmt or one the plugins here and should owrk 99% of time. https://github.com/mvdan/sh#related-projects
+# - if its a single line function like `foo(){ echo;}` then it should be one line.
+#   in other words a function line shoudld either end with { or }
+# - functions should end with a } and empty line.
+# - nested functions not supported (not really good practice in bash anyway)
+# - herdoc: if the heredoc contains an `}` or line that looks like a fn (because you generate source code or something )
+#   then put it in its own function and mark it with @internal or @ignore. or wrap the heredoc in # @ignore-start and # @ignore-end
 /^[ \t]*(function([ \t])+)?([a-zA-Z0-9_\-:-\\.]+)([ \t]*)(\(([ \t]*)\))?[ \t]*\{/ && !in_example{
     # && (length(docblock) != 0 || description != "") && !in_example
-    debug("→ function")
+    debug("→ function line [" $0 "]")
+    delete functionLines
     if (is_internal) {
-        debug("→ → function: it is internal, skip")
-        is_internal = 0
+        debug("→ → function: it is internal, skipping")
+        # is_internal = 0
     } else {
         debug("→ → function: register")
 
@@ -499,21 +591,52 @@ in_example {
         )
         debug("******************** → →func_name: [" func_name "]")
         doc = concat(doc, render_docblock(func_name, description, docblock))
-        tocContent = concat(tocContent, render_toc_item(func_name))
+        liItem = render("li", render_toc_link(func_name))
+        tocContent = concat(tocContent, liItem)
     }
-
+    in_function_block = 1
     reset()
     next
 }
 
-# nothing matched and not starting with # comment line
+# look for function end
+/^\}/ && in_function_block {
+    # looks like function end so mark it
+    is_function_end = 1
+}
+
+# tracks the function lines
+in_function_block {
+    # looks like function end so mark it
+    push(functionLines, $0)
+    if(is_function_end){
+      was_internal = is_internal
+      is_function_end = 0
+      is_internal = 0
+
+    }
+}
+
+
+# starts with comment line, if gets here then nothing alse picked it up
+/^[[:space:]]*#\s?/ {
+    debug("→ ********************** hit on comment line [" $0 "]")
+    trackCommentLine()
+}
+
+# starts with blank line
+/^[[:space:]]*?$/ {
+    debug("→ ********************** blank line RESET [" $0 "]")
+}
+
+# NOT starting with # comment line
 /^[^#]*$/ {
     debug("→ break line [" $0 "]")
     handle_description();
+    in_file_header_docs = 0
     reset()
     next
 }
-
 {
     debug("→ NOT HANDLED [" $0 "]")
 }
@@ -524,23 +647,25 @@ END {
     debug("→ → file_brief:       [" file_brief "]")
     debug("→ → file_description: [" file_description "]")
     debug("→ END }")
+    debug("→ VARS ")
+    debug("→ TOC " TOC)
 
     if (file_title != "") {
-        print render("h1", file_title)
+        print renderHeading(1, file_title)
 
         if (file_brief != "") {
             print "\n" file_brief
         }
 
         if (file_description != "") {
-            print "\n" render("h2", "Overview")
+            print "\n" renderHeading(2, DESC_TITLE)
             print "\n" file_description
         }
     }
 
-    if (toc == 1 && tocContent) {
-        print render("h2", "Index") "\n"
-        print tocContent
+    if (TOC && tocContent) {
+        print renderHeading(2, TOC_TITLE)
+        print "\n" tocContent
     }
 
     print "\n" doc

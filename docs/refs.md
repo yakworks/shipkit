@@ -6,6 +6,13 @@ https://gist.github.com/wcarhart/23008155c0699b497879595c84294296
 https://levelup.gitconnected.com/5-modern-bash-scripting-techniques-that-only-a-few-programmers-know-4abb58ddadad
 
 [bash package manger](https://github.com/hyperupcall/basalt)
+https://natelandau.com/boilerplate-shell-script-template/
+https://betterprogramming.pub/my-minimal-safe-bash-script-template-300759114040
+[great template examples with usage combined with comments](https://stackoverflow.com/a/7755563/6500859)
+
+https://docs.gitlab.com/ee/development/shell_scripting_guide/
+
+https://stackoverflow.com/questions/37531927/replacing-source-file-with-its-content-and-expanding-variables-in-bash
 
 ## Links
 https://unix.stackexchange.com/questions/224548/how-to-use-call-by-reference-on-an-argument-in-a-bash-function
@@ -48,14 +55,19 @@ https://www.educba.com/bash-shell-programming-with-python/
 https://towardsdatascience.com/different-ways-to-run-bash-scripts-in-your-python-file-8aeb721bc3d1
 https://www.freecodecamp.org/news/python-for-system-administration-tutorial/
 
+https://opensource.com/article/19/11/awk-to-python
+
 ## awk
 https://github.com/wernsey/d.awk
 
 ## documenting, usage and help
+https://github.com/wernsey/d.awk
 https://realpython.com/documenting-python-code/
 https://www.codingem.com/python-how-to-document-functions/
 https://realpython.com/python-project-documentation-with-mkdocs/
 https://opensource.com/article/19/12/help-bash-program
+https://github.com/tests-always-included/tomdoc.sh
+[license indicator standard](https://spdx.dev/ids/)
 
 ## js
 [order of @params type and name does not matter ](https://github.com/jsdoc/jsdoc/issues/1664)
