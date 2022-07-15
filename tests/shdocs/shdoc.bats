@@ -24,21 +24,23 @@ run_shdoc(){
   diff_output example.md
 }
 
-# @test 'set tags' {
-#   run_shdoc set.sh
-#   diff_output set.md
-# }
+@test 'set tags' {
+  run_shdoc set.sh
+  diff_output set.md
+}
 
-# @test '@ variable' {
-#   run_shdoc func_at.sh
-#   diff_output func_at.md
-# }
+@test '@ variable' {
+  run_shdoc func_at.sh
+  diff_output func_at.md
+}
 
-# @test 'simple' {
-#   export SHDOC_TOC=0
-#   run gawk -f $SHIPKIT_BIN/shdoc/github_styles.awk -f $SHIPKIT_BIN/shdoc/shdoc.awk   "$BATS_TEST_DIRNAME/simple.sh"
-#   diff_output simple.md
-# }
+@test 'simple no toc and start at h2' {
+  # export SHDOC_TOC=0
+  run gawk -v TOC=0 -v START_LEVEL=2 \
+    -f $SHIPKIT_BIN/shdoc/github_styles.awk -f $SHIPKIT_BIN/shdoc/shdoc.awk  \
+    "$BATS_TEST_DIRNAME/simple.sh"
+  diff_output simple.md
+}
 
 diff_output(){
   # uncomment this to get more info on failure

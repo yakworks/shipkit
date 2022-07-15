@@ -12,7 +12,11 @@ https://betterprogramming.pub/my-minimal-safe-bash-script-template-300759114040
 
 https://docs.gitlab.com/ee/development/shell_scripting_guide/
 
+combining bash scripts using source
 https://stackoverflow.com/questions/37531927/replacing-source-file-with-its-content-and-expanding-variables-in-bash
+
+neat trick to create executable tarzip
+https://askubuntu.com/questions/780600/combining-bash-script-and-script-resources-into-one-executable
 
 ## Links
 https://unix.stackexchange.com/questions/224548/how-to-use-call-by-reference-on-an-argument-in-a-bash-function

@@ -6,7 +6,7 @@ Brief
 
 a
 
-## Index
+## 📇 Index
 
 * [b()](#b)
 
@@ -14,7 +14,7 @@ a
 
 func b
 
-### Variables set
+* __🎯 Variables set__
 
-* **FOO** (int): Error code if an erorr occured
-* **BAR** (array): Some array thing
+  * __FOO__ (int): Error code if an erorr occured
+  * __BAR__ (array): Some array thing

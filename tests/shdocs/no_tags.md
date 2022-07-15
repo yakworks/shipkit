@@ -16,6 +16,17 @@ got it
 
 ### a()
 
+* <details>
+  <summary> <kbd>ℹ️ (show source)</kbd></summary>
+  
+  ```bash
+  function a(){
+    echo "$foo bar"
+    [ $x ] && echo "$foo bar"
+  }
+  ```
+</details>
+
 simple a
 
 <details>

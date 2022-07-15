@@ -24,8 +24,7 @@ tests.value() {
     eval $__variable__="${__value__}"
 }
 
-###
-# foo should work
+# @description foo should work
 function foo() {
   echo bar
 }

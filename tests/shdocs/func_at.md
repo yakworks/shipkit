@@ -1,4 +1,4 @@
-## Index
+## 📇 Index
 
 * [tests.value()](#testsvalue)
 * [foo()](#foo)
@@ -8,25 +8,25 @@
 Same, as `tests.eval`, but writes stdout into given variable and
 return stderr as expected.
 
-### Example
+* __🔧 Example__
 
-```bash
-_x() {
-    echo "y [$@]"
-}
-tests:value response _x a b c
-tests:assert-equals "$response" "y [a b c]"
-```
+  ```bash
+  _x() {
+      echo "y [$@]"
+  }
+  tests:value response _x a b c
+  tests:assert-equals "$response" "y [a b c]"
+  ```
 
-### Arguments
+* __🔌 Args__
 
-* **$1** (string): Variable name.
-* **...** (string): String to evaluate.
+  * __$1__ (string): Variable name.
+  * __...__ (string): String to evaluate.
 
-### See also
+* __👓 See also__
 
-* [tests.eval](#testseval)
-* [foo()](#foo)
+  * [tests.eval](#testseval)
+  * [foo()](#foo)
 
 ## foo()
 

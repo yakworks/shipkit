@@ -12,7 +12,7 @@ more here
 example.sh something -f text.txt
 ```
 
-## Index 🗂
+## 📇 Index
 
 * [do.something()](#dosomething)
 * [noargs()](#noargs)
@@ -24,50 +24,50 @@ example.sh something -f text.txt
 Multiline description goes here
 and here
 
-### Example 📄
+* __🔧 Example__
 
-```bash
-some:other:func a b c
-echo 123
-```
+  ```bash
+  some:other:func a b c
+  echo 123
+  ```
 
-### Args 🔌
+* __🔌 Args__
 
-* **$1** (string): Some arg.
-* **...** (any): Rest of arguments.
+  * __$1__ (string): Some arg.
+  * __...__ (any): Rest of arguments.
 
-### Variables Set 🎯
+* __🎯 Variables set__
 
-* **RETVAL** (string): Variable was set
+  * __RETVAL__ (string): Variable was set
 
-### Exit Codes 🚪
+* __🔢 Exit Codes__
 
-* **0**:  If successfull.
-* **>0**: Failure
-* **5**:  some specific error.
+  * **0**:  If successfull.
+  * **>0**: Failure
+  * **5**:  some specific error.
 
-### Stdin ⌨️
+* __🎮 Stdin__
 
-* Path to something.
+  * Path to something.
 
-### Stdout 📺
+* __📺 Stdout__
 
-* Path to something.
+  * Path to something.
 
-### See also 👀
+* __👓 See also__
 
-* [some.other.func()](#someotherfunc)
+  * [some.other.func()](#someotherfunc)
 
 ## noargs()
 
 can use description tag too
 
-### Example 📄
+* __🔧 Example__
 
-```bash
-echo "using example tag"
-echo 2
-```
+  ```bash
+  echo "using example tag"
+  echo 2
+  ```
 
 _Function has no arguments._
 
@@ -75,12 +75,12 @@ _Function has no arguments._
 
 func c
 
-### Example 📄
+* __🔧 Example__
 
-```bash
-echo 1
-echo 2
-```
+  ```bash
+  echo 1
+  echo 2
+  ```
 
 ## trip()
 

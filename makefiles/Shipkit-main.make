@@ -54,8 +54,9 @@ help: _HELP_F := $(firstword $(MAKEFILE_LIST))
 
 ## default, lists help for targets
 help: | _program_awk
-	echo "wordlist $(wordlist 2,$(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))"
-	awk -v pref=1 -f $(HELP_AWK) $(wordlist 2,$(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)) $(_HELP_F)
+	# word list gets all the makefiles that were included
+	# if target_regex is set then help.awk will pick it up and filter targets based on that.
+	awk -v target_regex=$(HELP_REGEX) -f $(HELP_AWK) $(wordlist 2,$(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)) $(_HELP_F)
 	printf "\n$(culine)Common Variables Options:\n$(creset)"
 	printf "$(ccyanB) VERBOSE=true                 $(creset)| show logit.debug in build/make/shikit.log and shows target output on console \n"
 	printf "$(ccyanB) dry_run=true                 $(creset)| setting this to true will stop certain deployment commands from pushing, such as kubectl and docker \n"

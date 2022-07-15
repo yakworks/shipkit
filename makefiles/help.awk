@@ -11,6 +11,9 @@ BEGIN {
     debug_file = ENVIRON["HELP_DEBUG_FILE"]
     if (!debug_fd) debug_fd = "stderr"
     if (!debug_file) debug_file = "/dev/fd/" debug_fd
+
+    # whether to generate toc, default to true
+    # if(target_regex=="") target_regex = "1"
 }
 
 # sort from here https://unix.stackexchange.com/a/609885
