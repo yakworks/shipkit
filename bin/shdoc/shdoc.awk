@@ -12,15 +12,15 @@ BEGIN {
 
     # labels for the headings
     DESC_TITLE = "Description"
-    TOC_TITLE = "Index"
-    EXAMPLE_TITLE = "Example"
-    ARG_TITLE = "Arguments"
-    VARS_TITLE = "Variables set"
+    TOC_TITLE = "Index 🗂"
+    EXAMPLE_TITLE = "Example 📄"
+    ARG_TITLE = "Args 🔌"
+    VARS_TITLE = "Variables Set 🎯"
 
-    SEE_TITLE = "See also"
-    OUTPUT_TITLE = "Output on stdout"
-    INPUT_TITLE = "Input on stdin"
-    EXIT_TITLE = "Exit codes"
+    SEE_TITLE = "See also 👀"
+    OUTPUT_TITLE = "Stdout 📺"
+    INPUT_TITLE = "Stdin ⌨️"
+    EXIT_TITLE = "Exit Codes 🚪"
 
     FUNCTION_DIVIDER = "---"
     # whether to generate toc, default to true

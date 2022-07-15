@@ -12,7 +12,7 @@ more here
 example.sh something -f text.txt
 ```
 
-## Index
+## Index 🗂
 
 * [do.something()](#dosomething)
 * [noargs()](#noargs)
@@ -24,37 +24,37 @@ example.sh something -f text.txt
 Multiline description goes here
 and here
 
-### Example
+### Example 📄
 
 ```bash
 some:other:func a b c
 echo 123
 ```
 
-### Arguments
+### Args 🔌
 
 * **$1** (string): Some arg.
 * **...** (any): Rest of arguments.
 
-### Variables set
+### Variables Set 🎯
 
 * **RETVAL** (string): Variable was set
 
-### Exit codes
+### Exit Codes 🚪
 
 * **0**:  If successfull.
 * **>0**: Failure
 * **5**:  some specific error.
 
-### Input on stdin
+### Stdin ⌨️
 
 * Path to something.
 
-### Output on stdout
+### Stdout 📺
 
 * Path to something.
 
-### See also
+### See also 👀
 
 * [some.other.func()](#someotherfunc)
 
@@ -62,7 +62,7 @@ echo 123
 
 can use description tag too
 
-### Example
+### Example 📄
 
 ```bash
 echo "using example tag"
@@ -75,7 +75,7 @@ _Function has no arguments._
 
 func c
 
-### Example
+### Example 📄
 
 ```bash
 echo 1
