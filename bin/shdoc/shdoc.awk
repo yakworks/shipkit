@@ -224,7 +224,10 @@ function render_docblock(func_name, description, docblock) {
     lines[0] = renderFunctionHeading(func_name)
 
     if (description != "") {
+        # make sure it ends with a LF
+        if (!match(description, /^.*\n$/)) description = description "\n"
         push(lines, description)
+        # if(lines[length(lines)] != "") push(lines, "")
     }
     spaces2= "  "
     if ("example" in docblock) {
@@ -428,6 +431,7 @@ function start_man_doc() {
     sub(/^[[:space:]]*# @(name|file|module|filename) /, "")
     file_title = $0
     init()
+    in_file_header_docs = 1
     # start_file_doc()
     next
 }
@@ -464,9 +468,10 @@ in_description {
     if (/^[^[[:space:]]*#]|^[[:space:]]*# @[^d]|^[[:space:]]*[^#]|^[[:space:]]*$/) {
         debug("→ → in_description: leave")
 
-        if (!match(description, /\n$/)) {
-            description = description "\n"
-        }
+        # if (!match(description, /\n$/)) {
+        #     description = description "\n"
+        #     debug("=========================added LF [" description "]")
+        # }
 
         in_description = 0
 
@@ -646,13 +651,13 @@ in_function_block {
 }
 
 # NOT starting with # comment line
-/^[^#]*$/ {
-    debug("→ **** hit on break line [" $0 "]")
-    handle_file_description();
-    in_file_header_docs = 0
-    reset()
-    next
-}
+# /^[^#]*$/ {
+#     debug("→ **** hit on break line [" $0 "]")
+#     handle_file_description();
+#     in_file_header_docs = 0
+#     reset()
+#     next
+# }
 
 {
     debug("→ NOT HANDLED [" $0 "]")
@@ -676,16 +681,17 @@ END {
 
         if (file_description != "") {
             print "\n" renderHeading(2, DESC_TITLE)
-            print "\n" file_description
+            print "\n" file_description "\n"
+            # debug("============================file_description [" file_description "]")
         }
     }
 
     if (TOC && tocContent) {
         print renderHeading(2, TOC_TITLE)
-        print "\n" tocContent
+        print "\n" tocContent "\n"
     }
 
-    print "\n" doc
+    print doc
 
     ## TODO: add examples section
 }
