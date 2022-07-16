@@ -1,4 +1,4 @@
-#!/usr/bin/env gawk -f
+#!/usr/bin/env awk -f
 # SPDX-License-Identifier: MIT
 
 # Awk program for automatically generating help text from those ludicrous makefiles.
@@ -86,7 +86,7 @@ function debug(msg) {
     width = length(target)
     # track the max  width for formatting
     max_width = (max_width > width) ? max_width : width + 1
-    target_docs[target] = join(comments, "~")
+    target_docs[target] = join(comments)
     # delete comments
   }
   delete comments
@@ -112,7 +112,7 @@ END {
   n = sortIdx(target_docs, idxs)
   for (j=1; j<=n; j++) {
     target = idxs[j]
-    unjoin(help, target_docs[target], "~")
+    unjoin(help, target_docs[target])
     printf "\033[36m%-" max_width "s\033[0m│  %s\n", target, help[1]
     for (i = 2; i <= len(help); i++)
       printf "%-" max_width "s│  %s\n", "", help[i]

@@ -1,5 +1,7 @@
 #!/usr/bin/env gawk -f
 # SPDX-License-Identifier: MIT
+# @include "github_styles.awk"
+# @include "utils.awk"
 
 BEGIN {
     if (!style) style = "github"
@@ -30,35 +32,65 @@ BEGIN {
 
     # greedy is bit like regex "greedy" in that it will doc all functions
     # and will add in any standard comments on the functions
-    if(TOC=="") TOC = "1"
+    if(GREEDY=="") GREEDY = "1"
 
     debug_enable = ENVIRON["SHDOC_DEBUG"] == "1"
     debug_fd = ENVIRON["SHDOC_DEBUG_FD"]
     debug_file = ENVIRON["SHDOC_DEBUG_FILE"]
-    if (!debug_fd) debug_fd = "stderr"
+    if (!debug_fd) debug_fd = 2 # "stderr"
     if (!debug_file) debug_file = "/dev/fd/" debug_fd
 
-    split("", commentLines)
+    # init the arrays, does a dummy split to create empty arrays
+    split("", comment_lines)
 
+    reset_docblock_arrays()
+    # split("", docblock_args)
+    # split("", docblock_sets)
+    # split("", docblock_examples)
+    # # split("", docblock_noargs)
+    # split("", docblock_stdins)
+    # split("", docblock_stdouts)
+    # split("", docblock_exitcodes)
+    # split("", docblock_sees)
     debug("================= BEGIN ======================")
 }
 
-fname != FILENAME {
-  fname = FILENAME;
+# ONLY RUNS on first file to set base_dir, FILENAME will = "-" if its being piped and this will not run
+FILENAME != "-" && !has_base_dir {
+  base_dir = basedir(FILENAME)
+  has_filename = 1
+  has_base_dir = 1
+}
+
+# triggered on each file change
+fname != FILENAME && has_filename {
+  fname = FILENAME
+  # default filename_title will the relative name and is used when processing multiple files
+  filename_title = rel_filename(fname, base_dir)
   fidx++
-  debug("file index:" fidx " fname: " fname )
+  debug("FILENAME: " FILENAME " base_dir: " base_dir " file index:" fidx " fname: " fname " file_title: " file_title)
 }
 
 function debug(msg) {
     if (debug_enable) {
-        printf("%-4s %-10s %s\n", FNR, basename(FILENAME), msg);
+        relative FILENAME
+        printf("%3s %-10s (%s): %s\n", FNR, basename(FILENAME), fidx, msg) > debug_file
         # print (FNR) " : " basename(FILENAME) " : " msg # > debug_file
     }
 }
 
-function basename(file) {
-  sub(".*/", "", file)
-  return file
+function reset_docblock_arrays(){
+  split("", docblock_args)
+  split("", docblock_sets)
+  split("", docblock_examples)
+  # split("", docblock_noargs)
+  split("", docblock_stdins)
+  split("", docblock_stdouts)
+  split("", docblock_exitcodes)
+  split("", docblock_sees)
+  delete docblock
+  # delete docblock_args
+  docblock_noargs = false
 }
 
 function render(type, text) {
@@ -150,8 +182,7 @@ function unindent(text) {
 
 function reset() {
     debug("→ reset()")
-
-    delete docblock
+  reset_docblock_arrays()
     description = ""
 }
 
@@ -170,33 +201,6 @@ function handle_file_description() {
     }
 }
 
-# concats text to source with a `\n`
-# if source is empty then just sets it to text
-# `concat("foo", "bar", '\n) == "foo\nbar"` or `concat("", "bar") == "bar"`
-function concat(source, text, sep) {
-    if (source == "") {
-        source = text
-    } else {
-        source = source sep text
-    }
-    return source
-}
-
-function push(arr, value) {
-    arr[length(arr)+1] = value
-}
-
-# (the extra space before result is a coding convention to indicate that i is a local variable, not an argument):
-function join(arr, sep,     result) {
-    for (i = 0; i < length(arr); i++) {
-        if (i == 0) {
-            result = arr[i]
-        } else {
-            result = result sep arr[i]
-        }
-    }
-    return result
-}
 
 function docblock_set(key, value) {
     docblock[key] = value
@@ -210,16 +214,19 @@ function docblock_concat(key, value) {
     }
 }
 
+# push section to the docblock hash
 function docblock_push(key, value) {
+  # ln = length(docblock[key])
     docblock[key][length(docblock[key])+1] = value
 }
 
+# docblock is for functions. renders it out
 function render_docblock(func_name, description, docblock) {
     debug("→ render_docblock")
     debug("→ → func_name: [" func_name "]")
     debug("→ → description: [" description "]")
     # debug("→ → docblock: [" join(docblock, " ")  "]")
-    debug("→ → commentLines: [" join(commentLines, "\n") "]")
+    debug("→ → comment_lines: [" join(comment_lines, "\n") "]")
 
     lines[0] = renderFunctionHeading(func_name)
 
@@ -238,10 +245,10 @@ function render_docblock(func_name, description, docblock) {
         push(lines, "")
     }
 
-    if ("arg" in docblock) {
+    if (length(docblock_args)) {
         push(lines, renderFunctionSubHeading(ARG_TITLE) "\n")
-        for (i in docblock["arg"]) {
-            item = docblock["arg"][i]
+        for (i in docblock_args) {
+            item = docblock_args[i]
             if(match(item, /\(\w+\)/)) {
                 # debug("******************** → → arg matched type for item: [" item "]")
                 item = render("argN", item)
@@ -256,37 +263,35 @@ function render_docblock(func_name, description, docblock) {
             # item = render("argN", item)
             item = render("arg@", item)
             item = spaces2 render("li", item)
-            if (i == length(docblock["arg"])) {
+            if (i == length(docblock_args)) {
                 item = item "\n"
             }
             push(lines, item)
         }
     }
 
-    if ("noargs" in docblock) {
+    if (docblock_noargs) {
         push(lines, render("i", "Function has no arguments.") "\n")
     }
 
-    if ("set" in docblock) {
+    if (length(docblock_sets)) {
         push(lines, renderFunctionSubHeading(VARS_TITLE) "\n")
-        for (i in docblock["set"]) {
-            item = docblock["set"][i]
+        for (i in docblock_sets) {
+            item = docblock_sets[i]
             item = render("set", item)
             item = spaces2 render("li", item)
-            if (i == length(docblock["set"])) {
+            if (i == length(docblock_sets)) {
                 item = item "\n"
             }
             push(lines, item)
         }
     }
 
-    if ("exitcode" in docblock) {
+    if (length(docblock_exitcodes)) {
         push(lines, renderFunctionSubHeading(EXIT_TITLE) "\n")
-        for (i in docblock["exitcode"]) {
-            item = spaces2 render("li", render("exitcode", docblock["exitcode"][i]))
-            if (i == length(docblock["exitcode"])) {
-                item = item "\n"
-            }
+        for (i in docblock_exitcodes) {
+            item = spaces2 render("li", render("exitcode", docblock_exitcodes[i]))
+            if (i == length(docblock_exitcodes)) item = item "\n"
             push(lines, item)
         }
     }
@@ -334,25 +339,23 @@ function doDescriptionSub(descripLine) {
   # debug("→ → doDescriptionSub")
   # tag
   sub(/^[[:space:]]*# @description[[:space:]]*/, "", descripLine)
-  # remove the hash
-  sub(/^[[:space:]]*#\s*/, "", descripLine)
-  # empty comment line
-  sub(/^#\s*$/, "", descripLine)
+  # remove hashes on empty comment line
+  sub(/^\s*##*\s*/, "", descripLine)
   # #--- seperator
-  sub(/^[[:space:]]*#-{3,}\s*/, "", descripLine)
+  sub(/^#-{3,}\s*/, "", descripLine)
   # multiple hashes
-  sub(/^[[:space:]]*#\s?#+/, "", descripLine)
+  # sub(/^[[:space:]]*#\s?#+/, "", descripLine)
   return descripLine
 }
 
-function trackCommentLine(commentLine){
+function trackCommentLine(comment){
   if(is_initialized) {
     # if(!commentLines) {
       # commentLines[0] = $0
     # } else {
       # push(commentLines, $0)
     # }
-    push(commentLines, commentLine)
+    push(comment_lines, comment)
     # debug("→ ******************** trackCommentLine " $0)
     # debug("→ trackCommentLine " join(commentLines))
   }
@@ -365,8 +368,14 @@ function start_man_doc() {
     # commentLines[0] = ""
 }
 
+function finish_file_header(){
+  handle_file_description()
+  reset()
+  in_file_header_docs = 0
+}
+
 {
-    debug("line: [" $0 "]")
+    debug("======[" $0 "]======")
 }
 
 /^[[:space:]]*# @(internal|ignore)/ {
@@ -390,19 +399,30 @@ function start_man_doc() {
     start_man_doc()
     next
 }
+
 # First line with word is the file_title
 # MAN DOC file_title
 /^#\s\w+/ && in_file_header_docs && !file_title {
-    debug("→ **** hit on MAN DOC file_title " )
-    sub(/^[[:space:]]*#\s?/, "")
-    file_title = $0
+    debug("→ **** hit on MAN DOC file_title [" $0 "]" )
+    # if it matches `name - brief`
+    if(/^.*\s-\s.*$/){
+      didx = index($0, " - ")
+      file_title = substr($0, 0, didx-1)
+      file_brief = substr($0, didx + 3)
+      sub(/^#\s?/, "", file_title)
+      debug("→ file_title [" file_title "] file_brief [" file_brief "]")
+    } else {
+      debug("→ normal file_title")
+      sub(/^[[:space:]]*#\s?/, "")
+      file_title = $0
+    }
     # next line can be
     title_line_num = (NR-1 + 1)
     next
 }
 
 # MAN DOC file_title seperator
-/^#\s?=*$/ && in_file_header_docs && file_title && !in_description {
+/^#\s?[=-]{2,}$/ && in_file_header_docs && file_title && !in_description {
     # old if && !is_title_seperator_done && title_line_num == NR-1
     debug("→ **** hit on MAN DOC === separator and Description start ")
     is_title_seperator_done = 1
@@ -413,9 +433,7 @@ function start_man_doc() {
 # blank line or not a comment resets
 /^[^#]*$/ && in_file_header_docs {
     debug("→ **** hit on file_header break line [" $0 "]")
-    handle_file_description()
-    reset()
-    in_file_header_docs = 0
+    finish_file_header()
     next
 }
 
@@ -440,7 +458,6 @@ function start_man_doc() {
     debug("→ @brief")
     sub(/^[[:space:]]*# @brief /, "")
     file_brief = $0
-
     next
 }
 
@@ -453,7 +470,7 @@ function start_man_doc() {
 }
 
 # function docs start with ##
-/^\s*#\s?##*$/ && is_initialized {
+/^#\s?##*\s?$/ || /^###*\s*\w+.*$/ && is_initialized {
     debug("→ **** hit on ### block description detected")
     in_description = 1
     in_example = 0
@@ -467,15 +484,7 @@ in_description {
     # if (/^[^\s*#]/ || /^\s*# @[^d]/ || /^\s*# @example/ || /^\s*# [\`]{3}/ || /^\s*[^#]/ ) {
     if (/^[^[[:space:]]*#]|^[[:space:]]*# @[^d]|^[[:space:]]*[^#]|^[[:space:]]*$/) {
         debug("→ → in_description: leave")
-
-        # if (!match(description, /\n$/)) {
-        #     description = description "\n"
-        #     debug("=========================added LF [" description "]")
-        # }
-
         in_description = 0
-
-        # handle_file_description()
     } else {
         debug("→ calling doDescriptionSub")
         descripLine = doDescriptionSub($0)
@@ -486,10 +495,7 @@ in_description {
 
 /^[[:space:]]*# @example/ {
     debug("→ @example")
-
     in_example = 1
-
-
     next
 }
 
@@ -525,14 +531,15 @@ in_example {
     debug("→ @arg")
     sub(/^[[:space:]]*# @arg /, "")
 
-    docblock_push("arg", $0)
+  # debug("→ argsArray" length(docblock_args))
+    push(docblock_args, $0)
 
     next
 }
 
 /^[[:space:]]*# @noargs/ {
     debug("→ @noargs")
-    docblock["noargs"] = 1
+    docblock_noargs = 1
 
     next
 }
@@ -541,7 +548,7 @@ in_example {
     debug("→ @set")
     sub(/^[[:space:]]*# @set /, "")
 
-    docblock_push("set", $0)
+    push(docblock_sets, $0)
 
     next
 }
@@ -549,9 +556,7 @@ in_example {
 /^[[:space:]]*# @exitcode/ {
     debug("→ @exitcode")
     sub(/^[[:space:]]*# @exitcode /, "")
-
-    docblock_push("exitcode", $0)
-
+    push(docblock_exitcodes, $0)
     next
 }
 
@@ -640,8 +645,8 @@ in_function_block {
 # capture it and use it if eager is set to use the docs
 /^#\s?/ {
     debug("→ **** hit on comment line [" $0 "]")
-    commentLine = doDescriptionSub($0)
-    trackCommentLine(commentLine)
+    comment = doDescriptionSub($0)
+    trackCommentLine(comment)
 }
 
 # blank line resets
@@ -672,26 +677,79 @@ END {
     debug("→ VARS ")
     debug("→ TOC " TOC)
 
+  if(!file_title) file_title = filename_title
     if (file_title != "") {
-        print renderHeading(1, file_title)
+        print renderHeading(1, file_title "\n")
 
         if (file_brief != "") {
-            print "\n" file_brief
+            print file_brief "\n"
         }
 
         if (file_description != "") {
-            print "\n" renderHeading(2, DESC_TITLE)
-            print "\n" file_description "\n"
+            print renderHeading(2, DESC_TITLE) "\n"
+            print file_description "\n"
             # debug("============================file_description [" file_description "]")
         }
     }
 
     if (TOC && tocContent) {
-        print renderHeading(2, TOC_TITLE)
-        print "\n" tocContent "\n"
+        print renderHeading(2, TOC_TITLE) "\n"
+        print tocContent "\n"
     }
 
     print doc
 
     ## TODO: add examples section
 }
+
+
+# --- utils.awk ---
+
+# gets file name from full path
+function basename(path) {
+  sub(".*/", "", path)
+  return path
+}
+
+# gets the realtive path and file from a base_dir
+function rel_filename(fname, base_dir) {
+  sub(base_dir, "", fname)
+  debug("relative_fname: " fname)
+  return fname
+}
+
+# returns the path without filename
+function basedir(f) {
+  sub(/\/[^\/]+$/, "", f)
+  return f "/"
+}
+
+# concats text to source with a `\n`
+# if source is empty then just sets it to text
+# `concat("foo", "bar", '\n) == "foo\nbar"` or `concat("", "bar") == "bar"`
+function concat(source, text, sep) {
+    if (source == "") {
+        source = text
+    } else {
+        source = source sep text
+    }
+    return source
+}
+
+function push(arr, value) {
+    arr[length(arr)+1] = value
+}
+
+# (the extra space before result is a coding convention to indicate that i is a local variable, not an argument):
+function join(arr, sep,     result) {
+    for (i = 0; i < length(arr); i++) {
+        if (i == 0) {
+            result = arr[i]
+        } else {
+            result = result sep arr[i]
+        }
+    }
+    return result
+}
+
+#---END UTILS---

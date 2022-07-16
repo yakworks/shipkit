@@ -61,7 +61,7 @@ c() {
   echo
 }
 
-###
+##
 # triple desc
 trip() {
   echo

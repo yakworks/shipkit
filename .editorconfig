@@ -50,6 +50,16 @@ indent_size = 2
 indent_style = space
 indent_size = 4
 
+# shell
+[*.{sh}]
+indent_style = space
+indent_size = 2
+
+# shell
+[*.awk]
+indent_style = space
+indent_size = 4
+
 [*.{make,mk}]
 indent_style = tab
 indent_size = 4

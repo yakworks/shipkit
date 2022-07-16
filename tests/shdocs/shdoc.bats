@@ -10,6 +10,7 @@ load ../test_helper
 # SHDOC_DEBUG=1 ./bin/shdoc/shdoc.awk < tests/shdocs/example.sh
 
 setup() {
+  export AWKPATH=$SHIPKIT_BIN/shdoc
   shdocAwk=$SHIPKIT_BIN/shdoc/shdoc.awk
 }
 
@@ -17,6 +18,7 @@ run_shdoc(){
   #awk -f ./bin/shdoc/github_styles.awk -f ./bin/shdoc/shdoc.awk
   # local awk_cmd="gawk -f $SHIPKIT_BIN/shdoc/github_styles.awk -f $SHIPKIT_BIN/shdoc/shdoc.awk"
   run gawk -f $SHIPKIT_BIN/shdoc/github_styles.awk -f $SHIPKIT_BIN/shdoc/shdoc.awk  "$BATS_TEST_DIRNAME/${1}"
+  # run gawk -f $SHIPKIT_BIN/shdoc/shdoc.awk  "$BATS_TEST_DIRNAME/${1}"
 }
 
 @test 'script 1 check' {

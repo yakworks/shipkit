@@ -1,17 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: MIT
 
-###
-# simple.sh
-# =========
-#
-# * description line1
-# * description line2
-#
-# ```
-#   got it
-# ```
-
 ##
 # foo go
 foo.go() {
@@ -23,7 +12,7 @@ foo.set() {
   echo foo
 }
 
-# picks up simple docs
+# normal comment used when GREEDY
 normal() {
   echo 1
   # @description foo
@@ -31,7 +20,7 @@ normal() {
 }
 
 # some foo
-# @arg $1 string Some arg.
+# @arg $1 should avoid mistakes and throw this away
 echo "foo"
 
 # another one

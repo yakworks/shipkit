@@ -70,8 +70,9 @@ https://realpython.com/documenting-python-code/
 https://www.codingem.com/python-how-to-document-functions/
 https://realpython.com/python-project-documentation-with-mkdocs/
 https://opensource.com/article/19/12/help-bash-program
-https://github.com/tests-always-included/tomdoc.sh
+[slick tomdoc way to doc scripts](https://github.com/tests-always-included/tomdoc.sh)
 [license indicator standard](https://spdx.dev/ids/)
+[markdown to man page pandoc](https://unix.stackexchange.com/questions/6891/how-can-i-add-man-page-entries-for-my-own-power-tools)
 
 ## js
 [order of @params type and name does not matter ](https://github.com/jsdoc/jsdoc/issues/1664)
