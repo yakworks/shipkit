@@ -44,14 +44,13 @@ BEGIN {
     split("", comment_lines)
 
     reset_docblock_arrays()
-    # split("", docblock_args)
-    # split("", docblock_sets)
-    # split("", docblock_examples)
-    # # split("", docblock_noargs)
-    # split("", docblock_stdins)
-    # split("", docblock_stdouts)
-    # split("", docblock_exitcodes)
-    # split("", docblock_sees)
+    # some standard indents
+    spaces2= "  "
+    spaces4= "    "
+    code_open="```bash"
+    code_close="```"
+    li_open="* "
+    li_close=""
     debug("================= BEGIN ======================")
 }
 
@@ -80,20 +79,23 @@ function debug(msg) {
 }
 
 function reset_docblock_arrays(){
-  split("", docblock_args)
-  split("", docblock_sets)
-  split("", docblock_examples)
-  # split("", docblock_noargs)
-  split("", docblock_stdins)
-  split("", docblock_stdouts)
-  split("", docblock_exitcodes)
-  split("", docblock_sees)
-  delete docblock
-  # delete docblock_args
-  docblock_noargs = false
+    split("", docblock_args)
+    split("", docblock_sets)
+    #   split("", docblock_examples)
+    # split("", docblock_noargs)
+    split("", docblock_stdins)
+    split("", docblock_stdouts)
+    split("", docblock_exitcodes)
+    split("", docblock_sees)
+
+    docblock_examples = ""
+    docblock_noargs = false
 }
 
 function render(type, text) {
+    if(type == "see") {
+        return render_toc_link(text)
+    }
     styleFrom = styles[style, type, "from"]
     styleTo = styles[style, type, "to"]
     return gensub( styleFrom, styleTo, "g", text )
@@ -102,10 +104,10 @@ function render(type, text) {
 # uses the heading_level and the passed in leve to build the prefix for the headers
 # ` headingPrefix(2) -> "##" `
 function headingPrefix(level){
-  headerPrefix = ""
-  useLevel = START_LEVEL + level - 1
-  for (i=1;i<=useLevel;i++) headerPrefix = headerPrefix "#"
-  return headerPrefix
+    headerPrefix = ""
+    useLevel = START_LEVEL + level - 1
+    for (i=1;i<=useLevel;i++) headerPrefix = headerPrefix "#"
+    return headerPrefix
 }
 
 # builds the heading
@@ -130,10 +132,10 @@ function renderFunctionSubHeading(text) {
 function render_toc_link(title) {
     url = title
     if (style == "github") {
-      # https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb#L44-L45
-      url = tolower(url)
-      gsub(/[^[:alnum:] _-]/, "", url)
-      gsub(/ /, "-", url)
+        # https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/toc_filter.rb#L44-L45
+        url = tolower(url)
+        gsub(/[^[:alnum:] _-]/, "", url)
+        gsub(/ /, "-", url)
     }
 
     return "[" title "](#" url ")"
@@ -182,7 +184,7 @@ function unindent(text) {
 
 function reset() {
     debug("→ reset()")
-  reset_docblock_arrays()
+    reset_docblock_arrays()
     description = ""
 }
 
@@ -201,27 +203,8 @@ function handle_file_description() {
     }
 }
 
-
-function docblock_set(key, value) {
-    docblock[key] = value
-}
-
-function docblock_concat(key, value) {
-    if (key in docblock) {
-        docblock[key] = concat(docblock[key], value, "\n")
-    } else {
-        docblock[key] = value
-    }
-}
-
-# push section to the docblock hash
-function docblock_push(key, value) {
-  # ln = length(docblock[key])
-    docblock[key][length(docblock[key])+1] = value
-}
-
 # docblock is for functions. renders it out
-function render_docblock(func_name, description, docblock) {
+function render_docblock(func_name, description) {
     debug("→ render_docblock")
     debug("→ → func_name: [" func_name "]")
     debug("→ → description: [" description "]")
@@ -237,115 +220,129 @@ function render_docblock(func_name, description, docblock) {
         # if(lines[length(lines)] != "") push(lines, "")
     }
     spaces2= "  "
-    if ("example" in docblock) {
+
+    if (docblock_examples) {
         push(lines, renderFunctionSubHeading(EXAMPLE_TITLE))
-        push(lines, "\n" spaces2 render("code", "bash"))
-        push(lines, unindent(docblock["example"]))
-        push(lines, spaces2 render("/code"))
+        push(lines, "\n" spaces2 code_open)
+        push(lines, unindent(docblock_examples))
+        push(lines, spaces2 code_close)
         push(lines, "")
     }
 
-    if (length(docblock_args)) {
-        push(lines, renderFunctionSubHeading(ARG_TITLE) "\n")
-        for (i in docblock_args) {
-            item = docblock_args[i]
-            if(match(item, /\(\w+\)/)) {
-                # debug("******************** → → arg matched type for item: [" item "]")
-                item = render("argN", item)
-            } else if(match(item, /[1-9] (string|int|number|array|float)/)) {
-                # debug("***** → → arg matched type for know types: [" item "]")
-                item = render("argN", item)
-            } else {
-                # evrything wants to be a string in bash
-                item = render("argN_notype", item)
-                # item = render("argN", item)
-            }
-            # item = render("argN", item)
-            item = render("arg@", item)
-            item = spaces2 render("li", item)
-            if (i == length(docblock_args)) {
-                item = item "\n"
-            }
-            push(lines, item)
-        }
-    }
+    render_args(lines)
 
     if (docblock_noargs) {
-        push(lines, render("i", "Function has no arguments.") "\n")
+        push(lines, "_Function has no arguments._\n")
     }
 
-    if (length(docblock_sets)) {
-        push(lines, renderFunctionSubHeading(VARS_TITLE) "\n")
-        for (i in docblock_sets) {
-            item = docblock_sets[i]
-            item = render("set", item)
-            item = spaces2 render("li", item)
-            if (i == length(docblock_sets)) {
-                item = item "\n"
-            }
-            push(lines, item)
-        }
-    }
+    render_dockblock_section(docblock_sets, lines, "set", VARS_TITLE)
 
-    if (length(docblock_exitcodes)) {
-        push(lines, renderFunctionSubHeading(EXIT_TITLE) "\n")
-        for (i in docblock_exitcodes) {
-            item = spaces2 render("li", render("exitcode", docblock_exitcodes[i]))
-            if (i == length(docblock_exitcodes)) item = item "\n"
-            push(lines, item)
-        }
-    }
+    render_dockblock_section(docblock_exitcodes, lines, "exitcode", EXIT_TITLE)
 
-    if ("stdin" in docblock) {
-        push(lines, renderFunctionSubHeading(INPUT_TITLE) "\n")
-        for (i in docblock["stdin"]) {
-            item = spaces2 render("li", docblock["stdin"][i])
-            if (i == length(docblock["stdin"])) {
-                item = item "\n"
-            }
-            push(lines, item)
-        }
-    }
+    render_dockblock_section(docblock_stdins, lines, "stdin", INPUT_TITLE)
 
-    if ("stdout" in docblock) {
-        push(lines, renderFunctionSubHeading(OUTPUT_TITLE) "\n")
-        for (i in docblock["stdout"]) {
-            item = spaces2 render("li", docblock["stdout"][i])
-            if (i == length(docblock["stdout"])) {
-                item = item "\n"
-            }
-            push(lines, item)
-        }
-    }
+    render_dockblock_section(docblock_stdouts, lines, "stdout", OUTPUT_TITLE)
 
-    if ("see" in docblock) {
-        push(lines, renderFunctionSubHeading(SEE_TITLE) "\n")
-        for (i in docblock["see"]) {
-            item = spaces2 render("li", render_toc_link(docblock["see"][i]))
-            if (i == length(docblock["see"])) {
-                item = item "\n"
-            }
-            push(lines, item)
-        }
-    }
-
+    render_dockblock_section(docblock_sees, lines, "see", SEE_TITLE)
 
     result = join(lines, "\n")
     delete lines
     return result
 }
 
+# helper to return the matched string
+function matcher(text, reggy){
+    if(match(text, reggy)){
+        return substr(text,RSTART,RSTART+RLENGTH)
+    } else {
+        return ""
+    }
+
+}
+
+# renders functions args section
+function render_args(lines){
+    if (length(docblock_args)) {
+        push(lines, renderFunctionSubHeading(ARG_TITLE) "\n")
+        for (i in docblock_args) {
+            item = docblock_args[i]
+            split(item, itemSplit, " ")
+            argnum = itemSplit[1]
+
+            # debug("item [" item "] itemSplit [" itemSplit[2] "] ")
+            idx = index(item, " ")
+            # rest of item with out the "$1 " argnum
+            itemDesc = itemType = substr(item, idx+1)
+            # debug("itemDesc [" itemDesc "] ")
+            # know type in format "$1 string some desc", not prefered kept for compatibility
+            knownTypePattern = @/^[ -]*(string|int|integer|number|float|array|list) /
+            # type in format "$1 (string) some desc" or "$1 - (string) some desc"
+            typePattern = @/^[ -]*\(\w+\) /
+            if(match(itemType, knownTypePattern)){
+                # debug("========== knownTypePattern hit [" itemType "] ")
+                sub(knownTypePattern, "", itemDesc)
+                split(itemType, itemSplit, " ")
+                itemType = itemSplit[1]
+            }
+            else if(match(itemType, typePattern)) {
+                # debug("-------------- typePattern hit [" itemType "] ")
+                sub(typePattern, "", itemDesc)
+                split(itemType, prenSplit, ")")
+                itemType = prenSplit[1]
+                sub(/^\s?-\s*\(/, "", itemType)
+            }
+            else {
+                debug("************ no type  [" itemType "] ")
+                sub(/^\s*-\s*/, "", itemDesc)
+                itemType = "any"
+            }
+            debug("argnum [" argnum "] itemType [" itemType "] itemDesc [" itemDesc "]")
+
+            item = sprintf("__%s__ (%s): %s", argnum, itemType, itemDesc)
+            # rest of line
+            # if(match(item, /^\$\d* \(\w+\)/) ||
+            #     match(item, /^\$\d* (string|int|integer|number|float|array|list)/)) {
+            #     # debug("******************** → → arg matched type for item: [" item "]")
+            #     item = render("argN", item)
+            # } else {
+            #     # evrything wants to be a string in bash
+            #     item = render("argN_notype", item)
+            #     # item = render("argN", item)
+            # }
+            # item = render("argN", item)
+            # item = render("arg@", item)
+            item = spaces2 render("li", item)
+            if (i == length(docblock_args)) item = item "\n"
+            push(lines, item)
+        }
+    }
+}
+
+# render the function section (set, exits, stdout, etc..)
+function render_dockblock_section(docblock_array, lines, styleKey, title){
+    if (length(docblock_array)) {
+        push(lines, renderFunctionSubHeading(title) "\n")
+        for (i in docblock_array) {
+            item = spaces2 render("li", render(styleKey, docblock_array[i]))
+            # if its last item in array then append the LF
+            if (i == length(docblock_array)) item = item "\n"
+            push(lines, item)
+        }
+    }
+}
+
+
 function doDescriptionSub(descripLine) {
-  # debug("→ → doDescriptionSub")
-  # tag
-  sub(/^[[:space:]]*# @description[[:space:]]*/, "", descripLine)
-  # remove hashes on empty comment line
-  sub(/^\s*##*\s*/, "", descripLine)
-  # #--- seperator
-  sub(/^#-{3,}\s*/, "", descripLine)
-  # multiple hashes
-  # sub(/^[[:space:]]*#\s?#+/, "", descripLine)
-  return descripLine
+    # debug("→ → doDescriptionSub")
+    # tag
+    sub(/^[[:space:]]*# @description[[:space:]]*/, "", descripLine)
+    # remove hashes on empty comment line
+    sub(/^\s*##*\s*/, "", descripLine)
+    # #--- seperator
+    sub(/^#-{3,}\s*/, "", descripLine)
+    # multiple hashes
+    # sub(/^[[:space:]]*#\s?#+/, "", descripLine)
+    return descripLine
 }
 
 function trackCommentLine(comment){
@@ -482,10 +479,15 @@ in_description {
     # any one of these will stop the decription flow.
     # not a `# `, any `# @` thats not a @desc, any `# example` and blank line
     # if (/^[^\s*#]/ || /^\s*# @[^d]/ || /^\s*# @example/ || /^\s*# [\`]{3}/ || /^\s*[^#]/ ) {
-    if (/^[^[[:space:]]*#]|^[[:space:]]*# @[^d]|^[[:space:]]*[^#]|^[[:space:]]*$/) {
+    if (/^[^[[:space:]]*#]|^[[:space:]]*# @[^d]|^[[:space:]]*[^#]|^[[:space:]]*$/ ) {
         debug("→ → in_description: leave")
         in_description = 0
-    } else {
+    }
+    else if (/^\s*# [\`]{3}/ && !in_file_header_docs){
+        debug("→ → in_description: Example")
+        in_description = 0
+    }
+    else {
         debug("→ calling doDescriptionSub")
         descripLine = doDescriptionSub($0)
         description = concat(description, descripLine, "\n")
@@ -500,7 +502,7 @@ in_description {
 }
 
 # Example code block
-/^\s*# [\`]{3}/ {
+/^#\s[\`]{3}/ {
     debug("→ @example")
     in_example = 1
     next
@@ -516,11 +518,10 @@ in_example {
             debug("→ → in_example: leave")
             in_example = 0
         } else {
-            debug("→ → in_example: concat")
+            debug("→ → in_example: concat" $0)
             sub(/^[[:space:]]*#/, "")
             sub(/^\s*#\s/, "")
-
-            docblock_concat("example", $0)
+            docblock_examples = concat(docblock_examples, $0, "\n")
             next
         }
     }
@@ -563,19 +564,14 @@ in_example {
 /^[[:space:]]*# @see/ {
     debug("→ @see")
     sub(/[[:space:]]*# @see /, "")
-
-    docblock_push("see", $0)
-
+    push(docblock_sees, $0)
     next
 }
 
 /^[[:space:]]*# @stdin/ {
     debug("→ **** hit on @stdin")
-
     sub(/^[[:space:]]*# @stdin /, "")
-
-    docblock_push("stdin", $0)
-
+    push(docblock_stdins, $0)
     next
 }
 
@@ -584,7 +580,7 @@ in_example {
 
     sub(/^[[:space:]]*# @stdout /, "")
 
-    docblock_push("stdout", $0)
+    push(docblock_stdouts, $0)
 
     next
 }
@@ -606,13 +602,13 @@ in_example {
         # is_internal = 0
     } else {
         is_internal = 0
-        func_name = gensub(\
-            /^[ \t]*(function([ \t])+)?([a-zA-Z0-9_\-:-\\.]+)[ \t]*\(.*/, \
-            "\\3()", \
-            "g" \
-        )
-        doc = concat(doc, render_docblock(func_name, description, docblock), "\n")
-        liItem = render("li", render_toc_link(func_name))
+        sub(/^[ \t]*(function[ \t]+)?/, "")
+        sub(/\s?\(\s?\).*$/, "")
+        func_name = $0
+        # TODO make this confiugruable
+        func_name = func_name "()"
+        doc = concat(doc, render_docblock(func_name, description), "\n")
+        liItem = li_open render_toc_link(func_name)
         tocContent = concat(tocContent, liItem, "\n")
     }
     in_function_block = 1
@@ -750,6 +746,12 @@ function join(arr, sep,     result) {
         }
     }
     return result
+}
+
+# Remove leading and trailing white space
+# gsub() is fast for prefix matches - consider changing the suffix case with str ~ /[[:blank:]]+$/
+function strtrim(str) {
+	gsub(/^[[:blank:]]+|[[:blank:]]+$/, "", str); return str
 }
 
 #---END UTILS---

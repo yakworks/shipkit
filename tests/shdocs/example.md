@@ -34,7 +34,7 @@ and here
 * __🔌 Args__
 
   * __$1__ (string): Some arg.
-  * __...__ (any): Rest of arguments.
+  * __$@__ (any): Rest of arguments.
 
 * __🎯 Variables set__
 

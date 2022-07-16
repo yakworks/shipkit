@@ -23,7 +23,7 @@ return stderr as expected.
 * __🔌 Args__
 
   * __$1__ (string): Variable name.
-  * __...__ (string): String to evaluate.
+  * __$@__ (string): String to evaluate.
 
 * __👓 See also__
 

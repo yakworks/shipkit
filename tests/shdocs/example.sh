@@ -18,7 +18,7 @@
 #   echo 123
 #
 # @arg $1 string Some arg.
-# @arg $@ any Rest of arguments.
+# @arg $@ - (any) Rest of arguments.
 #
 # @set RETVAL string Variable was set
 #
