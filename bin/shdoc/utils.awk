@@ -35,6 +35,16 @@ function push(arr, value) {
     arr[length(arr)+1] = value
 }
 
+function pop(arr,       retval) {
+    if(length(arr)){
+        retval = arr[length(arr)]
+        delete arr[length(arr)]
+        return retval
+    }
+    return false
+}
+
+
 # (the extra space before result is a coding convention to indicate that i is a local variable, not an argument):
 function join(arr, sep,     result) {
     for (i = 0; i < length(arr); i++) {

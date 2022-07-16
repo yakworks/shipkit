@@ -42,9 +42,9 @@ and here
 
 * __🔢 Exit Codes__
 
-  * **0**:  If successfull.
-  * **>0**: Failure
-  * **5**:  some specific error.
+  * __0__ :  If successfull.
+  * __>0__ : Failure
+  * __5__ :  some specific error.
 
 * __🎮 Stdin__
 

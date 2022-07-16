@@ -12,11 +12,18 @@
 #
 # ```
 #   echo
+#   echo
 # ```
 #
+#
 # @arg $1 string Variable name.
+# @arg $2 (string) String to evaluate.
+# @arg $2 - (string) String to evaluate.
 # @arg $2 - (string) String to evaluate.
 # @arg $@ - remaining args.
+#
+# @errorcode >0 - Failures
+# @errorcode 5  - some specific error.
 foo.go() {
   echo
 }

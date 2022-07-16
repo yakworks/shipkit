@@ -17,7 +17,7 @@ BEGIN {
 }
 
 # sort from here https://unix.stackexchange.com/a/609885
-function sortIdx (origArray, idxs, j, i, Local, tx, e, cmd) {
+function sortIdx (origArray, idxs,      j, i, Local, tx, e, cmd) {
     for (j in origArray) str = str j "\n"
     # The \047s in the code represent 's which shell does not allow to be included in '-delimited
     cmd = "printf \047%s\047 \047" str "\047 |sort " args
@@ -29,7 +29,7 @@ function sortIdx (origArray, idxs, j, i, Local, tx, e, cmd) {
     return i;
 }
 
-function len(a, i, k) {
+function len(a,     i, k) {
   for (i in a) k++
   return k
 }
