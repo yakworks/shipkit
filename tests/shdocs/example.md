@@ -8,9 +8,9 @@ more here
 * with lists
 * of things
 
-```bash
+~~~bash
 example.sh something -f text.txt
-```
+~~~
 
 ## 📇 Index
 
@@ -26,10 +26,10 @@ and here
 
 * __🔧 Example__
 
-  ```bash
+  ~~~bash
   some:other:func a b c
   echo 123
-  ```
+  ~~~
 
 * __🔌 Args__
 
@@ -64,10 +64,10 @@ can use description tag too
 
 * __🔧 Example__
 
-  ```bash
+  ~~~bash
   echo "using example tag"
   echo 2
-  ```
+  ~~~
 
 _Function has no arguments._
 
@@ -77,10 +77,10 @@ func c
 
 * __🔧 Example__
 
-  ```bash
+  ~~~bash
   echo 1
   echo 2
-  ```
+  ~~~
 
 ## trip()
 

@@ -10,11 +10,10 @@
 ##
 # foo go
 #
-# ```
+# ~~~
 #   echo
 #   echo
-# ```
-#
+# ~~~
 #
 # @arg $1 string Variable name.
 # @arg $2 (string) String to evaluate.

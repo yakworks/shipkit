@@ -5,9 +5,9 @@
 #  * with lists
 #  * of things
 #
-# ```bash
+# ~~~bash
 #   example.sh something -f text.txt
-# ```
+# ~~~
 
 ###
 # Multiline description goes here

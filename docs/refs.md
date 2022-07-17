@@ -73,6 +73,7 @@ https://opensource.com/article/19/12/help-bash-program
 [slick tomdoc way to doc scripts](https://github.com/tests-always-included/tomdoc.sh)
 [license indicator standard](https://spdx.dev/ids/)
 [markdown to man page pandoc](https://unix.stackexchange.com/questions/6891/how-can-i-add-man-page-entries-for-my-own-power-tools)
-
+[markdeep does the md in browser, pretty slick](https://casual-effects.com/markdeep/)
+[info on OPTIONS and denoting defaults, optional, required, etc](https://stackoverflow.com/questions/21503865/)how-to-denote-that-a-command-line-argument-is-optional-when-printing-usage
 ## js
 [order of @params type and name does not matter ](https://github.com/jsdoc/jsdoc/issues/1664)

@@ -45,3 +45,9 @@ BEGIN {
     styles["github", "exitcode", "from"] = "([>!]?[0-9]{1,3}) (.*)"
     styles["github", "exitcode", "to"] = "**\\1**: \\2"
 }
+
+# Remove leading and trailing white space
+# gsub() is fast for prefix matches - consider changing the suffix case with str ~ /[[:blank:]]+$/
+# function strtrim(str) {
+# 	gsub(/^[[:blank:]]+|[[:blank:]]+$/, "", str); return str
+# }

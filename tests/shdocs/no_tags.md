@@ -5,9 +5,9 @@
 * description line1
 * description line2
 
-```
+~~~
 got it
-```
+~~~
 ## Index
 
 * [a()](#a)
@@ -19,12 +19,12 @@ got it
 * <details>
   <summary> <kbd>ℹ️ (show source)</kbd></summary>
   
-  ```bash
+  ~~~bash
   function a(){
     echo "$foo bar"
     [ $x ] && echo "$foo bar"
   }
-  ```
+  ~~~
 </details>
 
 simple a
@@ -32,12 +32,12 @@ simple a
 <details>
   <summary> ℹ️ <sub><sup>(show source)</sup></sub></summary>
   
-  ```bash
+  ~~~bash
   function a(){
     echo "$foo bar"
     [ $x ] && echo "$foo bar"
   }
-  ```
+  ~~~
 </details>
 
 ### b()

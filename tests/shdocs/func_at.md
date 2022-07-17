@@ -12,13 +12,13 @@ return stderr as expected.
 
 * __🔧 Example__
 
-  ```bash
+  ~~~bash
   _x() {
       echo "y [$@]"
   }
   tests:value response _x a b c
   tests:assert-equals "$response" "y [a b c]"
-  ```
+  ~~~
 
 * __🔌 Args__
 
