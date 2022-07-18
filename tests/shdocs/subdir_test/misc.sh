@@ -5,17 +5,9 @@
 
 ###
 # simple a
-a() {
+misc.a() {
   echo
 }
 
 # @description desc b
-b() { echo foo; }
-
-# picks up simple docs
-normal() {
-  echo 1
-}
-
-# @internal use if dont want it to show
-bar() { echo; }
+misc.b() { echo foo; }

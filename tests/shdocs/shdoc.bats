@@ -17,7 +17,7 @@ setup() {
 run_shdoc(){
   #awk -f ./bin/shdoc/github_styles.awk -f ./bin/shdoc/shdoc.awk
   # local awk_cmd="gawk -f $SHIPKIT_BIN/shdoc/github_styles.awk -f $SHIPKIT_BIN/shdoc/shdoc.awk"
-  run gawk -f $SHIPKIT_BIN/shdoc/github_styles.awk -f $SHIPKIT_BIN/shdoc/shdoc.awk  "$BATS_TEST_DIRNAME/${1}"
+  run awk -f $SHIPKIT_BIN/shdoc/shdoc.awk -f $SHIPKIT_BIN/shdoc/shdoc_fns.awk  "$BATS_TEST_DIRNAME/${1}"
   # run gawk -f $SHIPKIT_BIN/shdoc/shdoc.awk  "$BATS_TEST_DIRNAME/${1}"
 }
 
@@ -36,10 +36,16 @@ run_shdoc(){
   diff_output func_at.md
 }
 
+@test 'pod.sh' {
+  run_shdoc pod.sh
+  diff_output pod.md
+}
+
 @test 'simple no toc and start at h2' {
   # export SHDOC_TOC=0
-  run gawk -v TOC=0 -v START_LEVEL=2 \
-    -f $SHIPKIT_BIN/shdoc/github_styles.awk -f $SHIPKIT_BIN/shdoc/shdoc.awk  \
+  run awk -v TOC=0 -v START_LEVEL=2 \
+    -f $SHIPKIT_BIN/shdoc/shdoc.awk  \
+    -f $SHIPKIT_BIN/shdoc/shdoc_fns.awk  \
     "$BATS_TEST_DIRNAME/simple.sh"
   diff_output simple.md
 }

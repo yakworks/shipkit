@@ -6,9 +6,10 @@ https://gist.github.com/wcarhart/23008155c0699b497879595c84294296
 https://levelup.gitconnected.com/5-modern-bash-scripting-techniques-that-only-a-few-programmers-know-4abb58ddadad
 
 [bash package manger](https://github.com/hyperupcall/basalt)
+
 https://natelandau.com/boilerplate-shell-script-template/
 https://betterprogramming.pub/my-minimal-safe-bash-script-template-300759114040
-[great template examples with usage combined with comments](https://stackoverflow.com/a/7755563/6500859)
+[template examples with usage combined with comments](https://stackoverflow.com/a/7755563/6500859)
 
 https://docs.gitlab.com/ee/development/shell_scripting_guide/
 

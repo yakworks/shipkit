@@ -9,8 +9,8 @@
 #   tests:value response _x a b c
 #   tests:assert-equals "$response" "y [a b c]"
 #
-# @arg $1 string Variable name.
-# @arg $@ string String to evaluate.
+# @arg $1 string Variable name
+# @arg $@ string String to evaluate
 # @see tests.eval
 # @see foo()
 tests.value() {
