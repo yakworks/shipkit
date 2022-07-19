@@ -22,6 +22,16 @@ can provide a quick example inline like `pod.sh go "$bar"`. in `eager` mode
   * __$1__ (any): use normal markdown list to doc vars, can also use indents instead of markdown lists like below
   * __$2__ (any): type in the docs will default to string
 
+* <details> <summary><kbd> ℹ️ show function source</kbd></summary>
+
+  ~~~bash
+  function pod.go() {
+    echo "this script really goes"
+  }
+  ~~~
+
+  <details>
+
 ## pod.go:faster()
 
 more complex example
@@ -42,3 +52,13 @@ more complex example
 * __🔢 Exit Codes__
 
   * __>0__ : can use error codes or use @exitcode
+
+* <details> <summary><kbd> ℹ️ show function source</kbd></summary>
+
+  ~~~bash
+  function pod.go:faster() {
+    echo "this script can go faster"
+  }
+  ~~~
+
+  <details>

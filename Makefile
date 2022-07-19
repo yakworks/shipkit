@@ -75,4 +75,4 @@ build/usage/is.md: bin/is.sh
 
 docs.generate:
 	shopt -s globstar
-	awk -v MULTI_FILE=1 -f ./bin/shdoc/shdoc.awk -f ./bin/shdoc/shdoc_fns.awk bin/* > docs/USAGE.md
+	awk -v MULTI_FILE=1 -v SHOW_SRC=1 -f ./bin/shdoc/shdoc.awk -f ./bin/shdoc/shdoc_fns.awk bin/* > docs/USAGE.md

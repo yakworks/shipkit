@@ -25,7 +25,7 @@ BEGIN {
     OUTPUT_TITLE = "📺 Stdout"
     INPUT_TITLE = "🎮 Stdin"
     EXIT_TITLE = "🔢 Exit Codes"
-
+    SOURCE_CODE_TITLE = "<kbd> ℹ️ show function source</kbd>"
     # when its multiple files this will be the h1 title.
     MAIN_TITLE = "Usage Docs"
 
@@ -36,6 +36,8 @@ BEGIN {
     if(TOC=="") TOC = "1"
     # TOC = false
     if(ENVIRON["SHDOC_TOC"] == "0") TOC = false
+    # whether to generate a show source code dropdown
+    if(SHOW_SRC=="") SHOW_SRC = false
 
     # greedy is bit like regex "greedy" in that it will doc all functions
     # and will add in any standard comments on the functions
@@ -335,12 +337,13 @@ in_description {
 #   then put it in its own function and mark it with @internal or @ignore. or wrap the heredoc in # @ignore-start and # @ignore-end
 /^[ \t]*(function([ \t])+)?([a-zA-Z0-9_:\-\.]+)([ \t]*)(\(([ \t]*)\))?[ \t]*\{/ && !in_example{
     debug("→ function line [" $0 "]")
-    delete functionLines
+    delete function_lines
     if (is_internal) {
         debug("→ → function: it is internal, skipping")
         # is_internal = 0
     } else {
         is_internal = 0
+        push(function_lines, $0)
         func_name = trim($0)
         sub(/^function[ \t]*/, "", func_name) # remove function if there
         sub(/[ \t]*\([ \t]*\).*$/, "", func_name) # remove parens if there and everythign after them
@@ -366,12 +369,15 @@ in_description {
 in_function_block {
     debug("→ **** in_function_block ")
     # looks like function end so mark it
-    push(functionLines, $0)
+    push(function_lines, $0)
     if(is_function_end){
-      in_function_block = 0
-      was_internal = is_internal
-      is_function_end = 0
-      is_internal = 0
+        if(SHOW_SRC){
+            render_function_source()
+        }
+        in_function_block = 0
+        was_internal = is_internal
+        is_function_end = 0
+        is_internal = 0
     }
 }
 

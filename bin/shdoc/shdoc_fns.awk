@@ -113,6 +113,17 @@ function handle_file_description() {
 }
 
 # docblock is for functions. renders it out
+function render_function_source() {
+    debug("→ render_function_source")
+    # concat to the main doc
+    DOC = DOC "\n"
+    DOC = DOC "* <details> <summary>" SOURCE_CODE_TITLE "</summary>\n\n"
+    srcBlock = sprintf(format_code, indentor(function_lines, 2))
+    DOC = DOC srcBlock "\n"
+    DOC = DOC "  <details>\n"
+}
+
+# docblock is for functions. renders it out
 function render_docblock(func_name) {
     debug("→ render_docblock")
     debug("→ → func_name: [" func_name "]")

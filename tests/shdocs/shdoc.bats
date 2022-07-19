@@ -36,16 +36,20 @@ run_shdoc(){
   diff_output func_at.md
 }
 
-@test 'pod.sh' {
-  run_shdoc pod.sh
+@test 'pod.sh with SHOW_SRC' {
+  # export SHDOC_TOC=0
+  run awk -v SHOW_SRC=1 \
+    -f $SHIPKIT_BIN/shdoc/shdoc_fns.awk  \
+    -f $SHIPKIT_BIN/shdoc/shdoc.awk  \
+    "$BATS_TEST_DIRNAME/pod.sh"
   diff_output pod.md
 }
 
 @test 'simple no toc and start at h2' {
   # export SHDOC_TOC=0
   run awk -v TOC=0 -v START_LEVEL=2 \
-    -f $SHIPKIT_BIN/shdoc/shdoc.awk  \
     -f $SHIPKIT_BIN/shdoc/shdoc_fns.awk  \
+    -f $SHIPKIT_BIN/shdoc/shdoc.awk  \
     "$BATS_TEST_DIRNAME/simple.sh"
   diff_output simple.md
 }

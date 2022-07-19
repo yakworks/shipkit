@@ -13,7 +13,7 @@
 # - $1 - use normal markdown list to doc vars, can also use indents instead of markdown lists like below
 # - $2 - type in the docs will default to string
 function pod.go() {
-  echo
+  echo "this script really goes"
 }
 
 ##
@@ -31,6 +31,6 @@ function pod.go() {
 # @arg $3 - can still use the arg tag
 # @errorcode >0 - can use error codes or use @exitcode
 function pod.go:faster() {
-  echo
+  echo "this script can go faster"
 }
 
