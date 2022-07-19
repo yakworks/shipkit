@@ -8,6 +8,29 @@ BAM (Bash And Make) Bash scripts and makefiles based CI/CD tool.
 
 For a standardized way to build, test and deploy across projects that stays out of your way, no matter what the language.
 
+<!-- TOC orderedlist:false -->
+
+- [Verisons](#verisons)
+    - [upgrade notes](#upgrade-notes)
+- [Bash Scripts Usage Docs](#bash-scripts-usage-docs)
+- [Why?](#why)
+    - [Why Bash?](#why-bash)
+    - [Why Make?](#why-make)
+- [Make as a wrapper](#make-as-a-wrapper)
+- [Assumptions about the build environment](#assumptions-about-the-build-environment)
+- [Good reads](#good-reads)
+- [style guides we endeveur to follow](#style-guides-we-endeveur-to-follow)
+- [Setup](#setup)
+- [MAKE](#make)
+- [Semver and Conventional Commits](#semver-and-conventional-commits)
+- [related](#related)
+- [links for using make and docker](#links-for-using-make-and-docker)
+- [bash](#bash)
+- [versioning example](#versioning-example)
+- [docker makefiles](#docker-makefiles)
+
+<!-- /TOC -->
+
 ## Verisons
 
 Follow semantic verioning. 
@@ -42,7 +65,11 @@ terminology.
   - the property version_set_snapshot should be changed to release_reset_flag=, check build.yml
 
   - is using with gradle plugin `org.yakworks:gradle-plugins` version must be >= 2.7.3
- 
+
+## Bash Scripts Usage Docs
+
+  [See Here For Shipkits Bash Scripts](docs/USAGE.md)
+
 ## Why?
 
 From https://github.blog/2015-06-30-scripts-to-rule-them-all/
@@ -59,7 +86,7 @@ With practically every software project, developers need to perform the followin
 
 We have normalized on a set of `Bash` scripts and `Make` targets for all of our projects that individual contributors will be familiar with the second after they clone a project. 
 
-## Why Bash?
+### Why Bash?
 
 Yes we need it. Its pretty much every where. And when using an alpine docker image, Bash only adds about 800k compressed, and 2.2 mb uncompressed. Its silly not use its plethora of features for scripting. 
 
@@ -71,7 +98,7 @@ Yes we need it. Its pretty much every where. And when using an alpine docker ima
 | Alpine with Bash, Make, Curl                                 | 4.56 MB | 10.04 MB     |
 | Alpine with Bash, Make, Curl <br> gnupg, git, openssh-client | 20.6 MB | 46.72 MB     |
 
-## Why Make?
+### Why Make?
 
 From [The Lost Art of the Makefile](https://www.olioapps.com/blog/the-lost-art-of-the-makefile/)
 
