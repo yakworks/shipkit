@@ -1,3 +1,65 @@
+# References
+
+Big dumping round for ref links and bookmarks. Need to clean this up
+
+- https://github.com/semantic-release/semantic-release
+- 
+
+Good make samples that this was taken from
+ideas pulled from https://tech.davis-hansson.com/p/make/
+and https://github.com/martinwalsh/ludicrous-makefiles	
+
+## Good reads
+
+Lost art of the makefile
+
+- https://www.olioapps.com/blog/the-lost-art-of-the-makefile/
+- https://3musketeers.io/
+
+12 factor app is the philosophy
+
+- https://12factor.net
+
+## make and docker
+- https://amaysim.engineering/the-3-musketeers-how-make-docker-and-compose-enable-us-to-release-many-times-a-day-e92ca816ef17
+- https://3musketeers.io/about/#what
+- https://www.freecodecamp.org/news/want-to-know-the-easiest-way-to-save-time-use-make-eec453adf7fe/
+- https://swcarpentry.github.io/make-novice/02-makefiles/
+- https://krzysztofzuraw.com/blog/2016/makefiles-in-python-projects.html
+- https://datakurre.pandala.org/2016/04/evolution-of-our-makefile-for-docker.html/
+- https://engineering.docker.com/2019/06/containerizing-test-tooling-creating-your-dockerfile-and-makefile/
+- https://github.com/marmelab/make-docker-command/blob/master/Makefile
+- https://github.com/mvanholsteijn/docker-makefile
+- https://itnext.io/docker-makefile-x-ops-sharing-infra-as-code-parts-ea6fa0d22946
+
+## bash
+
+- http://bash3boilerplate.sh
+- http://redsymbol.net/articles/unofficial-bash-strict-mode/
+- http://rus.har.mn/blog/2010-07-05/subshells/
+- https://github.com/dylanaraps/pure-bash-bible
+
+## versioning example
+
+- https://github.com/mvanholsteijn/docker-makefile
+
+## docker makefiles
+- https://philpep.org/blog/a-makefile-for-your-dockerfiles
+- https://stackoverflow.com/questions/44969605/incrementally-build-docker-image-hierarchy-with-makefile
+
+## MAKE
+
+https://github.com/wurosh/cake
+https://gitlab.com/internet-cleanup-foundation/web-security-map/-/blob/master/Makefile
+
+## Semver and Conventional Commits
+https://www.conventionalcommits.org/en/v1.0.0/
+https://github.com/semantic-release/semantic-release
+https://dwmkerr.com/conventional-commits-and-semantic-versioning-for-java/
+
+https://dev.to/craicoverflow/enforcing-conventional-commits-using-git-hooks-1o5p
+https://github.com/craicoverflow/sailr
+
 ## SED
 https://edoras.sdsu.edu/doc/sed-oneliners.html
 
