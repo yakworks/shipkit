@@ -371,7 +371,7 @@ in_function_block {
     # looks like function end so mark it
     push(function_lines, $0)
     if(is_function_end){
-        if(SHOW_SRC){
+        if(SHOW_SRC && !is_internal){
             render_function_source()
         }
         in_function_block = 0

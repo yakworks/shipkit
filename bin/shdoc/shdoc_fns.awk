@@ -120,7 +120,7 @@ function render_function_source() {
     DOC = DOC "* <details> <summary>" SOURCE_CODE_TITLE "</summary>\n\n"
     srcBlock = sprintf(format_code, indentor(function_lines, 2))
     DOC = DOC srcBlock "\n"
-    DOC = DOC "  <details>\n"
+    DOC = DOC "  </details>\n"
 }
 
 # docblock is for functions. renders it out

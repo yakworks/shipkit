@@ -203,7 +203,7 @@ updates the changelog, does a bunch of git diff work to get changes
   }
   ~~~
 
-  <details>
+  </details>
 
 ## circle
 
@@ -237,18 +237,7 @@ uses curl to trigger a pipeline
   }
   ~~~
 
-  <details>
-
-* <details> <summary><kbd> ℹ️ show function source</kbd></summary>
-
-  ~~~bash
-    CIRCLE_COMPARE_URL=$(cat CIRCLE_COMPARE_URL.txt || true)
-    # echo "CIRCLE_COMPARE_URL $CIRCLE_COMPARE_URL"
-    echo "$CIRCLE_COMPARE_URL" | rev | cut -d/ -f1 | rev
-  }
-  ~~~
-
-  <details>
+  </details>
 
 ## docker_tools
 
@@ -277,7 +266,7 @@ login to docker hub
   }
   ~~~
 
-  <details>
+  </details>
 
 ### docker.stop()
 
@@ -297,7 +286,7 @@ removes the docker
   }
   ~~~
 
-  <details>
+  </details>
 
 ### docker.remove()
 
@@ -319,7 +308,7 @@ removes the docker
   }
   ~~~
 
-  <details>
+  </details>
 
 ### docker.start()
 
@@ -342,7 +331,7 @@ starts a docker (docker run) if its not already running
   }
   ~~~
 
-  <details>
+  </details>
 
 ### docker.create_network()
 
@@ -363,7 +352,7 @@ create a docker network if it does not exist
   }
   ~~~
 
-  <details>
+  </details>
 
 ## docmark
 
@@ -396,7 +385,7 @@ Copies readme, updates version and replaces links that went into docs
   }
   ~~~
 
-  <details>
+  </details>
 
 ### docmark.copy_groovydoc_to_api()
 
@@ -410,7 +399,7 @@ builds the groovydocs and copies them into site/api
   }
   ~~~
 
-  <details>
+  </details>
 
 ### docmark.run()
 
@@ -428,7 +417,7 @@ runs the docmark
   }
   ~~~
 
-  <details>
+  </details>
 
 ### docmark.shell()
 
@@ -449,7 +438,7 @@ use this to open shell and test circle commands
   }
   ~~~
 
-  <details>
+  </details>
 
 ## dotenv
 
@@ -526,7 +515,7 @@ parses the env file, eval and load into BUILD_VARS
   }
   ~~~
 
-  <details>
+  </details>
 
 ## git_tools
 
@@ -583,7 +572,7 @@ will try and constuct PROJECT_FULLNAME from git config if not passed in
   }
   ~~~
 
-  <details>
+  </details>
 
 ### project_fullname_from_git_remote()
 
@@ -609,7 +598,7 @@ based on whther its https or ssh git
   }
   ~~~
 
-  <details>
+  </details>
 
 ### verify_git_user()
 
@@ -632,7 +621,7 @@ checks is a git user is setup, and if not sets up the bot user, used in CI.
   }
   ~~~
 
-  <details>
+  </details>
 
 ### current_git_branch()
 
@@ -646,7 +635,7 @@ shows the current git branch
   }
   ~~~
 
-  <details>
+  </details>
 
 ### git_clone_pages()
 
@@ -672,7 +661,7 @@ clones gh-pages into the build directory
   }
   ~~~
 
-  <details>
+  </details>
 
 ### git_push_pages()
 
@@ -697,7 +686,7 @@ in build/gh-pages commits and pushes gh pages
   }
   ~~~
 
-  <details>
+  </details>
 
 ### config_bot_user()
 
@@ -721,7 +710,7 @@ matching account in github
   }
   ~~~
 
-  <details>
+  </details>
 
 ### init_gh_pages()
 
@@ -742,7 +731,7 @@ matching account in github
   }
   ~~~
 
-  <details>
+  </details>
 
 ### git_tag()
 
@@ -763,7 +752,7 @@ creates a git tag
   }
   ~~~
 
-  <details>
+  </details>
 
 ### git_push_tags()
 
@@ -775,7 +764,7 @@ creates a git tag
   }
   ~~~
 
-  <details>
+  </details>
 
 ### hasAppChanges()
 
@@ -797,7 +786,7 @@ checks a commit rangs to see if somethign other than docs has changed
   }
   ~~~
 
-  <details>
+  </details>
 
 ### hasDocChanges()
 
@@ -819,7 +808,7 @@ checks a commit rangs to see if docs have changed
   }
   ~~~
 
-  <details>
+  </details>
 
 ### git_debug()
 
@@ -838,7 +827,7 @@ Just a helper to show variables which can be useful for debugging
   }
   ~~~
 
-  <details>
+  </details>
 
 ## github
 
@@ -890,7 +879,7 @@ Just a helper to show variables which can be useful for debugging
   }
   ~~~
 
-  <details>
+  </details>
 
 ## gradle_tools
 
@@ -908,7 +897,7 @@ Just a helper to show variables which can be useful for debugging
   }
   ~~~
 
-  <details>
+  </details>
 
 ### _copy_test_results()
 
@@ -924,7 +913,7 @@ Just a helper to show variables which can be useful for debugging
   }
   ~~~
 
-  <details>
+  </details>
 
 ### gradle.transform_to_java_props()
 
@@ -948,7 +937,7 @@ Just a helper to show variables which can be useful for debugging
   }
   ~~~
 
-  <details>
+  </details>
 
 ## basic tempalate variable replacement using heredoc
 
@@ -967,7 +956,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### make_env_init()
 
@@ -981,7 +970,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### init_env()
 
@@ -1033,7 +1022,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### init_defaults()
 
@@ -1104,7 +1093,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### init_from_build_yml()
 
@@ -1122,7 +1111,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### make_some_vals_lowercase()
 
@@ -1139,7 +1128,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### init_versions()
 
@@ -1174,7 +1163,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### set_snapshot()
 
@@ -1189,7 +1178,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### circle_init_env()
 
@@ -1211,7 +1200,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### init_db_env()
 
@@ -1259,7 +1248,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### createEnvFile()
 
@@ -1281,7 +1270,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### parse_bot_env_file()
 
@@ -1298,7 +1287,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### load_env()
 
@@ -1315,7 +1304,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### load_custom_sh_or_env()
 
@@ -1342,7 +1331,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ## jbuilder_docker
 
@@ -1364,7 +1353,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### db_start()
 
@@ -1383,7 +1372,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### db-start()
 
@@ -1397,7 +1386,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### wait_for_mysql()
 
@@ -1413,7 +1402,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### wait_for_sqlserver()
 
@@ -1431,7 +1420,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ## runs sed on the kubernetes tpl.yml template files to update and replace variables with values
 
@@ -1447,7 +1436,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### kube.create_namespace()
 
@@ -1463,7 +1452,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### kube.ctl()
 
@@ -1479,7 +1468,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ### kube.apply()
 
@@ -1491,7 +1480,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   }
   ~~~
 
-  <details>
+  </details>
 
 ## make_shell
 
@@ -1521,7 +1510,7 @@ The main issue to check for is lines starting with 4 spaces
   }
   ~~~
 
-  <details>
+  </details>
 
 ### makechecker.lint_files()
 
@@ -1556,7 +1545,7 @@ Lint one or more files
   }
   ~~~
 
-  <details>
+  </details>
 
 ### makechecker.find_targets()
 
@@ -1583,7 +1572,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ## basic tempalate variable replacement using sed
 
@@ -1601,7 +1590,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ## semver
 
@@ -1620,7 +1609,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ### bump_version_file()
 
@@ -1636,7 +1625,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ### update_package_json()
 
@@ -1652,7 +1641,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ### updateVersionFile()
 
@@ -1685,7 +1674,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ### bump_patch()
 
@@ -1707,7 +1696,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ## setVar
 
@@ -1731,7 +1720,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ### evalVar()
 
@@ -1746,7 +1735,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ### putVar()
 
@@ -1760,7 +1749,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ### add_build_vars()
 
@@ -1777,7 +1766,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ### log-vars()
 
@@ -1792,7 +1781,7 @@ gets all files that either start with Makefile or have .make extension
   }
   ~~~
 
-  <details>
+  </details>
 
 ## runs the shellcheck on the passed one or more directories
 
@@ -1811,7 +1800,7 @@ $@ - {array} one or more dirs
   }
   ~~~
 
-  <details>
+  </details>
 
 ### find_shellcheck_targets()
 
@@ -1835,6 +1824,6 @@ $@ - {array} one or more dirs
   }
   ~~~
 
-  <details>
+  </details>
 
 
