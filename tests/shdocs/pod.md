@@ -30,7 +30,7 @@ can provide a quick example inline like `pod.sh go "$bar"`. in `eager` mode
   }
   ~~~
 
-  <details>
+  </details>
 
 ## pod.go:faster()
 
@@ -61,4 +61,4 @@ more complex example
   }
   ~~~
 
-  <details>
+  </details>
