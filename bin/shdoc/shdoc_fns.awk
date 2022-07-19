@@ -108,7 +108,7 @@ function init() {
 function handle_file_description() {
     debug("→ handle_file_description")
     if (length(description_lines) && file_description == "") {
-        file_description = join(description_lines, "\n")
+        file_description = "\n" join(description_lines, "\n")
     }
 }
 
@@ -157,7 +157,8 @@ function render_docblock(func_name) {
 
     _func_docs = join(_lines, "\n")
     # concat to the main doc
-    if(FUNCTION_DIVIDER) DOC = DOC "\n" FUNCTION_DIVIDER "\n"
+    DOC = DOC "\n"
+    if(FUNCTION_DIVIDER) DOC = DOC FUNCTION_DIVIDER "\n"
     DOC = concat(DOC, _func_docs)
 
     # add function to the TOC
@@ -276,8 +277,8 @@ function finish_file_header(){
 }
 
 function render_multi_header(){
-    print "# Usage Docs"
-    if (TOC && tocContent) {
+    print "# " MAIN_TITLE
+    if (TOC) {
         print renderHeading(2, TOC_TITLE) "\n\n" tocContent "\n"
     }
 }
@@ -298,12 +299,9 @@ function render_file_doc(){
         if (file_brief != "") {
             FILE_DOC = FILE_DOC "\n" file_brief "\n"
         }
-
         if (file_description != "") {
             FILE_DOC = FILE_DOC "\n" renderHeading(2, DESC_TITLE) "\n" file_description "\n"
-            # debug("============================file_description [" file_description "]")
         }
-
     }
 
     if (!is_multi_file && TOC && tocContent) {
@@ -314,6 +312,7 @@ function render_file_doc(){
     # reset
     file_title = ""
     file_brief = ""
+    file_description = ""
     DOC = ""
     FILE_DOC = ""
     # print MAIN_DOC
@@ -360,20 +359,13 @@ function push(arr, value) {
     arr[length(arr)+1] = value
 }
 
-# function last(arr){
-#     return arr[length(arr)]
-# }
-
-# (the extra space before result is a coding convention to indicate that i is a local variable, not an argument):
-function join(arr, sep,     result) {
-    for (i = 0; i < length(arr); i++) {
-        if (i == 0) {
-            result = arr[i]
-        } else {
-            result = result sep arr[i]
-        }
+# joins an array, assumes index starts with 1
+function join(arr, sep,     _result) {
+    _result = arr[1]
+    for (i = 2; i <= length(arr); i++) {
+        _result = _result sep arr[i]
     }
-    return result
+    return _result
 }
 
 function ltrim(s) { sub(/^[ \t\r\n]+/, "", s); return s }
@@ -390,9 +382,7 @@ function comment_trim(s, commentChar)  {
 
 # gets a char repeated n times.
 # `nchars("x", 2) == "xx"`
-function nchars(c, n){
-    if(!n) return ""
-    _res = ""
+function nchars(c, n,       _res){
     for(i=0; i<n; i++) _res = _res " ";
     return _res
 }

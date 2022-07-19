@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-# @file simple.sh
-# @description descline1
+###
+# simple.sh
+# =========
+# descline1
 
 ###
 # simple a
-a() {
+function a {
   echo
 }
 

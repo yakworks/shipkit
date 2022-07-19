@@ -26,6 +26,9 @@ BEGIN {
     INPUT_TITLE = "🎮 Stdin"
     EXIT_TITLE = "🔢 Exit Codes"
 
+    # when its multiple files this will be the h1 title.
+    MAIN_TITLE = "Usage Docs"
+
     # FILE_DIVIDER = "---"
     # FUNCTION_DIVIDER = "---"
 
@@ -93,6 +96,7 @@ FILENAME != "-" && !has_base_dir {
 fname != FILENAME && has_filename {
     debug("================== FILENAME SWITCH [" fname "] ==============================")
     is_multi_file = 1
+    is_initialized = false
     # will render out last files info
     render_file_doc()
     init_file()
@@ -118,7 +122,7 @@ fname != FILENAME && has_filename {
 # example:
 # ###
 # # script_name.sh - some description
-/^[ \t]*###*$/ && !is_initialized {
+/^###*$/ && !is_initialized {
     debug("→ **** hit on first ## for file header docs " )
     start_man_doc()
     next
@@ -126,7 +130,7 @@ fname != FILENAME && has_filename {
 
 # First line with word is the file_title
 # MAN DOC file_title
-/^[ \t]*#[ \t]+[[:alnum:]]+.*$/ && in_file_header_docs && !file_title {
+/^#[ \t]+[[:alnum:]]+.*$/ && in_file_header_docs && !file_title {
     debug("→ **** hit on MAN DOC file_title [" $0 "]" )
     # if it matches `name - brief`
     if(/^.*[ \t]+-[ \t]+.*$/){
@@ -145,7 +149,7 @@ fname != FILENAME && has_filename {
 }
 
 # MAN DOC file_title seperator
-/^[ \t]*#[ \t]*[=-]{2,}$/ && in_file_header_docs && file_title && !in_description {
+/^#[ \t]*[=-]{2,}$/ && in_file_header_docs && file_title && !in_description {
     # old if && !is_title_seperator_done && title_line_num == NR-1
     debug("→ **** hit on MAN DOC === separator ")
     is_title_seperator_done = 1
@@ -225,14 +229,22 @@ in_example {
 /^[ \t]*# @arg/ {
     debug("→ @arg")
     sub(/^[[:space:]]*# @arg /, "")
-  # debug("→ argsArray" length(docblock_args))
+    # debug("→ argsArray" length(docblock_args))
+    push(docblock_args, $0)
+    next
+}
+
+# simple args tag
+/^#[ ]+-[ ]+\$[[:alnum:]]+/ {
+    debug("→ - $ args")
+    sub(/^#[ ]+-[ ]*/, "")
+    # debug("→ argsArray" length(docblock_args))
     push(docblock_args, $0)
     next
 }
 
 # ARGS block. Starts wtih Arg or Args
-#
-/^[ \t]*# (Args|ARGS|Arguments)[:]?[ \t]*$/ {
+/^# (Args|ARGS|Arguments)[:]?[ \t]*$/ {
     debug("→ ARGS")
     in_args = 1
     next
@@ -332,6 +344,7 @@ in_description {
         func_name = trim($0)
         sub(/^function[ \t]*/, "", func_name) # remove function if there
         sub(/[ \t]*\([ \t]*\).*$/, "", func_name) # remove parens if there and everythign after them
+        sub(/[ \t]*{$/, "", func_name) # any dangling '{'
         # TODO make this confiugruable
         # add parens suffix
         func_name = func_name "()"

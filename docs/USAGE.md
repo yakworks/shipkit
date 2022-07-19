@@ -1,857 +1,487 @@
+# Usage Docs
+### 📇 Index
+
+* [changelog](#changelog)
+  * [update_changelog()](#update_changelog)
+* [circle](#circle)
+  * [circle.trigger()](#circletrigger)
+* [docker_tools](#docker_tools)
+  * [docker.login()](#dockerlogin)
+  * [docker.stop()](#dockerstop)
+  * [docker.remove()](#dockerremove)
+  * [docker.start()](#dockerstart)
+  * [docker.create_network()](#dockercreate_network)
+* [docmark](#docmark)
+  * [docmark.copy_readme()](#docmarkcopy_readme)
+  * [docmark.copy_groovydoc_to_api()](#docmarkcopy_groovydoc_to_api)
+  * [docmark.run()](#docmarkrun)
+  * [docmark.shell()](#docmarkshell)
+* [dotenv](#dotenv)
+  * [dotenv.load()](#dotenvload)
+* [git_tools](#git_tools)
+  * [init_github_vars()](#init_github_vars)
+  * [project_fullname_from_git_remote()](#project_fullname_from_git_remote)
+  * [verify_git_user()](#verify_git_user)
+  * [current_git_branch()](#current_git_branch)
+  * [git_clone_pages()](#git_clone_pages)
+  * [git_push_pages()](#git_push_pages)
+  * [config_bot_user()](#config_bot_user)
+  * [init_gh_pages()](#init_gh_pages)
+  * [git_tag()](#git_tag)
+  * [git_push_tags()](#git_push_tags)
+  * [hasAppChanges()](#hasappchanges)
+  * [hasDocChanges()](#hasdocchanges)
+  * [git_debug()](#git_debug)
+* [github](#github)
+  * [github.create_release()](#githubcreate_release)
+* [gradle_tools](#gradle_tools)
+  * [gradle.merge_test_results()](#gradlemerge_test_results)
+  * [_copy_test_results()](#_copy_test_results)
+  * [gradle.transform_to_java_props()](#gradletransform_to_java_props)
+* [heredoc_tpl](#heredoc_tpl)
+* [init_env](#init_env)
+  * [make_env()](#make_env)
+  * [make_env_init()](#make_env_init)
+  * [init_env()](#init_env)
+  * [init_defaults()](#init_defaults)
+  * [init_from_build_yml()](#init_from_build_yml)
+  * [make_some_vals_lowercase()](#make_some_vals_lowercase)
+  * [init_versions()](#init_versions)
+  * [set_snapshot()](#set_snapshot)
+  * [circle_init_env()](#circle_init_env)
+  * [init_db_env()](#init_db_env)
+  * [createEnvFile()](#createenvfile)
+  * [parse_bot_env_file()](#parse_bot_env_file)
+  * [load_env()](#load_env)
+  * [load_custom_sh_or_env()](#load_custom_sh_or_env)
+* [jbuilder_docker](#jbuilder_docker)
+  * [builderStart()](#builderstart)
+  * [db_start()](#db_start)
+  * [db-start()](#db-start)
+  * [wait_for_mysql()](#wait_for_mysql)
+  * [wait_for_sqlserver()](#wait_for_sqlserver)
+* [kube_tools](#kube_tools)
+  * [kube.process_tpl()](#kubeprocess_tpl)
+  * [kube.create_namespace()](#kubecreate_namespace)
+  * [kube.ctl()](#kubectl)
+  * [kube.apply()](#kubeapply)
+* [make_shell](#make_shell)
+* [makechecker](#makechecker)
+  * [makechecker.lint()](#makecheckerlint)
+  * [makechecker.lint_files()](#makecheckerlint_files)
+  * [makechecker.find_targets()](#makecheckerfind_targets)
+* [sed_tpl](#sed_tpl)
+  * [build_sed_args()](#build_sed_args)
+* [semver](#semver)
+  * [replace_version()](#replace_version)
+  * [bump_version_file()](#bump_version_file)
+  * [update_package_json()](#update_package_json)
+  * [updateVersionFile()](#updateversionfile)
+  * [bump_patch()](#bump_patch)
+* [setVar](#setvar)
+  * [setVar()](#setvar)
+  * [evalVar()](#evalvar)
+  * [putVar()](#putvar)
+  * [add_build_vars()](#add_build_vars)
+  * [log-vars()](#log-vars)
+* [shellchecker](#shellchecker)
+  * [shellcheck.lint_fix()](#shellchecklint_fix)
+  * [find_shellcheck_targets()](#find_shellcheck_targets)
+
+## changelog
+
+helpers to create and update a changelog
+
+### update_changelog()
+
+updates the changelog, does a bunch of git diff work to get changes
+
+[See examples here]( https://gist.github.com/kingkool68/09a201a35c83e43af08fcbacee5c315a)
+
+* __🔌 Args__
 
-## Array
+  * __$1__ (any): the current dev version
+  * __$2__ (any): the previous published version
+  * __$3__ (any): the changelog filename
+  * __$4__ (any): the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
 
-: Functions for array operations and manipulations.
+* __🔢 Exit Codes__
 
-
----
-
-### array.contains()
-
-Check if item exists in the given array.
-
-#### 🔌 Arguments
-
-- **$1** | (string) |  Item to search (needle).
-- **$2** | (array) |  Array to be searched (haystack).
-
-#### 💡 Return codes
-
-- **0** 🎯 - If successful.
-- **1** 💥 - If no match found in the array.
-- **2** 💥 - Function missing arguments.
-
-#### Example
-
-```bash
- array=("a" "b" "c")
- array.contains "c" ${array[@]}
- #Output
- 0
-```
-
----
-
-### array.dedupe()
-
-Remove duplicate items from the array.
-
-#### 🔌 Arguments
-
-- **$1** | (array) |  Array to be deduped.
-
-#### 💡 Return codes
-
-- **0** 🎯 - If successful.
-- **2** 💥 - Function missing arguments.
-
-#### 🖨 Stdout output
-
--  Deduplicated array.
-
-#### Example
-
-```bash
- array=("a" "b" "a" "c")
- printf "%s" "$(array.dedupe ${array[@]})"
- #Output
- a
- b
- c
-```
-
----
-
-### array.is_empty()
-
-Check if a given array is empty.
-
-#### 🔌 Arguments
-
-- **$1** | (array) |  Array to be checked.
-
-#### 💡 Return codes
-
-- **0** 🎯 - If the given array is empty.
-- **2** 💥 - If the given array is not empty.
-
-#### Example
-
-```bash
-  array=("a" "b" "c" "d")
-  array.is_empty "${array[@]}"
-```
-
----
-
-### array.join()
-
-Join array elements with a string.
-the output is a string containing a string representation of all the array elements in the same order,
-with the $2 glue string between each element.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | String to join the array elements (glue).
-- **$2** | (array) |  The array to be joined with glue string.
-
-#### 💡 Return codes
-
-- **0** 🎯 If successful.
-- **2** 💥 Function missing arguments.
-
-#### 🖨 Stdout output
-
--  string representation of all the array elements
-
-#### Example
-
-```bash
-  array=("a" "b" "c" "d")
-  printf "%s" "$(array.join "," "${array[@]}")"
-  #Output
-  a,b,c,d
-  printf "%s" "$(array.join "" "${array[@]}")"
-  #Output
-  abcd
-```
-
----
-
-### array.reverse()
-
-Return an array with elements in reverse order.
-
-#### 🔌 Arguments
-
-- **$1** | (array) |  The input array.
-
-#### 💡 Return codes
-
-- **0** 🎯  If successful.
-- **2** 💥 Function missing arguments.
-
-#### 🖨 Stdout output
-
--  The reversed array.
-
-#### Example
-
-```bash
-  array=(1 2 3 4 5)
-  printf "%s" "$(array.reverse "${array[@]}")"
-  #Output
-  5 4 3 2 1
-```
-
----
-
-### array.random_element()
-
-Returns a random item from the array.
-
-#### 🔌 Arguments
-
-- **$1** | (array) |  The input array.
-
-#### 💡 Return codes
-
-- **0** 🎯 If successful.
-- **2** 💥 Function missing arguments.
-
-#### 🖨 Stdout output
-
--  Random item out of the array.
-
-#### Example
-
-```bash
-  array=("a" "b" "c" "d")
-  printf "%s\n" "$(array.random_element "${array[@]}")"
-  #Output
-  c
-```
-
----
-
-### array.sort()
-
-Sort an array from lowest to highest.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | array The input array.
-
-#### 💡 Return codes
-
-- **0** 🎯  If successful.
-- **2** 💥 Function missing arguments.
-
-#### 🖨 Stdout output
-
--  sorted array.
-
-#### Example
-
-```bash
-  sarr=("a c" "a" "d" 2 1 "4 5")
-  array.array_sort "${sarr[@]}"
-  #Output
-  1
-  2
-  4 5
-  a
-  a c
-  d
-```
-
----
-
-### array.rsort()
-
-Sort an array in reverse order (highest to lowest).
-
-#### 🔌 Arguments
-
-- **$1** | (string) | array The input array.
-
-#### 💡 Return codes
-
-- **0** 🎯  If successful.
-- **2** 💥 Function missing arguments.
-
-#### 🖨 Stdout output
-
--  reverse sorted array.
-
-#### Example
-
-```bash
-  sarr=("a c" "a" "d" 2 1 "4 5")
-  array.array_sort "${sarr[@]}"
-  #Output
-  d
-  a c
-  a
-  4 5
-  2
-  1
-```
-
----
-
-### array.bsort()
-
-Bubble sort an integer array from lowest to highest.
-This sort does not work on string array.
-
-#### 🔌 Arguments
-
-- **$1** | (array) |  The input array.
-
-#### 💡 Return codes
-
-- **0** 🎯  If successful.
-- **2** 💥 Function missing arguments.
-
-#### 🖨 Stdout output
-
--  bubble sorted array.
-
-#### Example
-
-```bash
-  iarr=(4 5 1 3)
-  array.bsort "${iarr[@]}"
-  #Output
-  1
-  3
-  4
-  5
-```
-
----
-
-### array.merge()
-
-Merge two arrays.
-Pass the variable name of the array instead of value of the variable.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | string variable name of first array.
-- **$2** | (string) | string variable name of second array.
-
-#### 💡 Return codes
-
-- **0** 🎯 - If successful.
-- **2** 💥 - Function missing arguments.
-
-#### 🖨 Stdout output
-
--  Merged array.
-
-#### Example
-
-```bash
-  a=("a" "c")
-  b=("d" "c")
-  array.merge "a[@]" "b[@]"
-  #Output
-  a
-  c
-  d
-  c
-```
-
-
-## String
-
-Functions for string operations and manipulations.
-
-
----
-
-### string.trim()
-
-Strip whitespace from the beginning and end of a string.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | string The string to be trimmed.
-
-#### 🖨 Stdout output
-
--  The trimmed string.
-
-#### Example
-
-```bash
-echo "$(string::trim "   Hello World!   ")"
-#Output
-Hello World!
-```
-
----
-
-### string::split()
-
-Split a string to array by a delimiter.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | string The input string.
-- **$2** | (string) | string The delimiter string.
-
-#### 🖨 Stdout output
-
--  Returns an array of strings created by splitting the string parameter by the delimiter.
-
-#### Example
-
-```bash
-array=( $(string::split "a,b,c" ",") )
-printf "%s" "$(string::split "Hello!World" "!")"
-#Output
-Hello
-World
-```
-
----
-
-### string::lstrip()
-
-Strip characters from the beginning of a string.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | string The input string.
-- **$2** | (string) | string The characters you want to strip.
-
-#### 🖨 Stdout output
-
--  Returns the modified string.
-
-#### Example
-
-```bash
-echo "$(string::lstrip "Hello World!" "He")"
-#Output
-llo World!
-```
-
----
-
-### string::rstrip()
-
-Strip characters from the end of a string.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | string The input string.
-- **$2** | (string) | string The characters you want to strip.
-
-#### 🖨 Stdout output
-
--  Returns the modified string.
-
-#### Example
-
-```bash
-echo "$(string::rstrip "Hello World!" "d!")"
-#Output
-Hello Worl
-```
-
----
-
-### string::to_lower()
-
-Make a string lowercase.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | string The input string.
-
-#### 🖨 Stdout output
-
--  Returns the lowercased string.
-
-#### Example
-
-```bash
-echo "$(string::to_lower "HellO")"
-#Output
-hello
-```
-
----
-
-### string::to_upper()
-
-Make a string all uppercase.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | string The input string.
-
-#### 🖨 Stdout output
-
--  Returns the uppercased string.
-
-#### Example
-
-```bash
-echo "$(string::to_upper "HellO")"
-#Output
-HELLO
-```
-
----
-
-### string::contains()
-
-Check whether the search string exists within the input string.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | string The input string.
-- **$2** | (string) | string The search key.
-
-#### Example
-
-```bash
-string::contains "Hello World!" "lo"
-```
-
----
-
-### string::starts_with()
-
-Check whether the input string starts with key string.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | string The input string.
-- **$2** | (string) | string The search key.
-
-#### Example
-
-```bash
-string::starts_with "Hello World!" "He"
-```
-
----
-
-### string::ends_with()
-
-Check whether the input string ends with key string.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | string The input string.
-- **$2** | (string) | string The search key.
-
-#### Example
-
-```bash
-string::ends_with "Hello World!" "d!"
-```
-
----
-
-### string::regex()
-
-Check whether the input string matches the given regex.
-
-#### 🔌 Arguments
-
-- **$1** | (string) | string The input string.
-- **$2** | (string) | string The search key.
-
-#### Example
-
-```bash
-string::regex "HELLO" "^[A-Z]*$"
-```
-
-
-## makechecker
-
-Checks makefiles for common issues. The main one being 4 spaces instead of tab to start shell commands
-
-
----
-
-### function makechecker.lint {
-
-Lints a one or more dirs
-The main issue to check for is lines starting with 4 spaces
-
-#### 🔌 Arguments
-
-- $@ - {array} one or more dirs
-
-#### Example
-
-```bash
-  makechecker lint makefiles
-```
-
----
-
-### function makechecker.lint_files {
-
-Lint one or more files
-
-#### 🔌 Arguments
-
-- $@ - {array} list of files
-
-#### 💡 Return codes
-
-- **0** 🎯 - success
-- **1** 💥 - bad makefile
-
----
-
-### function makechecker.find_targets {
-
-gets all files that either start with Makefile or have .make extension
-
-#### 🔌 Arguments
-
-- $@ - {array} one or more dirs
-
-
+  * __1__ : published_version does not exists
 
 ## circle
 
 utils for working with CI circle and publishing,
 
+### Description
 
----
+
+to trigger a circle repo
+~~~bash
+./circle.sh trigger "yakworks/shipkit" "g22kljf2324....."
+~~~
 
 ### circle.trigger()
 
-
 uses curl to trigger a pipeline
-$1 - the owner/repo
-$2 - the circle token
 
+* __🔌 Args__
 
-## is.sh
+  * __$1__ (any): the owner/repo
+  * __$2__ (any): the circle token
 
-@description Various validations and asserts that can be chained
-and be explicit in a DSL-like way.
-@example
-    source lib/is.sh
-    is.begin "Checking for file validity"
-    is.not-blank "$1" && is.non-empty
+## docker_tools
 
+helper functions for running docker
 
----
+### Description
 
-### __is.validation.error()
+Common helper functions for running docker images and logging into dockerhub
+Use compose when possible but these are used for quickly bringing up a docker
+docmark makes heavy use of this
 
-Private Helper Function
-Invoke a validation on the value, and process
-                  the invalid case using a customizable error handler.
+### docker.login()
 
-#### 🔌 Arguments
+login to docker hub
 
-- 1 func        Validation function name to invoke
-- 2 var         Value under the test
-- 4 error_func  Error function to call when validation fails
+* __🔌 Args__
 
----
+  * __$1__ (any): docker hub user
+  * __$2__ (any): docker hub password
 
-### is-validations()
+### docker.stop()
 
-Returns the list of validation functions available
+removes the docker
 
----
+* __🔌 Args__
 
-### __is.validation.ignore-error()
+  * __$1__ (any): the docker name
 
-Private function that ignores errors
+### docker.remove()
 
----
+removes the docker
 
-### __is.validation.report-error()
+* __🔌 Args__
 
-Private function that ignores errors
+  * __$1__ (any): the docker name
 
----
+### docker.start()
 
-### validations.begin()
+starts a docker (docker run) if its not already running
 
-Public API
-Part 1. supporting functions
+* __🔌 Args__
 
----
+  * __$1__ (any): the name of the docker as in `--name=$1`
+  * __$2__ (any): the arguments that would normall passed to a docker run
 
-### 
+### docker.create_network()
 
----
+create a docker network if it does not exist
 
-### 
+* __🔌 Args__
 
----
+  * __$1__ (any): network name
 
-### 
+## docmark
 
----
+functions for running the yakworks docmark mkdocs variant
 
-### is.not-blank()
+### Description
 
-Public API
-Part 2. "is" validations — no output, just return code
-is.not-blank <arg>
+functions for running the yakworks docmark mkdocs variant
+depends on bin/github_pages script
 
-#### 💡 Return codes
+### docmark.copy_readme()
 
-- true if the first argument is not blank
+Copies readme, updates version and replaces links that went into docs
 
----
+* __🔌 Args__
 
-### is.blank()
+  * __$1__ (any): the version to update
 
-is.blank <arg>
+### docmark.copy_groovydoc_to_api()
 
-#### 💡 Return codes
+builds the groovydocs and copies them into site/api
 
-- true if the first argument is blank
+### docmark.run()
 
----
+runs the docmark
 
-### is.empty()
+### docmark.shell()
 
-is.empty <arg>
+use this to open shell and test circle commands
 
-#### 💡 Return codes
+## dotenv
 
-- true if the first argument is blank or empty
+default functions to setup BUILD_VARS
 
----
+### Description
 
-### is.not-a-blank-var()
+BUILD_VARS are used to create a makefile.env
+that is imcluded at the start of the Makefile to share vars
 
-is.not-a-blank-var <var-name>
+### dotenv.load()
 
-#### 💡 Return codes
+parses the env file, eval and load into BUILD_VARS
 
-- true if varaible passed by name is not blank
+* __🔌 Args__
 
----
+  * __$1__ (any): the env file to parse
+  * __$2__ (any): true if we want to override all variables that might already be set
+  * __$3__ (any): the regex exclude pattern for keys such as "foo|bar|baz"
 
-### is.a-non-empty-file()
+## git_tools
 
-is.a-non-empty-file <file>
+Github and git helpers.
 
-#### 💡 Return codes
+### Description
 
-- true if the file passed is non epmpty
+MOSTLY HERE FOR REF, SEE git-tools.make as that the core of it.
+uses the variables set from gradle/build.yml
 
----
+### init_github_vars()
 
-### is.an-empty-file()
+initialize variables for github
+will try and constuct PROJECT_FULLNAME from git config if not passed in
 
-is.an-empty-file <file>
+* __🔌 Args__
 
-#### 💡 Return codes
+  * __$1__ (any): the PROJECT_FULLNAME in the format of owner/repo, if not passed in then it will constuct it
 
-- true if the file passed is epmpty
+### project_fullname_from_git_remote()
 
----
+set the PROJECT_FULLNAME github slug from git config --get remote.origin.url
+based on whther its https or ssh git
 
-### is.a-directory()
+### verify_git_user()
 
-is.a-directory <dir>
+checks is a git user is setup, and if not sets up the bot user, used in CI.
 
-#### 💡 Return codes
+### current_git_branch()
 
-- true if the argument is a propery
+shows the current git branch
 
----
+### git_clone_pages()
 
-### is.an-existing-file()
+clones gh-pages into the build directory
+--
 
-is.an-existing-file <file>
+* __🔌 Args__
 
-#### 💡 Return codes
+  * __$1__ (any): PAGES_BRANCH the branch, normally gh-pages
+  * __$2__ (any): PAGES_BUILD_DIR the dir to clone it to, build/gh-pages
+  * __$3__ (any): PROJECT_FULLNAME the full name
 
-- true if the file exits
+### git_push_pages()
 
----
+in build/gh-pages commits and pushes gh pages
 
-### is.a-function.invoke()
+* __🔌 Args__
 
-if the argument passed is a value function, invoke it
+  * __$1__ (any): PAGES_BRANCH the branch, normally gh-pages
+  * __$2__ (any): PAGES_BUILD_DIR the dir to clone it to, build/gh-pages
+  * __$3__ (any): PROJECT_FULLNAME the full name
 
-#### 💡 Return codes
+### config_bot_user()
 
-- exit status of the function
+sets up the git user info for commit and push
+should run only if CI=true. Pass in what you want in github with email
+matching account in github
 
----
+* __🔌 Args__
 
-### is.a-function()
+  * __$1__ (any): bot user name
+  * __$2__ (any): bot user email
 
-verifies that the argument is a valid shell function
+### init_gh_pages()
 
----
+### git_tag()
 
-### is.a-variable()
+creates a git tag
 
-verifies that the argument is a valid and defined variable
+* __🔌 Args__
 
----
+  * __$1__ (any): the tag nam
+  * __$2__ (any): the commit message
 
-### 
+### git_push_tags()
 
----
+### hasAppChanges()
 
-### is.a-non-empty-array()
+checks a commit rangs to see if somethign other than docs has changed
 
-verifies that the argument is a non-empty array
+* __🔌 Args__
 
----
+  * __$1__ (any): the commit range like 911ff1ea1fa5...a883787c2f50
 
-### is.sourced-in()
+* __📺 Stdout__
 
-verifies that the argument is a valid and defined variable
+  * the list of file changes, empty if nothing
 
----
+### hasDocChanges()
 
-### is.a-script()
+checks a commit rangs to see if docs have changed
 
-returns success if the current script is executing in a subshell
+* __🔌 Args__
 
----
+  * __$1__ (any): the commit range like 911ff1ea1fa5...a883787c2f50
 
-### is.integer()
+* __📺 Stdout__
 
-returns success if the argument is an integer
+  *  the list of file changes, empty if nothing
 
-#### See also
+### git_debug()
 
-- [https://stackoverflow.com/questions/806906/how-do-i-test-if-a-variable-is-a-number-in-bash](#httpsstackoverflowcomquestions806906how-do-i-test-if-a-variable-is-a-number-in-bash)
+Just a helper to show variables which can be useful for debugging
 
----
+## github
 
-### is.an-integer()
+### github.create_release()
 
-returns success if the argument is an integer
+## gradle_tools
 
----
+### gradle.merge_test_results()
 
-### is.numeric()
+### _copy_test_results()
 
-returns success if the argument is numeric, eg. float
+### gradle.transform_to_java_props()
 
----
+## basic tempalate variable replacement using heredoc
 
-### is.command()
+## init_env
 
-returns success if the argument is a valid command found in the $PATH
+### make_env()
 
----
+LEAVE THIS INDENT, heredoc needs to to look this way
 
-### is.a-command()
+### make_env_init()
 
-returns success if the argument is a valid command found in the $PATH
+### init_env()
 
----
+### init_defaults()
 
-### is.missing()
+### init_from_build_yml()
 
-returns success if the command passed as an argument is not in $PATH
+### make_some_vals_lowercase()
 
----
+### init_versions()
 
-### is.alias()
+### set_snapshot()
 
-returns success if the argument is a current alias
+### circle_init_env()
 
----
+### init_db_env()
 
-### is.zero()
+### createEnvFile()
 
-returns success if the argument is a numerical zero
+### parse_bot_env_file()
 
----
+### load_env()
 
-### is.non.zero()
+### load_custom_sh_or_env()
 
-returns success if the argument is not a zero
+## jbuilder_docker
 
----
+### builderStart()
 
-### whenever()
+### db_start()
 
-Public API
-Part 3. error versions of each validation, which print an error messages
-a convenient DSL for validating things
+### db-start()
 
-#### Example
+### wait_for_mysql()
 
-```bash
-   whenever /var/log/postgresql.log is.an-empty-file && {
-      touch /var/log/postgresql.log
-   }
-```
+### wait_for_sqlserver()
 
----
+## runs sed on the kubernetes tpl.yml template files to update and replace variables with values
 
-### unless()
+### kube.process_tpl()
 
-a convenient DSL for validating things
+### kube.create_namespace()
 
-#### Example
+### kube.ctl()
 
-```bash
-   unless /var/log/postgresql.log is.an-non-empty-file && {
-      touch /var/log/postgresql.log
-   }
-```
+### kube.apply()
+
+## make_shell
+
+## makechecker
+
+### makechecker.lint()
+
+Lints a one or more dirs
+The main issue to check for is lines starting with 4 spaces
+
+* __🔧 Example__
+
+  ~~~bash
+  makechecker lint makefiles
+  ~~~
+
+* __🔌 Args__
+
+  * __$@__ (any): {array} one or more dirs
+
+### makechecker.lint_files()
+
+Lint one or more files
+
+* __🔌 Args__
+
+  * __$@__ (any): {array} list of files
+
+* __📺 Stdout__
+
+  * # @returns
+
+### makechecker.find_targets()
+
+gets all files that either start with Makefile or have .make extension
+
+* __🔌 Args__
+
+  * __$@__ (any): {array} one or more dirs
+
+## basic tempalate variable replacement using sed
+
+### build_sed_args()
+
+## semver
+
+### replace_version()
+
+### bump_version_file()
+
+### update_package_json()
+
+### updateVersionFile()
+
+### bump_patch()
+
+## setVar
+
+### setVar()
+
+### evalVar()
+
+### putVar()
+
+### add_build_vars()
+
+### log-vars()
+
+## runs the shellcheck on the passed one or more directories
+
+### shellcheck.lint_fix()
+
+uses the pattern `shellcheck -f diff bin/* | git apply` to fix what can be automatically fixed
+
+$@ - {array} one or more dirs
+
+### find_shellcheck_targets()
+
+collects the files names from one or more directories into SHELLCHECK_TARGETS variable
+will recursively spin in and only get the files that are x-shellscript mime type
+
+$@ - {array} one or more dirs
+
 

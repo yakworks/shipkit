@@ -7,14 +7,11 @@
 # pod = Plain Old Documentation. Its a term from the perl days and it smiliar to man
 # Will be able to generate man pages from it ot setup right
 
-##
 # documenting function without tags. keep it easy to read. Sticks to a markdownish like context
-# can provide a quick example inline like `pod.sh go "$bar"`
+# can provide a quick example inline like `pod.sh go "$bar"`. in `eager` mode
 #
-# ARGS:
-# - $1 - make it easy to comment on vars, can also use indents instead of markdown lists
+# - $1 - use normal markdown list to doc vars, can also use indents instead of markdown lists like below
 # - $2 - type in the docs will default to string
-#
 function pod.go() {
   echo
 }

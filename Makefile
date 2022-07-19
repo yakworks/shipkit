@@ -68,12 +68,11 @@ test.e2e::
 ## NA builds the libs
 build::
 
-docs.bin:
-	./bin/bashdoc/generate.sh
-
-docs.gen:
-	./bin/bashdoc/gen-usage-docs.sh generate
 
 build/usage/is.md: bin/is.sh
 	mkdir -p $(@D)
 	./bin/bashdoc/shdocs.sh file $< $@
+
+docs.generate:
+	shopt -s globstar
+	awk -v MULTI_FILE=1 -f ./bin/shdoc/shdoc.awk -f ./bin/shdoc/shdoc_fns.awk bin/* > docs/USAGE.md

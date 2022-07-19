@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 
-# @file circle
-# Utils for working with CI circle and publishing,
+##
+# circle - utils for working with CI circle and publishing,
+# ======
+#
+# to trigger a circle repo
+# ~~~bash
+#   ./circle.sh trigger "yakworks/shipkit" "g22kljf2324....."
+# ~~~
 
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 
 ###
 # uses curl to trigger a pipeline
-#
-# $1 - the owner/repo
-# $2 - the circle token
+# - $1 - the owner/repo
+# - $2 - the circle token
 circle.trigger(){
   curl --location --request POST \
 		"https://circleci.com/api/v2/project/github/$1/pipeline" \
@@ -20,7 +25,7 @@ circle.trigger(){
 # @ignore
 # circle orb compare-url/reconstruct makes a CIRCLE_COMPARE_URL.txt and this will
 # returns the commit range like 911ff1ea1fa5...a883787c2f50
-# !deprecated
+# @deprecated
 function circleCommitRange {
   CIRCLE_COMPARE_URL=$(cat CIRCLE_COMPARE_URL.txt || true)
   # echo "CIRCLE_COMPARE_URL $CIRCLE_COMPARE_URL"

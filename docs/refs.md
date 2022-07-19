@@ -2,6 +2,9 @@
 https://edoras.sdsu.edu/doc/sed-oneliners.html
 
 ## bash misc
+
+https://github.com/progrium/bashstyle
+
 https://gist.github.com/wcarhart/23008155c0699b497879595c84294296
 https://levelup.gitconnected.com/5-modern-bash-scripting-techniques-that-only-a-few-programmers-know-4abb58ddadad
 

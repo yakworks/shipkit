@@ -1,31 +1,34 @@
 #!/usr/bin/env bash
-# ---
+
+###
+# docker_tools -  helper functions for running docker
+# ==================================================
 # Common helper functions for running docker images and logging into dockerhub
 # Use compose when possible but these are used for quickly bringing up a docker
 # docmark makes heavy use of this
-# ---
+
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 
-# ---
+##
 # login to docker hub
-# $1 - docker hub user
-# $2 - docker hub password
-# ---
+# - $1 - docker hub user
+# - $2 - docker hub password
 function docker.login {
   echo "$2" | docker login -u "$1" --password-stdin
 }
 
-# removes the docker
-# arg $1 - the docker name
+## removes the docker
+# - $1 - the docker name
 function docker.stop {
   if [ "$(docker ps -aq -f name="${1}")" ]; then
     docker stop "${1}" || true
   fi
 }
 
+##
 # removes the docker
-# arg $1 - the docker name
+# - $1 the docker name
 function docker.remove {
   if [ "$(docker ps -aq -f name="${1}")" ]; then
      docker stop "${1}" || true
@@ -34,10 +37,10 @@ function docker.remove {
   fi
 }
 
-# -----
+##
 # starts a docker (docker run) if its not already running
-# arg $1 - the name of the docker as in --name=${1}
-# arg $2 - the arguments that would normall passed to a docker run
+# - $1 - the name of the docker as in `--name=$1`
+# - $2 - the arguments that would normall passed to a docker run
 function docker.start {
   if [ ! "$(docker ps -q -f name="${1}")" ]; then
     # just in case it does exist but with status=exited fire a remove
@@ -46,9 +49,9 @@ function docker.start {
   fi
 }
 
-# -----------------------------------
+###
 # create a docker network if it does not exist
-# arg $1 - network name
+# - $1 - network name
 function docker.create_network {
   if [ ! "$( docker network ls | grep "$1" )" ]; then
     docker network create "$1"

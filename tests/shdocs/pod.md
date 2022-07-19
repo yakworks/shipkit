@@ -15,11 +15,11 @@ Will be able to generate man pages from it ot setup right
 ## pod.go()
 
 documenting function without tags. keep it easy to read. Sticks to a markdownish like context
-can provide a quick example inline like `pod.sh go "$bar"`
+can provide a quick example inline like `pod.sh go "$bar"`. in `eager` mode
 
 * __🔌 Args__
 
-  * __$1__ (any): make it easy to comment on vars, can also use indents instead of markdown lists
+  * __$1__ (any): use normal markdown list to doc vars, can also use indents instead of markdown lists like below
   * __$2__ (any): type in the docs will default to string
 
 ## pod.go:faster()
