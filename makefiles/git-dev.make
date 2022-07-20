@@ -2,12 +2,21 @@
 # helpers for git dev
 # -------------
 
+## show help for GIT and GITHUB short cut helpers, alias to help.git
+g.help: help.git
+
+## show help for GIT and GITHUB short cut helpers
+help.git:
+	$(MAKE) help HELP_REGEX="^g[\.]+.*"
+
+
 # git checkout branch and pull, b=<branch>
 g.switch-pull:
 	git switch $(b)
 	git fetch --prune origin
 	git pull
 
+# git switch to dev branch and pull
 g.dev.switch-pull:
 	$(MAKE) g.switch-pull b=dev
 
@@ -20,7 +29,7 @@ g.branch.new:
 	read -p "branch name: " bname
 	git switch -c "$$bname"
 
-# adds all changes, commits and push
+# adds all changes, commits and push. Will prompt for commit message if there are changes.
 g.commit:
 	git status
 	echo "---------------------------------------------------------------"
@@ -45,11 +54,11 @@ g.pr.new:
 g.pr.draft: pr_opts = -d
 g.pr.draft: g.pr.new
 
-# pull request for current branch.
-g.pr.show:
-	hub pr show
+# list pull request
+g.pr.list:
+	gh pr list
 
-# creates new master-dev-merge branch and opens pr
+# WIP creates new master-dev-merge branch and opens pr
 g.master-dev-merge:
 	git switch master
 	git pull
@@ -60,7 +69,7 @@ g.master-dev-merge:
 	# create pr and open page
 	hub pull-request -o --base master -m "dev master merge"
 
-# resets dev to be at master, run after done releasing
+# WIP resets dev to be at master, run after done releasing
 g.master-dev-reset:
 	git switch master
 	git fetch --prune origin
@@ -77,7 +86,8 @@ g.master-dev-reset:
 	git commit -m "hard reset to master HEAD"
 	git push origin refs/heads/dev:refs/heads/dev
 
-git.check-changes:
+# checks for changes
+g.check-changes:
 	changed_files=$$(git status --porcelain --untracked-files=no | wc -l)
 	unpushed=$$(git cherry -v)
 	if [ $$changed_files -gt 0 ] || [ "$$unpushed" ] ; then

@@ -65,10 +65,8 @@ help: | _program_awk
 .PHONY: help
 
 ## list all the availible Make targets, including the targets hidden from core help
-help-all:
+help.all:
 	$(MAKE) -pRrq | awk -F':' '/^[a-zA-Z0-9][^$$#\/\t=]*:([^=]|$$)/ {split($$1,A,/ /);for(i in A)print A[i]}' | sort -u
-
-.PHONY: help-all
 
 # Old way before phony for forcing targets to run.
 # useful when .PHONY doesn't help, plus it looks a bit cleaner in many cases than .phony

@@ -47,16 +47,21 @@ $(SOP_SH):
 	chmod +x $(SOP_SH)
 	$(logr.done)
 
-# easier for testing
-sops.install: $(SOP_SH)
+## show help list for vault targets
+help.vault:
+	$(MAKE) help HELP_REGEX="^vault.+.*"
 
+# installs sops, easier for testing
+vault.sops.install: $(SOP_SH)
+
+# clone vault from github
 vault.clone: | _verify_VAULT_GITHUB_URL
 	[ ! -e $(VAULT_DIR) ] && git clone $(VAULT_GITHUB_URL) $(VAULT_DIR) || :;
 
 # alias for legacy refs
 vault.decrypt: $(VAULT_DIR)
 
-$(VAULT_DIR): | $(SOP_SH) gpg.import-private-key vault.clone
+$(VAULT_DIR): | $(SOP_SH) vault.gpg.import-private-key vault.clone
 	cd $(VAULT_DIR)
 	for vfile in $(VAULT_FILES); do
 		outFile="$${vfile/.enc./.}" # remove .enc.
@@ -72,7 +77,7 @@ $(VAULT_DIR): | $(SOP_SH) gpg.import-private-key vault.clone
 # GPG_PASS := xxx
 
 # imports private key from GPG_PRIVATE_KEY var
-gpg.import-private-key:
+vault.gpg.import-private-key:
 	if [ "$(GPG_KEY)"  ]; then
 		echo "$(GPG_KEY)" | base64 --decode | gpg -v --batch --import --quiet --no-verbose
 		$(logr) "GPG_KEY imported"

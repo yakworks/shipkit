@@ -9,13 +9,17 @@ GROOVYDOC_BUILD_DIR ?= $(BUILD_DIR)/docs/groovydoc
 
 # --- Dockers ---
 
-## serves the docmark docs from docker, alias to docker.dockmark-up
+## show help list for docmark targets
+help.docmark:
+	$(MAKE) help HELP_REGEX="^docmark.*"
+
+# serves the docmark docs from docker, alias to docker.dockmark-up
 docmark.start: docker.dockmark-up
 
-## serves the docmark docs from docker, alias to docker.dockmark-up
+# serves the docmark docs from docker, alias to docker.dockmark-up
 docmark.shell: docker.dockmark-shell
 
-## docker for docmark docs, follow with a docker cmd  up, down, shell or pull
+# docker for docmark docs, follow with a docker cmd  up, down, shell or pull
 docker.dockmark: | _verify-DOCKER_CMD
 	make docker.dockmark-$(DOCKER_CMD)
 
@@ -44,6 +48,6 @@ docmark.copy-readme:
 # empty target that gets called before the build that main makefile can implement to do any special processing
 docmark.build-prep:
 
-## run inside docmark container, builds the docs. 'make docker-dockmark-shell' will start shell
+# run inside docmark container, builds the docs. 'make docker-dockmark-shell' will start shell
 docmark.build: docmark.build-prep
 	docmark build --site-dir $(DOCKMARK_SITE_DIR)

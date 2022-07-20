@@ -8,11 +8,14 @@ include Shipkit.make
 include $(SHIPKIT_MAKEFILES)/vault.make
 include $(SHIPKIT_MAKEFILES)/base-build.make
 include $(SHIPKIT_MAKEFILES)/docker.make
+include $(SHIPKIT_MAKEFILES)/docmark.make
 include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/ship-version.make
 include $(SHIPKIT_MAKEFILES)/circle.make
 include $(SHIPKIT_MAKEFILES)/bats-testing.make
 include $(SHIPKIT_MAKEFILES)/git-dev.make
+include $(SHIPKIT_MAKEFILES)/kube.make
+include $(SHIPKIT_MAKEFILES)/kubectl-config.make
 
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
@@ -36,6 +39,7 @@ docker.shell:
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
 
+# docker shelk with bullseye debian image
 docker.shell.deb:
 	$(docker_tools) start shipkit-shell -it \
 	  -v `pwd`:/project:delegated  \
@@ -71,6 +75,7 @@ build/usage/is.md: bin/is.sh
 	mkdir -p $(@D)
 	./bin/bashdoc/shdocs.sh file $< $@
 
+## generate usage docs from bin
 docs.generate:
 	shopt -s globstar
 	awk -v MULTI_FILE=1 -v SHOW_SRC=1 -f ./bin/shdoc/shdoc.awk -f ./bin/shdoc/shdoc_fns.awk bin/* > docs/USAGE.md

@@ -34,7 +34,7 @@ test.e2e::
 	@:
 
 ## show help list for test targets
-test.help:
+help.test:
 	$(MAKE) help HELP_REGEX="^test.*"
 
 ## builds the libs

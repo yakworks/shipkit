@@ -5,7 +5,7 @@
 circle.sh := $(SHIPKIT_BIN)/circle
 
 ## show help list for circle targets
-circle.help:
+help.circle:
 	$(MAKE) help HELP_REGEX="^circle.*"
 
 # Triggers circle to build project call. Will use PROJECT_FULLNAME and defaults to current branch.
