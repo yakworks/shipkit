@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# @file makechecker
-#
-# Checks makefiles for common issues. The main one being 4 spaces instead of tab to start shell commands
+##
+# makechecker - Checks makefiles for common issues. The main one being 4 spaces instead of tab to start shell commands
+# ================================================================================
 
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 
@@ -10,12 +10,11 @@ source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 # Lints a one or more dirs
 # The main issue to check for is lines starting with 4 spaces
 #
-# ```
+# ~~~
 #   makechecker lint makefiles
-# ```
+# ~~~
 #
-# @arg $@ - {array} one or more dirs
-
+# - $@ (array) one or more dirs
 function makechecker.lint {
   makechecker.find_targets "$@"
   makechecker.lint_files "${MAKECHECK_TARGETS[@]}"
@@ -24,11 +23,9 @@ function makechecker.lint {
 ###
 # Lint one or more files
 #
-# @arg $@ - {array} list of files
+# - $@ (array) list of files
 #
-# @returns
-#  0 - success
-#  1 - bad makefile
+# @ errorcode 1 - bad makefile
 #
 function makechecker.lint_files {
   local targets=("$@")
@@ -50,7 +47,7 @@ function makechecker.lint_files {
 ###
 # gets all files that either start with Makefile or have .make extension
 #
-# @arg $@ - {array} one or more dirs
+# - $@ (array) one or more dirs
 #
 function makechecker.find_targets {
   MAKECHECK_TARGETS=()

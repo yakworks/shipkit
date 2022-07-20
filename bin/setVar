@@ -1,13 +1,25 @@
 #!/usr/bin/env bash
-#
-# The original purpose here was to be able to set a variable that will be tracked and can then be
-# eported back out to a file can be created and included into Make
+
+##
+# setVar - sets and track variables
+# ==================================
+# Tracks the variables set in a `BUILD_VARS`` variable.
+# Enables to set a variable that will be tracked and can then be
+# exported back out to a file which can them be included into Make
+
 set -eo pipefail # strict mode https://bit.ly/36MvF0T
 core.import "logit"
 
-# sets the variable value if its not already set and adds it for tracking in BUILD_VARS
-# args $1 - the variable name
-# args $2 - the variable value to set
+##
+# sets the variable value ONLY if it is not already set and adds it for tracking in `BUILD_VARS`
+# ~~~
+#   setVar "FOO" "BAR"
+#   echo $FOO
+#   -> BAR
+# ~~~
+# ARGS:
+# - $1 - the variable name
+# - $2 - the variable value to set
 function setVar {
   set +u # allow unbound variables
   varName="$1"
@@ -22,9 +34,10 @@ function setVar {
   set -u # don't allow unbound variables
 }
 
+##
 # sets the variable value if its not already set and adds it for tracking in BUILD_VARS
-# args $1 - the variable name
-# args $2 - the variable value to set
+# - $1 - the variable name
+# - $2 - the variable value to set
 function evalVar {
   varName="$1"
   # echo "$varName=\"$2\""
@@ -32,18 +45,19 @@ function evalVar {
   add_build_vars "$varName"
 }
 
+##
 # sets the variable value and overwrites what was there before
-# args $1 - the variable name
-# args $2 - the variable value to set
+# - $1 - the variable name
+# - $2 - the variable value to set
 function putVar {
   # declare -g "$1"="$2" # not working in older bash 3 on mac
   eval "$1"=\$2
   add_build_vars "$1"
 }
 
-
+##
 # add the variable name to the BUILD_VARS list for use later in make or in logging
-# args $1 - the variables
+# - $1 - the variables
 function add_build_vars {
   for bvar in "$@"; do
     if [[ ! $BUILD_VARS == *" $bvar "* ]]; then

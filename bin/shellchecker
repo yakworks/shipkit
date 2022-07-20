@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# ---
-# wrapper around the shellcheck linter to make it easier to do a couple of common things
-# ---
+
+##
+# shellchecker - wrapper around the shellcheck linter to make it easier to do a couple of common things
+# =====================================================================================================
+
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 
@@ -9,10 +11,11 @@ source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 # runs the shellcheck on the passed one or more directories
 # will recursively spin in and only run on the files that are x-shellscript mime type
 #
-# ``` shellchecker lint bin scripts2
+# ~~~
+#   shellchecker lint bin scripts2
+# ~~~
 #
-# $@ - {array} one or more dirs
-#
+# - $@ - {array} one or more dirs
 function shellcheck.lint {
   find_shellcheck_targets "$@"
 	shellcheck -s bash "${SHELLCHECK_TARGETS[@]}"
@@ -20,9 +23,7 @@ function shellcheck.lint {
 
 ##
 # uses the pattern `shellcheck -f diff bin/* | git apply` to fix what can be automatically fixed
-#
-# $@ - {array} one or more dirs
-#
+# - $@ - {array} one or more dirs
 function shellcheck.lint_fix {
   find_shellcheck_targets "$@"
 	shellcheck -f diff "${SHELLCHECK_TARGETS[@]}" | git apply
@@ -32,8 +33,7 @@ function shellcheck.lint_fix {
 # collects the files names from one or more directories into SHELLCHECK_TARGETS variable
 # will recursively spin in and only get the files that are x-shellscript mime type
 #
-# $@ - {array} one or more dirs
-#
+# - $@ - {array} one or more dirs
 function find_shellcheck_targets {
   SHELLCHECK_TARGETS=()
   for dir in "$@"; do

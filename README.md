@@ -18,9 +18,8 @@ For a standardized way to build, test and deploy across projects that stays out 
     - [Why Make?](#why-make)
 - [Make as a wrapper](#make-as-a-wrapper)
 - [Assumptions about the build environment](#assumptions-about-the-build-environment)
-- [Good reads](#good-reads)
-- [style guides we endeveur to follow](#style-guides-we-endeveur-to-follow)
 - [Setup](#setup)
+- [style guides we endeveur to follow](#style-guides-we-endeveur-to-follow)
 - [References](#references)
 
 <!-- /TOC -->

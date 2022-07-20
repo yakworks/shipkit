@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
-# -----------------
-# functions for working with spring, grails and gradle
-# ------------------
+
+##
+# gradle_tools - functions for working with spring, grails and gradle
+# ===================================================================
+
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 
 
-# ---
+##
 # for multi-project gradles this will consolidate the test results into the root build
 # this simplifies so we can run circles "store" command on just one dir
-# $1 - the project list, if not passed then defaults to whats in env variable PROJECT_SUBPROJECTS
-# ---
+# - $1 - the project list, if not passed then defaults to whats in env variable PROJECT_SUBPROJECTS
 function gradle.merge_test_results {
   local projList="${1:-$PROJECT_SUBPROJECTS}"
   for project in $projList; do
@@ -19,8 +20,10 @@ function gradle.merge_test_results {
   done
 }
 
-# $1 - the project name
-# $2 - the build test dir, will either be test-results or reports
+##
+# copy the test results
+# - $1 - the project name
+# - $2 - the build test dir, will either be test-results or reports
 function _copy_test_results {
   local dir="$1/build/$2/"
   if [ -d "${dir}" ]; then
@@ -29,12 +32,13 @@ function _copy_test_results {
   fi
 }
 
+##
 # build app props from list which will be in form
 #  dataSource.host=mysql
 #  dataSource.dbName=bar
 # turned into -DdataSource.host=mysql -DdataSource.dbName=bar
-# $1 - the string to convert into java props
-# ---
+#
+# - $1 - the string to convert into java props
 function gradle.transform_to_java_props {
   local sysProps=""
   echo "1 $1"

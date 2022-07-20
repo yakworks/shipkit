@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
-###
+##
+# sed_tpl - helpers for sed
+
+##
 # basic tempalate variable replacement using sed
 # runs sed on a .tpl. file in form some_file.tpl.yml for example
 # replaces variables with values from the BUILD_ENV_VARS in the form ${var_name}
 #
-# $1 - the tpl.yml file
-# $2 - the output dir for sed to put the processed files with the .tpl. stripped from the name
+# - $1 - the tpl.yml file
+# - $2 - the output dir for sed to put the processed files with the .tpl. stripped from the name
 #
 # @stdout the processed tpl build file name
 #

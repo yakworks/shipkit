@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034 # appears unused, many are used in templates
-# ---
+
+##
+# init_env - main init script for the shipkit make file
+# =======================================================
 # default functions to setup BUILD_VARS
 # BUILD_VARS are used in the build.sh and a makefile.env is created
 # that is imcluded at the start of the Makefile to share vars
-# ---
+
 set -eo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "logit"
@@ -17,22 +20,24 @@ core.import "setVar"
 # version.properties should be in root dir
 if [ -e "version.properties" ]; then source version.properties; fi
 
+##
 # main make env, this is called early.
-# $1 - BUILD_ENV (test, dev, seed)
+# - $1 - BUILD_ENV (test, dev, seed)
 function make_env {
   make_env_init "${1:-}"
   createEnvFile
 }
 
+##
 # create build/make_env_db.env for importing into makefile.
-# $1 - BUILD_ENV (test, dev, seed)
+# - $1 - BUILD_ENV (test, dev, seed)
 function make_env_init {
   setVar BUILD_ENV "${1:-test}"
   init_env
   init_db_env  #if DBMS env is set
 }
 
-# initializes the environment
+## initializes the environment
 function init_env {
   version=${version:-}
   [ "$version" ] && init_versions
@@ -77,7 +82,7 @@ function init_env {
   fi
 }
 
-# makes sure defaults are setup
+## makes sure defaults are setup
 function init_defaults {
   set +u
   # important to remeber that setVar registers the var in BUILD_VARS
@@ -141,7 +146,7 @@ function init_defaults {
 
 }
 
-# sets up defaults vars for docker ninedb and dock builders
+## sets up defaults vars for docker ninedb and dock builders
 function init_from_build_yml {
   # if gradle
   if [ -e ./build.yml ]; then
@@ -152,10 +157,9 @@ function init_from_build_yml {
   return 0 # I don't understand why this is needed
 }
 
-# ---
+##
 # special handling, kubernetes requires all lower case for names so we abide
 # and lowercase APP_KEY some of the values
-# ---
 function make_some_vals_lowercase {
   set +u
   [ "$APP_KEY" ] && APP_KEY=$(tolower "${APP_KEY}")

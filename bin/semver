@@ -1,27 +1,29 @@
 #!/usr/bin/env bash
-# ---
-# common logic for publishing a release.
-# ---
+
+##
+# semver - common logic for publishing a release.
+# -----------------------------------------------
+# used to roll a version and update `version.properties` and `package.json`
+#
+
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "logit"
 core.import "utils"
 
+##
 # updates the version number in README
-# $1 - the new version to replace old one with
-# $2 - the file name to do the replace
+# - $1 - the new version to replace old one with
+# - $2 - the file name to do the replace
 function replace_version {
   sed -i.bak -e "s|Version: [0-9.]*[-v]*[0-9.]*|Version: ${1}|g" "$2" && \
     rm -- "${2}.bak"
-
-  # updatedContent = updatedContent.replaceFirst(/${p.name}:[\d\.]+[^"]+/, "${p.name}:$version")
-  # update any dependencies for plugin style versions, ie `id "yakworks.gorm-tools" version "1.2.3"`
-  # updatedContent = updatedContent.replaceFirst(/(?i)${p.name}"\sversion\s"[\d\.]+[^\s]+"/, "${p.name}\" version \"$version\"")
 }
 
+##
 # bumps the current version and updates the version.properties
-# $1 - the current dev version that will be moved to publishedVersion, should be the version in the version.props
-# $2 - the version file, defaults to version.properties
+# - $1 - the current dev version that will be moved to publishedVersion, should be the version in the version.props
+# - $2 - the version file, defaults to version.properties
 function bump_version_file {
   local publishingVersion="${1}"
   local newVersion=$( bump_patch "$publishingVersion")
@@ -30,8 +32,9 @@ function bump_version_file {
   update_package_json "$newVersion"
 }
 
+##
 # if package.json exists then update it with new version
-# $1 - the new version
+# - $1 - the new version
 function update_package_json {
   if [ -f package.json ]; then
     sed -i.bak -e "s|\"version\":.*|\"version\": \"${1}\",|g" package.json && rm -- "package.json.bak"
@@ -40,11 +43,12 @@ function update_package_json {
   fi
 }
 
+##
 # Updates version.properties with given version, sets publishedVersion to the $VERSION
 # and sets snapshot to true
-# $1 - the new version
-# $2 - the published version
-# $3 - the version file
+# - $1 - the new version
+# - $2 - the published version
+# - $3 - the version file
 function updateVersionFile {
   local versionFile=${3:-version.properties}
   if [ -n "$1" ] ; then
@@ -70,10 +74,9 @@ function updateVersionFile {
   fi
 }
 
-# ---
-# increments version so 9.8.7 will return 9.8.8 and 9.8.7-RC.1 returns 9.8.7-RC.2
-# $1 - the version to bump
-# ---
+##
+# increments version so `9.8.7` will return `9.8.8` and `9.8.7-RC.1` `returns 9.8.7-RC.2`
+# - $1 - the version to bump
 function bump_patch {
   local ver="${1}"
   local dotCount=$(echo "${ver}" | awk -F"." '{print NF-1}')

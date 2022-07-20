@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# ---
+##
 # jdk builder docker and database docker
-# # ! DEPRECATED, kept as ref for now
+# @DEPRECATED kept as ref for now
 # ---
 
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main

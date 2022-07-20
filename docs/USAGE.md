@@ -39,6 +39,7 @@
   * [_copy_test_results()](#_copy_test_results)
   * [gradle.transform_to_java_props()](#gradletransform_to_java_props)
 * [heredoc_tpl](#heredoc_tpl)
+  * [heredoc_tpl()](#heredoc_tpl)
 * [init_env](#init_env)
   * [make_env()](#make_env)
   * [make_env_init()](#make_env_init)
@@ -62,6 +63,7 @@
   * [wait_for_sqlserver()](#wait_for_sqlserver)
 * [kube_tools](#kube_tools)
   * [kube.process_tpl()](#kubeprocess_tpl)
+  * [kube.apply_tpl()](#kubeapply_tpl)
   * [kube.create_namespace()](#kubecreate_namespace)
   * [kube.ctl()](#kubectl)
   * [kube.apply()](#kubeapply)
@@ -71,6 +73,7 @@
   * [makechecker.lint_files()](#makecheckerlint_files)
   * [makechecker.find_targets()](#makecheckerfind_targets)
 * [sed_tpl](#sed_tpl)
+  * [sed_tpl()](#sed_tpl)
   * [build_sed_args()](#build_sed_args)
 * [semver](#semver)
   * [replace_version()](#replace_version)
@@ -85,6 +88,7 @@
   * [add_build_vars()](#add_build_vars)
   * [log-vars()](#log-vars)
 * [shellchecker](#shellchecker)
+  * [shellcheck.lint()](#shellchecklint)
   * [shellcheck.lint_fix()](#shellchecklint_fix)
   * [find_shellcheck_targets()](#find_shellcheck_targets)
 
@@ -831,7 +835,25 @@ Just a helper to show variables which can be useful for debugging
 
 ## github
 
+Helper functions to call Githubs release rest endpoint to make a release from a tag
+
+### Description
+
+Reference Links
+https://isabelcastillo.com/script-release-github
+https://hinty.io/ivictbor/publish-and-upload-release-to-github-with-bash-and-curl/
+https://github.com/terryburton/travis-github-release/blob/master/github-release.sh
+
 ### github.create_release()
+
+calls the github release endpoint to tag nd mark a release
+
+* __🔌 Args__
+
+  * __$1__ (any): the current dev version we are releasing
+  * __$2__ (any): the release branch to push to, should be the active releasable git branch that is checked out such as master
+  * __$3__ (any): the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
+  * __$4__ (any): the GITHUB_TOKEN auth token
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -845,7 +867,6 @@ Just a helper to show variables which can be useful for debugging
     local body=$(cat "$BUILD_DIR/CHANGELOG_RELEASE.md")
     local body_esc=`escape_json_string "$body"`
   
-  ## LEAVE THIS INDENT, heredoc needs to to look this way
   local api_data=$(cat <<EOF
     {
       "tag_name":         "v$1",
@@ -883,7 +904,20 @@ Just a helper to show variables which can be useful for debugging
 
 ## gradle_tools
 
+functions for working with spring, grails and gradle
+
+### Description
+
+LEAVE THIS INDENT, heredoc needs to to look this way
+
 ### gradle.merge_test_results()
+
+for multi-project gradles this will consolidate the test results into the root build
+this simplifies so we can run circles "store" command on just one dir
+
+* __🔌 Args__
+
+  * __$1__ (any): the project list, if not passed then defaults to whats in env variable PROJECT_SUBPROJECTS
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -901,6 +935,13 @@ Just a helper to show variables which can be useful for debugging
 
 ### _copy_test_results()
 
+copy the test results
+
+* __🔌 Args__
+
+  * __$1__ (any): the project name
+  * __$2__ (any): the build test dir, will either be test-results or reports
+
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
   ~~~bash
@@ -916,6 +957,15 @@ Just a helper to show variables which can be useful for debugging
   </details>
 
 ### gradle.transform_to_java_props()
+
+build app props from list which will be in form
+dataSource.host=mysql
+dataSource.dbName=bar
+turned into -DdataSource.host=mysql -DdataSource.dbName=bar
+
+* __🔌 Args__
+
+  * __$1__ (any): the string to convert into java props
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -939,13 +989,66 @@ Just a helper to show variables which can be useful for debugging
 
   </details>
 
-## basic tempalate variable replacement using heredoc
+## herdoc_tpl
+
+heredoc helpers
+
+### heredoc_tpl()
+
+basic tempalate variable replacement using heredoc
+runs on a .tpl. file in form some_file.tpl.yml for example
+replaces variables with values
+
+* __🔌 Args__
+
+  * __$1__ (any): the tpl.yml file
+  * __$2__ (any): the output dir to put the processed files with the .tpl. stripped from the name
+
+* __📺 Stdout__
+
+  * the processed tpl build file name
+
+* <details> <summary><kbd> ℹ️ show function source</kbd></summary>
+
+  ~~~bash
+  function heredoc_tpl {
+    mkdir -p "$2"
+    # parse just the file name
+    local tplFile=${1##*/}
+    # replace .tpl.yml with .yml or .tpl.any with .any is what `/.tpl./.` is doing
+    local processedTpl="$2/${tplFile/.tpl./.}"
+    tplFile="$1"
+    # unset $1
+    # unset $2
+  eval "cat << EOF
+  $(<"$tplFile")
+  EOF
+  " > "$processedTpl"
+  
+  	echo "$processedTpl"
+  }
+  ~~~
+
+  </details>
 
 ## init_env
 
-### make_env()
+main init script for the shipkit make file
+
+### Description
 
 LEAVE THIS INDENT, heredoc needs to to look this way
+default functions to setup BUILD_VARS
+BUILD_VARS are used in the build.sh and a makefile.env is created
+that is imcluded at the start of the Makefile to share vars
+
+### make_env()
+
+main make env, this is called early.
+
+* __🔌 Args__
+
+  * __$1__ (any): BUILD_ENV (test, dev, seed)
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -960,6 +1063,12 @@ LEAVE THIS INDENT, heredoc needs to to look this way
 
 ### make_env_init()
 
+create build/make_env_db.env for importing into makefile.
+
+* __🔌 Args__
+
+  * __$1__ (any): BUILD_ENV (test, dev, seed)
+
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
   ~~~bash
@@ -973,6 +1082,8 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   </details>
 
 ### init_env()
+
+initializes the environment
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1025,6 +1136,8 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   </details>
 
 ### init_defaults()
+
+makes sure defaults are setup
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1097,6 +1210,8 @@ LEAVE THIS INDENT, heredoc needs to to look this way
 
 ### init_from_build_yml()
 
+sets up defaults vars for docker ninedb and dock builders
+
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
   ~~~bash
@@ -1114,6 +1229,9 @@ LEAVE THIS INDENT, heredoc needs to to look this way
   </details>
 
 ### make_some_vals_lowercase()
+
+special handling, kubernetes requires all lower case for names so we abide
+and lowercase APP_KEY some of the values
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1333,7 +1451,7 @@ LEAVE THIS INDENT, heredoc needs to to look this way
 
   </details>
 
-## jbuilder_docker
+## jdk builder docker and database docker
 
 ### builderStart()
 
@@ -1422,9 +1540,17 @@ LEAVE THIS INDENT, heredoc needs to to look this way
 
   </details>
 
-## runs sed on the kubernetes tpl.yml template files to update and replace variables with values
+## kube_tools
+
+functions to help with kubernetes and deployment
 
 ### kube.process_tpl()
+
+runs sed on the kubernetes tpl.yml and puts in build dir
+
+* __🔌 Args__
+
+  * __$1__ (any): the template file to apply
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1438,7 +1564,36 @@ LEAVE THIS INDENT, heredoc needs to to look this way
 
   </details>
 
+### kube.apply_tpl()
+
+runs sed on the kubernetes tpl.yml template files to update and replace variables with values
+
+* __🔌 Args__
+
+  * __$1__ (any): the file template to process and apply
+
+* <details> <summary><kbd> ℹ️ show function source</kbd></summary>
+
+  ~~~bash
+  function kube.apply_tpl {
+    local processedTplFile=$(kube.process_tpl "$1" "build/kube")
+    echo "processed tpl -> $processedTplFile"
+    kube.ctl apply -f "$processedTplFile"
+  }
+  ~~~
+
+  </details>
+
 ### kube.create_namespace()
+
+creates namespace if it does not exist.
+
+* __🔧 Example__
+
+  ~~~bash
+    kube.create_namespace foo
+  - $1 - the name of the namespace to be created
+  ~~~
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1456,6 +1611,15 @@ LEAVE THIS INDENT, heredoc needs to to look this way
 
 ### kube.ctl()
 
+wrapper around kubectl so we can intercept execution if dry_run is set
+
+* __🔧 Example__
+
+  ~~~bash
+    kube.ctl create namespace foo
+  - $@ - the commands to apply to kubectl
+  ~~~
+
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
   ~~~bash
@@ -1472,6 +1636,12 @@ LEAVE THIS INDENT, heredoc needs to to look this way
 
 ### kube.apply()
 
+runs kubectl apply on the passed in string
+
+* __🔌 Args__
+
+  * __$1__ (any): the yml string to apply
+
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
   ~~~bash
@@ -1484,22 +1654,32 @@ LEAVE THIS INDENT, heredoc needs to to look this way
 
 ## make_shell
 
+a wrapper around the shell that make targets will use for commands.
+
+### Description
+
+Allows for having certain things sourced. also allows to easily trace and log
+set in the Makefile like so
+~~~bash
+SHELL := $(SHIPKIT_BIN)/make_shell
+~~~
+
 ## makechecker
+
+Checks makefiles for common issues. The main one being 4 spaces instead of tab to start shell commands
 
 ### makechecker.lint()
 
 Lints a one or more dirs
 The main issue to check for is lines starting with 4 spaces
 
+- $@ (array) one or more dirs
+
 * __🔧 Example__
 
   ~~~bash
   makechecker lint makefiles
   ~~~
-
-* __🔌 Args__
-
-  * __$@__ (any): {array} one or more dirs
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1516,13 +1696,7 @@ The main issue to check for is lines starting with 4 spaces
 
 Lint one or more files
 
-* __🔌 Args__
-
-  * __$@__ (any): {array} list of files
-
-* __📺 Stdout__
-
-  * # @returns
+- $@ (array) list of files
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1551,9 +1725,7 @@ Lint one or more files
 
 gets all files that either start with Makefile or have .make extension
 
-* __🔌 Args__
-
-  * __$@__ (any): {array} one or more dirs
+- $@ (array) one or more dirs
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1574,7 +1746,41 @@ gets all files that either start with Makefile or have .make extension
 
   </details>
 
-## basic tempalate variable replacement using sed
+## sed_tpl
+
+helpers for sed
+
+### sed_tpl()
+
+basic tempalate variable replacement using sed
+runs sed on a .tpl. file in form some_file.tpl.yml for example
+replaces variables with values from the BUILD_ENV_VARS in the form ${var_name}
+
+* __🔌 Args__
+
+  * __$1__ (any): the tpl.yml file
+  * __$2__ (any): the output dir for sed to put the processed files with the .tpl. stripped from the name
+
+* __📺 Stdout__
+
+  * the processed tpl build file name
+
+* <details> <summary><kbd> ℹ️ show function source</kbd></summary>
+
+  ~~~bash
+  function sed_tpl {
+    build_sed_args
+    mkdir -p "$2"
+    # parse just the file name
+    local tplFile=${1##*/}
+    # replace .tpl.yml with .yml or .tpl.any with .any is what `/.tpl./.` is doing
+    local processedTpl="$2/${tplFile/.tpl./.}"
+    sed "$BUILD_VARS_SED_ARGS" "$1" > "$processedTpl"
+  	echo "$processedTpl"
+  }
+  ~~~
+
+  </details>
 
 ### build_sed_args()
 
@@ -1594,7 +1800,21 @@ gets all files that either start with Makefile or have .make extension
 
 ## semver
 
+common logic for publishing a release.
+
+### Description
+
+used to roll a version and update `version.properties` and `package.json`
+
+
 ### replace_version()
+
+updates the version number in README
+
+* __🔌 Args__
+
+  * __$1__ (any): the new version to replace old one with
+  * __$2__ (any): the file name to do the replace
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1602,16 +1822,19 @@ gets all files that either start with Makefile or have .make extension
   function replace_version {
     sed -i.bak -e "s|Version: [0-9.]*[-v]*[0-9.]*|Version: ${1}|g" "$2" && \
       rm -- "${2}.bak"
-  
-    # updatedContent = updatedContent.replaceFirst(/${p.name}:[\d\.]+[^"]+/, "${p.name}:$version")
-    # update any dependencies for plugin style versions, ie `id "yakworks.gorm-tools" version "1.2.3"`
-    # updatedContent = updatedContent.replaceFirst(/(?i)${p.name}"\sversion\s"[\d\.]+[^\s]+"/, "${p.name}\" version \"$version\"")
   }
   ~~~
 
   </details>
 
 ### bump_version_file()
+
+bumps the current version and updates the version.properties
+
+* __🔌 Args__
+
+  * __$1__ (any): the current dev version that will be moved to publishedVersion, should be the version in the version.props
+  * __$2__ (any): the version file, defaults to version.properties
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1629,6 +1852,12 @@ gets all files that either start with Makefile or have .make extension
 
 ### update_package_json()
 
+if package.json exists then update it with new version
+
+* __🔌 Args__
+
+  * __$1__ (any): the new version
+
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
   ~~~bash
@@ -1644,6 +1873,15 @@ gets all files that either start with Makefile or have .make extension
   </details>
 
 ### updateVersionFile()
+
+Updates version.properties with given version, sets publishedVersion to the $VERSION
+and sets snapshot to true
+
+* __🔌 Args__
+
+  * __$1__ (any): the new version
+  * __$2__ (any): the published version
+  * __$3__ (any): the version file
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1678,6 +1916,12 @@ gets all files that either start with Makefile or have .make extension
 
 ### bump_patch()
 
+increments version so `9.8.7` will return `9.8.8` and `9.8.7-RC.1` `returns 9.8.7-RC.2`
+
+* __🔌 Args__
+
+  * __$1__ (any): the version to bump
+
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
   ~~~bash
@@ -1700,7 +1944,28 @@ gets all files that either start with Makefile or have .make extension
 
 ## setVar
 
+sets and track variables
+
+### Description
+
+Tracks the variables set in a `BUILD_VARS`` variable.
+Enables to set a variable that will be tracked and can then be
+exported back out to a file which can them be included into Make
+
 ### setVar()
+
+sets the variable value ONLY if it is not already set and adds it for tracking in `BUILD_VARS`
+
+* __🔧 Example__
+
+  ~~~bash
+    setVar "FOO" "BAR"
+    echo $FOO
+    -> BAR
+  ARGS:
+  - $1 - the variable name
+  - $2 - the variable value to set
+  ~~~
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1724,6 +1989,13 @@ gets all files that either start with Makefile or have .make extension
 
 ### evalVar()
 
+sets the variable value if its not already set and adds it for tracking in BUILD_VARS
+
+* __🔌 Args__
+
+  * __$1__ (any): the variable name
+  * __$2__ (any): the variable value to set
+
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
   ~~~bash
@@ -1739,6 +2011,13 @@ gets all files that either start with Makefile or have .make extension
 
 ### putVar()
 
+sets the variable value and overwrites what was there before
+
+* __🔌 Args__
+
+  * __$1__ (any): the variable name
+  * __$2__ (any): the variable value to set
+
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
   ~~~bash
@@ -1752,6 +2031,12 @@ gets all files that either start with Makefile or have .make extension
   </details>
 
 ### add_build_vars()
+
+add the variable name to the BUILD_VARS list for use later in make or in logging
+
+* __🔌 Args__
+
+  * __$1__ (any): the variables
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1783,13 +2068,38 @@ gets all files that either start with Makefile or have .make extension
 
   </details>
 
-## runs the shellcheck on the passed one or more directories
+## shellchecker
+
+wrapper around the shellcheck linter to make it easier to do a couple of common things
+
+### shellcheck.lint()
+
+runs the shellcheck on the passed one or more directories
+will recursively spin in and only run on the files that are x-shellscript mime type
+
+- $@ - {array} one or more dirs
+
+* __🔧 Example__
+
+  ~~~bash
+  shellchecker lint bin scripts2
+  ~~~
+
+* <details> <summary><kbd> ℹ️ show function source</kbd></summary>
+
+  ~~~bash
+  function shellcheck.lint {
+    find_shellcheck_targets "$@"
+  	shellcheck -s bash "${SHELLCHECK_TARGETS[@]}"
+  }
+  ~~~
+
+  </details>
 
 ### shellcheck.lint_fix()
 
 uses the pattern `shellcheck -f diff bin/* | git apply` to fix what can be automatically fixed
-
-$@ - {array} one or more dirs
+- $@ - {array} one or more dirs
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
@@ -1807,7 +2117,7 @@ $@ - {array} one or more dirs
 collects the files names from one or more directories into SHELLCHECK_TARGETS variable
 will recursively spin in and only get the files that are x-shellscript mime type
 
-$@ - {array} one or more dirs
+- $@ - {array} one or more dirs
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 

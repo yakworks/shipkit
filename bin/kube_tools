@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
-# -----------------
-# functions to help with kubernetes
-# ------------------
+
+##
+# kube_tools - functions to help with kubernetes and deployment
+#
+
 set -e
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "init_env"
 core.import "heredoc_tpl"
 core.import "dotenv"
 
-# ---
+##
 # runs sed on the kubernetes tpl.yml and puts in build dir
-# $1 - the template file to apply
-# ---
+# - $1 - the template file to apply
 function kube.process_tpl {
   # set the variables in BUILD_ENV so we can build the sed replacement for templates
   # dotenv.load "build/make/makefile${MAKELEVEL}.env"
@@ -20,16 +21,19 @@ function kube.process_tpl {
 
 ###
 # runs sed on the kubernetes tpl.yml template files to update and replace variables with values
-#
-# $1 - the template file to apply
-#
+# - $1 - the file template to process and apply
 function kube.apply_tpl {
   local processedTplFile=$(kube.process_tpl "$1" "build/kube")
   echo "processed tpl -> $processedTplFile"
   kube.ctl apply -f "$processedTplFile"
 }
 
-# creates namespace if it does not exist
+##
+# creates namespace if it does not exist.
+# ~~~
+#   kube.create_namespace foo
+# ~~~
+# - $1 - the name of the namespace to be created
 function kube.create_namespace {
   [ "${dry_run:-}" ] && echo "🌮 dry_run ->  kube.ctl create namespace $1" && return 0
 
@@ -38,7 +42,12 @@ function kube.create_namespace {
   fi
 }
 
+##
 # wrapper around kubectl so we can intercept execution if dry_run is set
+# ~~~
+#   kube.ctl create namespace foo
+# ~~~
+# - $@ - the commands to apply to kubectl
 function kube.ctl {
   if [ "${dry_run:-}" ]; then
 		echo "🌮 dry_run ->  kubectl $@"
@@ -47,7 +56,9 @@ function kube.ctl {
 	fi
 }
 
+##
 # runs kubectl apply on the passed in string
+# - $1 - the yml string to apply
 function kube.apply {
   echo "$1" | kube.ctl apply -f -
 }
