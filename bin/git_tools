@@ -3,7 +3,7 @@
 ##
 # git_tools - Github and git helpers.
 # =====================================
-# MOSTLY HERE FOR REF, SEE git-tools.make as that the core of it.
+# SEE git-tools.make as that the core of it.
 # uses the variables set from gradle/build.yml
 
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
@@ -54,6 +54,7 @@ function init_github_vars {
 ##
 # set the PROJECT_FULLNAME github slug from git config --get remote.origin.url
 # based on whther its https or ssh git
+# @set PROJECT_FULLNAME - will get set to the github slug such as `yakworks/shipkit`
 function project_fullname_from_git_remote {
   HAS_GIT="$(which git 2> /dev/null)" || true
   if [ ! "$HAS_GIT" ];then

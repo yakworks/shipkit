@@ -215,29 +215,41 @@ utils for working with CI circle and publishing,
 
 ### Description
 
+CIRCLE_TOKEN env variable should be set already with the token
 
 to trigger a circle repo
 ~~~bash
-./circle.sh trigger "yakworks/shipkit" "g22kljf2324....."
+./circle.sh trigger some_branch
 ~~~
 
 ### circle.trigger()
 
-uses curl to trigger a pipeline
+uses curl to trigger a pipeline for a branch.
+Expect the PROJECT_FULLNAME and CIRCLE_TOKEN to be set before calling.
+NOTE: if the branch passed in does not exist then it will still run and end up using whatever is set as master branch.
 
 * __🔌 Args__
 
-  * __$1__ (any): the owner/repo
-  * __$2__ (any): the circle token
+  * __$1__ (any): the branch name. OPTIONAL, if not provided then will use git to read the current branch
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 
   ~~~bash
   circle.trigger(){
-    curl --location --request POST \
-  		"https://circleci.com/api/v2/project/github/$1/pipeline" \
+    local branch_name=${1:-}
+    # read from github if not specified
+    [ ! "$branch_name" ] && branch_name=$(git rev-parse --abbrev-ref HEAD)
+    local branch_data="{\"branch\":\"${branch_name}\"}"
+    # if no project name then get it.
+    [ ! "${PROJECT_FULLNAME:-}" ] && project_fullname_from_git_remote
+  
+    echo "triggering ${PROJECT_FULLNAME} branch: ${branch_data}"
+  
+  	curl --location --request POST \
+  		"https://circleci.com/api/v2/project/github/${PROJECT_FULLNAME}/pipeline" \
   		--header 'Content-Type: application/json' \
-  		-u "$2:"
+  		-u "${CIRCLE_TOKEN}:" \
+  		--data "${branch_data}"
   }
   ~~~
 
@@ -527,7 +539,7 @@ Github and git helpers.
 
 ### Description
 
-MOSTLY HERE FOR REF, SEE git-tools.make as that the core of it.
+SEE git-tools.make as that the core of it.
 uses the variables set from gradle/build.yml
 
 ### init_github_vars()
@@ -582,6 +594,10 @@ will try and constuct PROJECT_FULLNAME from git config if not passed in
 
 set the PROJECT_FULLNAME github slug from git config --get remote.origin.url
 based on whther its https or ssh git
+
+* __🎯 Variables set__
+
+  * __PROJECT_FULLNAME__ (any): will get set to the github slug such as `yakworks/shipkit`
 
 * <details> <summary><kbd> ℹ️ show function source</kbd></summary>
 

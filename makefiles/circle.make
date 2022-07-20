@@ -4,9 +4,11 @@
 
 circle.sh := $(SHIPKIT_BIN)/circle
 
-## Triggers circle to build project call with SLUG passed in, ex: make circle.trigger SLUG=yakworks/gorm-tools
-circle.trigger: | _verify_CIRCLE_TOKEN _verify_SLUG
-	$(circle.sh) trigger $(SLUG) $(CIRCLE_TOKEN)
+## Triggers circle to build project call. Will use PROJECT_FULLNAME and defaults to current branch.
+## pass `b=some_branch` to specify a different one.
+circle.trigger: | _verify_CIRCLE_TOKEN _verify_PROJECT_FULLNAME
+	$(circle.sh) trigger $(b)
+
 
 SHELLCHECK_VERSION ?= v0.7.2
 SHELLCHECK_TAR = shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz
