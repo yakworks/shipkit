@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ##
-# shellchecker - wrapper around the shellcheck linter to make it easier to do a couple of common things
+# shell_checker - wrapper around the shellcheck linter to make it easier to do a couple of common things
 # =====================================================================================================
 
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
@@ -12,7 +12,7 @@ source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 # will recursively spin in and only run on the files that are x-shellscript mime type
 #
 # ~~~
-#   shellchecker lint bin scripts2
+#   shell_checker lint bin scripts2
 # ~~~
 #
 # - $@ - {array} one or more dirs
