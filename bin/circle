@@ -35,6 +35,16 @@ circle.trigger(){
 		--data "${branch_data}"
 }
 
+##
+# opens the circle pipeline for this project in the default web browser. only works on mac right now.
+circle.open(){
+  # if no project name then get it from git remote
+  [ ! "${PROJECT_FULLNAME:-}" ] && project_fullname_from_git_remote
+  local circle_url="https://app.circleci.com/pipelines/github/${PROJECT_FULLNAME}"
+  echo "opening ${circle_url}"
+  open "${circle_url}"
+}
+
 # @ignore
 # circle orb compare-url/reconstruct makes a CIRCLE_COMPARE_URL.txt and this will
 # returns the commit range like 911ff1ea1fa5...a883787c2f50

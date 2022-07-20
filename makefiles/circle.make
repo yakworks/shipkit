@@ -10,6 +10,11 @@ circle.trigger: | _verify_CIRCLE_TOKEN _verify_PROJECT_FULLNAME
 	$(circle.sh) trigger $(b)
 
 
+## opens the circle pipeline for this project in the default web browser. only works on mac right now.
+circle.open: | _verify_CIRCLE_TOKEN _verify_PROJECT_FULLNAME
+	$(circle.sh) open
+
+
 SHELLCHECK_VERSION ?= v0.7.2
 SHELLCHECK_TAR = shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz
 SHELLCHECK_URL = https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/$(SHELLCHECK_TAR)
