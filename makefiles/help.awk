@@ -7,6 +7,7 @@
 BEGIN {
 
     debug_enable = ENVIRON["HELP_DEBUG"] == "1"
+    # debug_enable = 1
     debug_fd = ENVIRON["HELP_DEBUG_FD"]
     debug_file = ENVIRON["HELP_DEBUG_FILE"]
     if (!debug_fd) debug_fd = "stderr"
@@ -14,6 +15,7 @@ BEGIN {
 
     # whether to generate toc, default to true
     # if(target_regex=="") target_regex = "1"
+    split("", comments)
 }
 
 # sort from here https://unix.stackexchange.com/a/609885
@@ -34,13 +36,24 @@ function len(a,     i, k) {
   return k
 }
 
-function join(a,sep) {
-  result = ""
-  if (sep == "")
+# function join(a,sep) {
+#   result = ""
+#   if (sep == "")
+#     sep = SUBSEP
+#   for (item in a)
+#     result = result sep a[item]
+#   return result
+
+# }
+
+# joins an array, assumes index starts with 1
+function join(arr) {
     sep = SUBSEP
-  for (item in a)
-    result = result sep a[item]
-  return result
+    _result = sep arr[1]
+    for (i = 2; i <= length(arr); i++) {
+        _result = _result sep arr[i]
+    }
+    return _result
 }
 
 function unjoin(a, text, sep) {
@@ -60,20 +73,32 @@ function extend(a, b) {
 
 function debug(msg) {
   if (debug_enable) {
-    print (NR-1 + 1) " : " FILENAME ":" msg
+    print (NR) " : " FILENAME ":" msg
     # > debug_file
   }
 }
 
-/^## / {
-  comments[++comments_counter] = substr($0, 4)
-  debug("→ added comment line [" comments[comments_counter] "]")
+
+
+/^## / && !target_regex{
+    _com = $0
+    sub(/^#+ /, "", _com)
+    comments[length(comments)+1] = _com
+    debug("→ added comments line [" _com "]")
+}
+
+/^#+ / && target_regex{
+    _com = $0
+    sub(/^#+ /, "", _com)
+    comments[length(comments)+1] = _com
+    debug("→ added comments line [" _com "]")
 }
 
 # matches the makefile target
 /^[^: \t]*:[^;]*;?/ {
   split($0, recipe_firstline, ":")
   target = recipe_firstline[1]
+  debug(" ******* target HIT [" target "]")
   includeThis = 1
   # target_regex = "^test\\."
   if (target_regex){
@@ -81,25 +106,35 @@ function debug(msg) {
     if (match(target, target_regex)) includeThis = 1
   }
 
-  if ( includeThis && substr(lastline, 1, 2) == "##" ) {
+  if ( includeThis && length(comments)) {
     debug("→ found target [" target "]")
     width = length(target)
     # track the max  width for formatting
     max_width = (max_width > width) ? max_width : width + 1
+    # target_docs[target] = join(comments)
     target_docs[target] = join(comments)
     # delete comments
   }
   delete comments
 }
 
+# not comment with target_regex then reset
+# !/^# / && target_regex{
+#   delete comments
+# }
+
 # not a comment line, append and resets
-!/^##/ {
-  if (len(comments) > 0) {
-    extend(global_docs, comments)
-    append(global_docs, "")
-    delete comments
-  }
+!/^##*/ {
+    # debug(" ******* RESET HIT")
+#   if (len(comments) > 0) {
+#     extend(global_docs, comments)
+#     append(global_docs, "")
+#     delete comments
+#   }
+  delete comments
+  delete simple_comments
 }
+
 { lastline = $0 }
 
 END {

@@ -49,6 +49,7 @@ lint:: lint.makefiles
 lint.fix:
 	$(SHIPKIT_BIN)/shellchecker lint_fix $(SHELLCHECK_DIRS)
 
+# checks the makefiles
 lint.makefiles:
 	$(SHIPKIT_BIN)/makechecker lint makefiles
 
@@ -61,9 +62,6 @@ clean::
 
 ## runs all BAT tests. to run tests matching a regex do `make test-bats TESTS=test_names.*`
 test:: test-bats
-
-## NA runs integration/e2e tests
-test.e2e::
 
 ## NA builds the libs
 build::

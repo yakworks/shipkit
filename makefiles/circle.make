@@ -4,13 +4,17 @@
 
 circle.sh := $(SHIPKIT_BIN)/circle
 
-## Triggers circle to build project call. Will use PROJECT_FULLNAME and defaults to current branch.
-## pass `b=some_branch` to specify a different one.
+## show help list for circle targets
+circle.help:
+	$(MAKE) help HELP_REGEX="^circle.*"
+
+# Triggers circle to build project call. Will use PROJECT_FULLNAME and defaults to current branch.
+# pass `b=some_branch` to specify a different one.
 circle.trigger: | _verify_CIRCLE_TOKEN _verify_PROJECT_FULLNAME
 	$(circle.sh) trigger $(b)
 
 
-## opens the circle pipeline for this project in the default web browser. only works on mac right now.
+# opens the circle pipeline for this project in the default web browser. only works on mac right now.
 circle.open: | _verify_CIRCLE_TOKEN _verify_PROJECT_FULLNAME
 	$(circle.sh) open
 
