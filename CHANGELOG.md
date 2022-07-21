@@ -1,3 +1,8 @@
+### v2.0.6
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.5...v2.0.6)
+- add day-version-cache-key-file [link](https://github.com/yakworks/shipkit/commit/2048cee35a1cab78d0651773e03e6b72ee8f06d3)
+
 ### v2.0.5
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.4...v2.0.5)
