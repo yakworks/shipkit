@@ -1,3 +1,8 @@
+### v2.0.5
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.4...v2.0.5)
+- Makefile escape # pound char (#56) [link](https://github.com/yakworks/shipkit/commit/9c9daa21d644eb0ccbb1bc412b061f456fa0e722)
+
 ### v2.0.4
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.3...v2.0.4)
