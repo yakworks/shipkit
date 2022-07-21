@@ -8,7 +8,7 @@ docmark.publish-prep: docmark.build git.clone-pages
 		cp -r $(GROOVYDOC_BUILD_DIR) $(PAGES_BUILD_DIR)/groovydocs
 	fi
 
-## Builds and pushes docmark pages to github pages, CI should call publish-docs which calls this
+# Builds and pushes docmark pages to github pages, CI should call publish-docs which calls this
 pages.deploy-github: docmark.publish-prep
 	if [ "$(dry_run)" ]; then
 		echo "🌮 dry_run ->  $(MAKE) git.push-pages"
