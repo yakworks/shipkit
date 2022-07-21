@@ -1,3 +1,8 @@
+### v2.0.8
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.7...v2.0.8)
+- add PROJECT_FULLNAME to  day-version-cache-key-file so its unique [link](https://github.com/yakworks/shipkit/commit/68db23ef78ee67cfda02ace54abad2b4f859385f)
+
 ### v2.0.7
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.6...v2.0.7)
