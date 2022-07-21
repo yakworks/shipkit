@@ -22,6 +22,8 @@ circle.open: | _verify_CIRCLE_TOKEN _verify_PROJECT_FULLNAME
 circle.day-version-cache-key-file: | _verify_PROJECT_SUBPROJECTS
 	cat version.properties > day-version-cache-key.tmp
 	date +%F  >> day-version-cache-key.tmp
+	# adds the project name so its unique by project
+	echo $(PROJECT_FULLNAME)  >> day-version-cache-key.tmp
 	$(logr.done)
 
 SHELLCHECK_VERSION ?= v0.7.2
