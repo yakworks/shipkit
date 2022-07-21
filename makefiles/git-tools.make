@@ -1,6 +1,8 @@
 # -------------
 # targets for release process on git, not
 # -------------
+# include the helpers
+include $(SHIPKIT_MAKEFILES)/git-dev.make
 
 GITHUB_BASE_URL ?= github.com/$(PROJECT_FULLNAME).git
 GITHUB_URL ?= https://$(GITHUB_BASE_URL)
