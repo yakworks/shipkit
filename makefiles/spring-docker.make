@@ -50,14 +50,14 @@ build/docker_push_$(APP_KEY): $(BUILD_DIR)/docker_built_$(APP_KEY) | _verify_APP
 	fi
 
 .PHONY: docker.app-push
-## builds and deploys whats in the src/deploy for the APP_DOCKER_URL to docker hub
+# builds and deploys whats in the src/deploy for the APP_DOCKER_URL to docker hub
 docker.app-push: $(BUILD_DIR)/docker_push_$(APP_KEY)
 
 APP_COMPOSE_FILE ?= $(build_docker_dir)/docker-compose.yml
 APP_COMPOSE_CMD := APP_DOCKER_URL=$(APP_DOCKER_URL) APP_NAME=$(APP_NAME) docker compose -p $(APP_NAME)_servers -f $(APP_COMPOSE_FILE)
 APP_COMPOSE_CLEAN_FLAGS ?= --volumes --remove-orphans
 
-## docker compose for the runnable jar, follow with a docker cmd such as up, down, shell or pull
+# docker compose for the runnable jar, follow with a docker cmd such as up, down, shell or pull
 docker.app: | _verify-DOCKER_CMD
 	$(MAKE) docker.app-$(DOCKER_CMD)
 
@@ -69,6 +69,7 @@ docker.app-up: build/docker_built_$(APP_KEY)
 docker.app-down:
 	$(APP_COMPOSE_CMD) down $(APP_COMPOSE_CLEAN_FLAGS)
 
+# open docker shell for app
 docker.app-shell: docker.app-up
 	docker exec -it $(APP_NAME) bash -l
 

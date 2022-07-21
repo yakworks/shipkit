@@ -42,23 +42,31 @@ test.unit::
 test.e2e::
 	$(gradlew) integrationTest $(testArg)
 
+## show help list for test targets
+help.test:
+	$(MAKE) help HELP_REGEX="^test.*"
+
+test.help: help.test
+
 # verifies the snapshot is set
 _verify-snapshot: FORCE
 	_=$(if $(IS_SNAPSHOT),,$(error set snapshot=true in version properties))
-
-## publish snapshot(s) jars into you local maven
-publish.snapshot: | _verify-snapshot
-	$(gradlew) snapshot
 
 # here so we can depend on it being there and if not firing assemble
 $(APP_JAR):
 	$(gradlew) assemble
 
-## java runs the APP_JAR
+# java runs the APP_JAR
 start.jar: $(APP_JAR)
 	java -server -Xmx3048m -XX:MaxMetaspaceSize=256m -jar $(APP_JAR)
 
 .PHONY: resolve-dependencies merge-test-results
+
+## show help list for gradle targets
+help.gradle:
+	$(MAKE) help HELP_REGEX="^gradle.*"
+
+gradle.help: help.gradle
 
 # calls `gradlew resolveConfigurations` to download deps without compiling, used mostly for CI cache
 gradle.resolve-dependencies:
@@ -80,14 +88,23 @@ gradle.cache-key-file: | _verify_PROJECT_SUBPROJECTS
 	done
 	$(logr.done)
 
+# publish the library jar, calls gradle publish, alias to publish.libs
+gradle.publish.libs: publish.libs
+
+# publish snapshot(s) jars into you local maven
+gradle.snapshot: | _verify-snapshot
+	$(gradlew) snapshot
+
+## publish snapshot(s) jars into you local maven, alias to gradle.snapshot
+publish.snapshot: gradle.snapshot
+
 # legacy calls with no namespace
 resolve-dependencies: gradle.resolve-dependencies
 
+# alias to gradle.cache-key-file
 cache-key-file: gradle.cache-key-file
 
-merge-test-results: gradle.merge-test-results
-
-## publish the library jar, calls gradle publish
+# publish the library jar, calls gradle publish
 publish.libs:
 	if [ "$(IS_SNAPSHOT)" ]; then $(logr) "publishing SNAPSHOT"; else $(logr) "publishing release"; fi
 	if [ "$(dry_run)" ]; then

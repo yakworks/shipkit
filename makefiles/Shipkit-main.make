@@ -121,7 +121,7 @@ uc = $(call _awk_case,toupper,$(1))
 $(BUILD_DIR)::
 	mkdir -p $@
 
-## Make it so
+# Make it so
 ship-it::
 
 

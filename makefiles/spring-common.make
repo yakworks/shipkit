@@ -7,7 +7,7 @@ include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/docker.make
 include $(SHIPKIT_MAKEFILES)/kubectl-config.make
 include $(SHIPKIT_MAKEFILES)/kube.make
-include $(SHIPKIT_MAKEFILES)/jbuilder-docker.make
+include $(SHIPKIT_MAKEFILES)/jdk-docker.make
 include $(SHIPKIT_MAKEFILES)/gradle-tools.make
 include $(SHIPKIT_MAKEFILES)/spring-docker.make
 include $(SHIPKIT_MAKEFILES)/docmark.make
