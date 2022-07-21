@@ -18,6 +18,11 @@ circle.trigger: | _verify_CIRCLE_TOKEN _verify_PROJECT_FULLNAME
 circle.open: | _verify_CIRCLE_TOKEN _verify_PROJECT_FULLNAME
 	$(circle.sh) open
 
+# creates a file with todays date and version.properties to use circles checksum to create a daily cachekey file
+circle.day-version-cache-key-file: | _verify_PROJECT_SUBPROJECTS
+	cat version.properties > day-version-cache-key.tmp
+	date +%F  >> day-version-cache-key.tmp
+	$(logr.done)
 
 SHELLCHECK_VERSION ?= v0.7.2
 SHELLCHECK_TAR = shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz
