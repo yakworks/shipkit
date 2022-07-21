@@ -4,3 +4,4 @@ build/
 .env
 bot.env
 cache-key.tmp
+.idea

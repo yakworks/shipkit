@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
-# -----------------
+
+##
+# docmark - functions for running the yakworks docmark mkdocs variant
+# ===================================================================
 # functions for running the yakworks docmark mkdocs variant
 # depends on bin/github_pages script
-# ------------------
+
 
 # set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
@@ -12,8 +15,9 @@ core.import "docker_tools"
 DOCMARK_DOCKER_IMAGE=yakworks/docmark
 DOCMARK_DOCKER_NAME=docmark-server
 
+##
 # Copies readme, updates version and replaces links that went into docs
-# $1 - the version to update
+# - $1 - the version to update
 function docmark.copy_readme {
   local index_md=docs/index.md
   rm -f "$index_md"
@@ -24,11 +28,12 @@ function docmark.copy_readme {
   return 0
 }
 
-# builds the groovydocs and copies them into site/api
+## builds the groovydocs and copies them into site/api
 function docmark.copy_groovydoc_to_api {
   cp -r build/docs/groovydoc build/site/api || true
 }
 
+## runs the docmark
 function docmark.run {
   docker.start "$DOCMARK_DOCKER_NAME" -it \
     -w /project \
@@ -37,7 +42,7 @@ function docmark.run {
 		"$DOCMARK_DOCKER_IMAGE"
 }
 
-# use this to open shell and test circle commands
+## use this to open shell and test circle commands
 function docmark.shell {
   docker.start "$DOCMARK_DOCKER_NAME" --rm -it \
     --entrypoint /bin/bash \
@@ -49,8 +54,7 @@ function docmark.shell {
   # GITHUB_TOKEN gitub token is passed from local env to docmark so we can test publish
 }
 
-# --- boiler plate function runner, keep at end of file ------
-# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+# boiler plate function runner, only runs if executed as script, not when sourced
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
   source "${BASHKIT_CORE}/function_runner.sh"
 fi

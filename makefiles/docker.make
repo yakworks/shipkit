@@ -1,6 +1,10 @@
 
 docker_tools := $(SHIPKIT_BIN)/docker_tools
 
+## show help for GIT and GITHUB short cut helpers
+help.docker:
+	$(MAKE) help HELP_REGEX="^docker[\.]+.*"
+
 # DOCKER_CMD verbs
 
 # MAKECMDGOALS has the list of all target goals that are passed into make cmd

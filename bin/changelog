@@ -1,20 +1,27 @@
 #!/usr/bin/env bash
-# ---
-# updates a changelog
-# ---
+
+##
+# changelog - helpers to create and update a changelog
+# ====================================================
+
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "utils"
 core.import "array"
 
-# examples https://gist.github.com/kingkool68/09a201a35c83e43af08fcbacee5c315a
-#
+##
 # updates the changelog, does a bunch of git diff work to get changes
-# $1 - the current dev version
-# $2 - the previous published version
-# $3 - the changelog filename
-# $4 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
-function update_changelog {
+#
+# [See examples here]( https://gist.github.com/kingkool68/09a201a35c83e43af08fcbacee5c315a)
+#
+# @exitcode 1 - published_version does not exists
+#
+# ARGS:
+#   $1 - the current dev version
+#   $2 - the previous published version
+#   $3 - the changelog filename
+#   $4 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
+function update_changelog(){
 
   # the GITHUB_LINK_URL such as https://github.com/yakworks/gorm-tools to make anchors in changelog
   : "${GITHUB_LINK_URL:=https://github.com/$4}"
@@ -50,7 +57,8 @@ function update_changelog {
     # shellcheck disable=SC2076,SC2199 # array is done like this intentionally
     if ! array.contains "$published_version" "${TAGS[@]}"; then
       echo "Error creating changelog - publishedVersion $published_version does not exists"
-      return 1
+      false
+      return
     fi
     MARKDOWN+="[Full Changelog]($GITHUB_LINK_URL/compare/$published_version...$LATEST_TAG)"
 

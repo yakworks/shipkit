@@ -1,4 +1,7 @@
 # --- init_env and the makefile.env generation and BUILD_VARS-----
+# see: https://stackoverflow.com/questions/18136918/how-to-get-current-relative-directory-of-your-makefile/18137056#18137056
+MAKEFILE_PATH 	:= $(abspath $(lastword $(MAKEFILE_LIST)))
+CURRENT_DIR 	:= $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
 
 # path to core scripts
 export BASHKIT_CORE ?= $(SHIPKIT_BIN)/core
@@ -51,8 +54,10 @@ help: _HELP_F := $(firstword $(MAKEFILE_LIST))
 
 ## default, lists help for targets
 help: | _program_awk
-	@awk -f $(HELP_AWK) $(wordlist 2,$(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)) $(_HELP_F)
-	printf "\n$(culine)Common Variables:\n$(creset)"
+	# word list gets all the makefiles that were included
+	# if target_regex is set then help.awk will pick it up and filter targets based on that.
+	awk -v target_regex=$(HELP_REGEX) -f $(HELP_AWK) $(wordlist 2,$(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)) $(_HELP_F)
+	printf "\n$(culine)Common Variables Options:\n$(creset)"
 	printf "$(ccyanB) VERBOSE=true                 $(creset)| show logit.debug in build/make/shikit.log and shows target output on console \n"
 	printf "$(ccyanB) dry_run=true                 $(creset)| setting this to true will stop certain deployment commands from pushing, such as kubectl and docker \n"
 	printf "$(ccyanB) env=<file.env> or <file.sh>  $(creset)| loads custom variables in from .env file or source 'imports' a custom bash .sh script \n"
@@ -60,10 +65,8 @@ help: | _program_awk
 .PHONY: help
 
 ## list all the availible Make targets, including the targets hidden from core help
-help-all:
-	LC_ALL=C $(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort -u | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
-
-.PHONY: help-all
+help.all:
+	$(MAKE) -pRrq | awk -F':' '/^[a-zA-Z0-9][^$$#\/\t=]*:([^=]|$$)/ {split($$1,A,/ /);for(i in A)print A[i]}' | sort -u
 
 # Old way before phony for forcing targets to run.
 # useful when .PHONY doesn't help, plus it looks a bit cleaner in many cases than .phony
@@ -230,10 +233,18 @@ OS_ARCH := $(if $(findstring amd64,$(OS_CPU)),x86_64,i686)
 else
 OS_NAME := $(shell uname -s)
 OS_ARCH := $(shell uname -m)
-OS_CPU  := $(if $(findstring 64,$(OS_ARCH)),amd64,x86)
+ # supports aarch64 on linux arm64 on mac,
+ ifeq (aarch64,$(filter aarch64,$(OS_ARCH)))
+  OS_ARCH = arm64
+ else ifeq (x86_64,$(filter x86_64,$(OS_ARCH)))
+  OS_ARCH = amd64
+ endif
+
 endif
 
 test-logging-os: FORCE
+	$(logr) "CURDIR $(CURDIR)"
+	$(logr) "MAKEFILE_PATH $(MAKEFILE_PATH)"
 	$(logr) "OS_NAME $(OS_NAME)"
 	$(logr) "OS_ARCH $(OS_ARCH)"
 	$(logr.warn) "OS_CPU $(OS_CPU)"

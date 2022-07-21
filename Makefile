@@ -8,11 +8,14 @@ include Shipkit.make
 include $(SHIPKIT_MAKEFILES)/vault.make
 include $(SHIPKIT_MAKEFILES)/base-build.make
 include $(SHIPKIT_MAKEFILES)/docker.make
+include $(SHIPKIT_MAKEFILES)/docmark.make
 include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/ship-version.make
 include $(SHIPKIT_MAKEFILES)/circle.make
 include $(SHIPKIT_MAKEFILES)/bats-testing.make
 include $(SHIPKIT_MAKEFILES)/git-dev.make
+include $(SHIPKIT_MAKEFILES)/kube.make
+include $(SHIPKIT_MAKEFILES)/kubectl-config.make
 
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
@@ -27,8 +30,8 @@ export RELEASE_RESET_FLAG = true
 
 # --- Dockers ---
 docker_tools := $(SHIPKIT_BIN)/docker_tools
-DOCK_SHELL_URL = yakworks/bullseye:base
-DOCK_SHELL_DEB_URL = yakworks/bullseye:jdk11
+DOCK_SHELL_URL = yakworks/builder:base
+DOCK_SHELL_DEB_URL = yakworks/bullseye:base
 
 ## docker shell for testing
 docker.shell:
@@ -36,6 +39,7 @@ docker.shell:
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_URL) /bin/bash
 
+# docker shelk with bullseye debian image
 docker.shell.deb:
 	$(docker_tools) start shipkit-shell -it \
 	  -v `pwd`:/project:delegated  \
@@ -49,6 +53,7 @@ lint:: lint.makefiles
 lint.fix:
 	$(SHIPKIT_BIN)/shellchecker lint_fix $(SHELLCHECK_DIRS)
 
+# checks the makefiles
 lint.makefiles:
 	$(SHIPKIT_BIN)/makechecker lint makefiles
 
@@ -59,18 +64,18 @@ check:: lint test
 clean::
 	rm -rf $(BUILD_DIR)
 
-## runs the bashkit core tests
-test.core: $(BATS_EXE)
-	$(BATS_EXE) $(BATS_OPTS) -f $(TESTS) $(BATS_TEST_DIR)/core
-
-## runs all BAT tests
-test.unit:: test.bats test.core
-
-## runs all BAT tests. to run a single file make test-bats TESTS=test_file_name*
+## runs all BAT tests. to run tests matching a regex do `make test-bats TESTS=test_names.*`
 test:: test-bats
-
-## NA runs integration/e2e tests
-test.e2e::
 
 ## NA builds the libs
 build::
+
+
+build/usage/is.md: bin/is.sh
+	mkdir -p $(@D)
+	./bin/bashdoc/shdocs.sh file $< $@
+
+## generate usage docs from bin
+docs.generate:
+	shopt -s globstar
+	awk -v MULTI_FILE=1 -v SHOW_SRC=1 -f ./bin/shdoc/shdoc.awk -f ./bin/shdoc/shdoc_fns.awk bin/* > docs/USAGE.md

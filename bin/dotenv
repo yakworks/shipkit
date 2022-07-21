@@ -1,18 +1,23 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034 # appears unused, many are used in templates
-# ---
-# default functions to setup BUILD_VARS
+
+###
+# dotenv - default functions to setup BUILD_VARS
+# ==============================================
 # BUILD_VARS are used to create a makefile.env
 # that is imcluded at the start of the Makefile to share vars
-# ---
+
+
 set -eo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "setVar"
 
+##
 # parses the env file, eval and load into BUILD_VARS
-# $1 - the env file to parse
-# $2 - true if we want to override all variables that might already be set
-# $3 - the regex exclude pattern for keys such as "foo|bar|baz"
+# ARGS:
+#   $1 - the env file to parse
+#   $2 - true if we want to override all variables that might already be set
+#   $3 - the regex exclude pattern for keys such as "foo|bar|baz"
 function dotenv.load {
   local env_file="${1}"
   local overrideVar="${2:-false}"
@@ -65,8 +70,7 @@ function dotenv.load {
   # log-vars
 }
 
-# --- boiler plate function runner, keep at end of file ------
-# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+# boiler plate, function runner when run as script. ignored when sourced------
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
   export fn_namespace='dotenv' && source "${BASHKIT_CORE}/function_runner_ns.sh"
 fi

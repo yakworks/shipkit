@@ -25,13 +25,17 @@ check::
 test::
 	@:
 
-## runs unit tests
+# runs unit tests
 test.unit::
 	@:
 
-## runs integration/e2e tests
+# runs integration/e2e tests
 test.e2e::
 	@:
+
+## show help list for test targets
+help.test:
+	$(MAKE) help HELP_REGEX="^test.*"
 
 ## builds the libs
 build::

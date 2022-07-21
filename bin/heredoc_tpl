@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 
+##
+# herdoc_tpl - heredoc helpers
+# =============================
+
 ###
 # basic tempalate variable replacement using heredoc
 # runs on a .tpl. file in form some_file.tpl.yml for example
 # replaces variables with values
 #
-# $1 - the tpl.yml file
-# $2 - the output dir to put the processed files with the .tpl. stripped from the name
+# ARGS:
+#   $1 - the tpl.yml file
+#   $2 - the output dir to put the processed files with the .tpl. stripped from the name
 #
 # @stdout the processed tpl build file name
-#
 function heredoc_tpl {
   mkdir -p "$2"
   # parse just the file name

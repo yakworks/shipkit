@@ -1,33 +1,119 @@
 Uses bats https://github.com/bats-core/bats-core
 
-`make test` will run the tests
+`make test` or `make test-bats` will run the tests
+
+To run test with glob or single test file then 
+
+```bash
+# runs all tests starting with util on tests dir
+make test-bats TESTS=util*
+
+# runs only tests in the core dir
+make test-bats TESTS=core
+
+# runs only tests named array.bats in core dir
+make test-bats TESTS=core/array.bats
+```
+
+## Test Examples
+
+```bash
+@test 'examples will fail' {
+  [ 1 -lt 0 ]
+  FOO=bar
+  # add the || false to test with [[ ]]
+  [[ $FOO && $FOO != "buzz" ]] || false
+  # for negating use same syntax
+  ! BUZZ || false
+  #or with doubles with expected failure
+  ! [[ $FOO && $FOO != "bar" ]] || false
+
+}
+```
 
 ## asserts
 
 from https://github.com/bats-core/bats-assert
 
-`assert [ -e '/var/log/test.log' ]`
+The expressions must be a simple command, no `[[`, see docs for using bash -c as option.
 
-refute
+### `assert`
+
+Fail if the given expression evaluates to false.
+
+```bash
+@test 'assert()' {
+  assert [ 1 -lt 0 ]
+}
+```
+
+On failure, the failed expression is displayed.
+
+```
+-- assertion failed --
+expression : [ 1 -lt 0 ]
+--
+```
+
+
+### `refute`
+
 Fail if the given expression evaluates to true.
-refute [ -e '/var/log/test.log' ]
 
-assert_equal
+```bash
+@test 'refute()' {
+  refute [ 1 -gt 0 ]
+}
+```
+
+On failure, the successful expression is displayed.
+
+```
+-- assertion succeeded, but it was expected to fail --
+expression : [ 1 -gt 0 ]
+--
+```
+
+
+### `assert_equal`
+
 Fail if the two parameters, actual and expected value respectively, do not equal.
-assert_equal 'have' 'want'
 
-assert_success
-Fail if $status is not 0.
+```bash
+@test 'assert_equal()' {
+  assert_equal 'have' 'want'
+}
+```
 
-assert_failure
-Fail if $status is 0.
+On failure, the expected and actual values are displayed.
 
-assert_output
-run echo 'have'
-assert_output 'want'
-run echo 'some SUCCESS xxx'
-assert_output --partial 'SUCCESS'
+```
+-- values do not equal --
+expected : want
+actual   : have
+--
+```
 
-assert_line
-run echo $'have-0\nwant\nhave-2'
-assert_line 'want'
+If either value is longer than one line both are displayed in *multi-line* format.
+
+
+### `assert_not_equal`
+
+Fail if the two parameters, actual and unexpected value respectively, are equal.
+
+```bash
+@test 'assert_not_equal()' {
+  assert_not_equal 'foobar' 'foobar'
+}
+```
+
+On failure, the expected and actual values are displayed.
+
+```
+-- values should not be equal --
+unexpected : foobar
+actual     : foobar
+--
+```
+
+If either value is longer than one line both are displayed in *multi-line* format.

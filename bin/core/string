@@ -16,7 +16,7 @@
 # @exitcode 2 Function missing arguments.
 #
 # @stdout The trimmed string.
-string::trim() {
+string.trim() {
     [[ $# = 0 ]] && printf "%s: Missing arguments\n" "${FUNCNAME[0]}" && return 2
 
     : "${1#"${1%%[![:space:]]*}"}"

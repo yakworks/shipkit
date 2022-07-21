@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-# ---
-# a wrapper around the shell for make targets so we can have certain things sourced. also allows to easily trace and log
+
+##
+# @name make_shell
+# @brief a wrapper around the shell that make targets will use for commands.
+# ================================================================================
+# Allows for having certain things sourced. also allows to easily trace and log
 # set in the Makefile like so
+# ~~~bash
 # SHELL := $(SHIPKIT_BIN)/make_shell
-# ---
+# ~~~
+
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "logit"

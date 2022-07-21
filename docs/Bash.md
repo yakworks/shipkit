@@ -1,5 +1,26 @@
 # Bash Tips
 
+<!-- TOC depthfrom:2 depthto:3 -->
+
+- [1. Bash Conditional Expressions](#1-bash-conditional-expressions)
+    - [1.1. If Then brackets](#11-if-then-brackets)
+    - [1.2. Check if File Exists](#12-check-if-file-exists)
+    - [1.3. Check if File does Not Exist](#13-check-if-file-does-not-exist)
+    - [1.4. Check if Multiple Files Exist](#14-check-if-multiple-files-exist)
+    - [1.5. /dev/null](#15-devnull)
+    - [1.6. Operators](#16-operators)
+- [2. Bash For Loop](#2-bash-for-loop)
+    - [2.1. Range](#21-range)
+    - [2.2. Loop over array elements](#22-loop-over-array-elements)
+    - [2.3. C-style Bash for loop](#23-c-style-bash-for-loop)
+    - [2.4. break and continue Statements](#24-break-and-continue-statements)
+    - [2.5. Real World](#25-real-world)
+- [3. Parameter Expansion](#3-parameter-expansion)
+- [4. booleans](#4-booleans)
+- [5. Paths](#5-paths)
+
+<!-- /TOC -->
+
 ## Bash Conditional Expressions
 
 ### If Then brackets
@@ -372,5 +393,12 @@ if [ -z ${var+x} ]; then echo "var is unset"; else echo "var is set to '$var'"; 
 
 bash has no Boolean data type, and so no keywords representing true and false. The if statement merely checks if the command you give it succeeds or fails. The test command takes an expression and succeeds if the expression is true; a non-empty string is an expression that evaluates as true, just as in most other programming languages. false is a command which always fails. (By analogy, true is a command that always succeeds.) 
 
-## SED
-https://edoras.sdsu.edu/doc/sed-oneliners.html
+
+## Paths
+
+Use `realpath` for getting fill path
+
+`realpath "."` for example
+
+example absolute path to script `script_dir=$(realpath "$(dirname "${BASH_SOURCE[0]}")")`
+

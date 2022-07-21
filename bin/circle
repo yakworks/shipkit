@@ -1,34 +1,64 @@
 #!/usr/bin/env bash
-# ---
-# working with CI circle and publishing,
-# ---
-set -euo pipefail # strict mode https://bit.ly/36MvF0T
-source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 
-###
-# uses curl to trigger a pipeline
+##
+# circle - utils for working with CI circle and publishing,
+# ======
+# CIRCLE_TOKEN env variable should be set already with the token
 #
-# $1 - the owner/repo
-# $2 - the circle token
+# to trigger a circle repo
+# ~~~bash
+#   ./circle.sh trigger some_branch
+# ~~~
+
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
+core.import "git_tools"
+
+##
+# uses curl to trigger a pipeline for a branch.
+# Expect the PROJECT_FULLNAME and CIRCLE_TOKEN to be set before calling.
+# NOTE: if the branch passed in does not exist then it will still run and end up using whatever is set as master branch.
+# - $1 - the branch name. OPTIONAL, if not provided then will use git to read the current branch
 circle.trigger(){
-  curl --location --request POST \
-		"https://circleci.com/api/v2/project/github/$1/pipeline" \
+  local branch_name=${1:-}
+  # read from github if not specified
+  [ ! "$branch_name" ] && branch_name=$(git rev-parse --abbrev-ref HEAD)
+  local branch_data="{\"branch\":\"${branch_name}\"}"
+  # if no project name then get it.
+  [ ! "${PROJECT_FULLNAME:-}" ] && project_fullname_from_git_remote
+
+  echo "triggering ${PROJECT_FULLNAME} branch: ${branch_data}"
+
+	curl --location --request POST \
+		"https://circleci.com/api/v2/project/github/${PROJECT_FULLNAME}/pipeline" \
 		--header 'Content-Type: application/json' \
-		-u "$2:"
+		-u "${CIRCLE_TOKEN}:" \
+		--data "${branch_data}"
 }
-# ---
+
+##
+# opens the circle pipeline for this project in the default web browser. only works on mac right now.
+circle.open(){
+  # if no project name then get it from git remote
+  [ ! "${PROJECT_FULLNAME:-}" ] && project_fullname_from_git_remote
+  local circle_url="https://app.circleci.com/pipelines/github/${PROJECT_FULLNAME}"
+  echo "opening ${circle_url}"
+  open "${circle_url}"
+}
+
+# @ignore
 # circle orb compare-url/reconstruct makes a CIRCLE_COMPARE_URL.txt and this will
 # returns the commit range like 911ff1ea1fa5...a883787c2f50
-# !deprecated
-# ---
+# @deprecated
 function circleCommitRange {
   CIRCLE_COMPARE_URL=$(cat CIRCLE_COMPARE_URL.txt || true)
   # echo "CIRCLE_COMPARE_URL $CIRCLE_COMPARE_URL"
   echo "$CIRCLE_COMPARE_URL" | rev | cut -d/ -f1 | rev
 }
 
-# --- boiler plate function runner, keep at end of file ------
-# BASH_SOURCE check will be true if this is run, false if imported into another script with `source`
+# boiler plate function runner, keep at end of file
+fn_namespace='circle'
 if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
-  export fn_namespace='circle' && source "${BASHKIT_CORE}/function_runner_ns.sh"
+  # BASH_SOURCE will be true if this file is run as a script, if sourced into another this never gets run
+  set -euo pipefail # strict mode https://bit.ly/36MvF0T
+  export fn_namespace && source "${BASHKIT_CORE}/function_runner_ns.sh"
 fi

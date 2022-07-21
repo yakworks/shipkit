@@ -1,20 +1,24 @@
 #!/usr/bin/env bash
-#
-# Helper functions to call Githubs release rest endpoint to make a release from a tag
-# TODO See following links for ideas on how to implement
+
+##
+# github - Helper functions to call Githubs release rest endpoint to make a release from a tag
+# ============================================================================================
+# Reference Links
 # https://isabelcastillo.com/script-release-github
 # https://hinty.io/ivictbor/publish-and-upload-release-to-github-with-bash-and-curl/
 # https://github.com/terryburton/travis-github-release/blob/master/github-release.sh
+
 set -euo pipefail # strict mode https://bit.ly/36MvF0T
 source "$(dirname "${BASH_SOURCE[0]}")"/core/main
 core.import "utils"
 
 
+##
 # calls the github release endpoint to tag nd mark a release
-# $1 - the current dev version we are releasing
-# $2 - the release branch to push to, should be the active releasable git branch that is checked out such as master
-# $3 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
-# $4 - the GITHUB_TOKEN auth token
+# - $1 - the current dev version we are releasing
+# - $2 - the release branch to push to, should be the active releasable git branch that is checked out such as master
+# - $3 - the PROJECT_FULLNAME in the format of owner/repo, such as yakworks/gorm-tools
+# - $4 - the GITHUB_TOKEN auth token
 function github.create_release {
   if [ "${dry_run:-}" ]; then
 		echo "🌮 dry_run ->  github.create_release $@"
