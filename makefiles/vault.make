@@ -21,7 +21,9 @@ endif
 
 ifneq ($(wildcard $(VAULT_BOT_ENV_FILE)),)
   include $(VAULT_BOT_ENV_FILE)
-  VAULT_ENV_VARS := $(shell sed '/^#.*/d; /^$$/d; s/=.*//g;' $(VAULT_BOT_ENV_FILE))
+  # $ need to be escaped with another $ and # need to be escaped with a normal \
+  cmd = sed '/^\#.*/d; /^$$/d; s/=.*//g;' $(VAULT_BOT_ENV_FILE)
+  VAULT_ENV_VARS := $(shell $(cmd))
   # $(info including $(VAULT_ENV_VARS) from $(VAULT_ENV_FILE))
   export $(VAULT_ENV_VARS)
 endif
