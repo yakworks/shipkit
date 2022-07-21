@@ -1,3 +1,8 @@
+### v2.0.4
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.3...v2.0.4)
+- Help cleanup (#55) [link](https://github.com/yakworks/shipkit/commit/1d6482236b5158c09cfc665fa58b621464ccfd7a)
+
 ### v2.0.3
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.2...v2.0.3)
