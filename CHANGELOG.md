@@ -1,3 +1,8 @@
+### v2.0.7
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.6...v2.0.7)
+- make git-dev part of the default git-tools.make [link](https://github.com/yakworks/shipkit/commit/1da90eda71f8764f34515bed6acae2fe9da07271)
+
 ### v2.0.6
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.5...v2.0.6)
