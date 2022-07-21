@@ -1,3 +1,9 @@
+### v2.0.3
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.2...v2.0.3)
+- trigger release [link](https://github.com/yakworks/shipkit/commit/786ee800c1f52d42224be3e61b2d6bca2e20302b)
+- Docs for bash bin and target help for awk (#54) [link](https://github.com/yakworks/shipkit/commit/aca2ddedb20d9bb59c830d6c1713e35e6c00fba8)
+
 ### v2.0.2
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.1...v2.0.2)
