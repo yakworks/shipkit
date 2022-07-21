@@ -9,19 +9,16 @@ gradle_properties ?= gradle.properties
 build_gradle ?= build.gradle
 
 
-## runs codenarc and spotless
+## runs codenarc and spotless with spotlessApply to fix any format issues
 lint::
 	$(gradlew) spotlessApply
 	$(gradlew) codenarcMain
 
-# Run the lint and test suite with ./gradlew check
-# check::
-# 	$(gradlew) spotlessApply
-# 	$(gradlew) check
-
+## clean the build
 clean::
 	$(gradlew) clean
 
+## compile apps. calls ./gradlew classes.
 compile::
 	$(gradlew) classes
 
@@ -31,6 +28,7 @@ build::
 
 testArg := $(if $(tests),--tests *$(tests)*, )
 
+# runs both test and integrationTest.
 test::
 	$(gradlew) test integrationTest
 
