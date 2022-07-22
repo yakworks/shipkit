@@ -1,3 +1,8 @@
+### v2.0.9
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.8...v2.0.9)
+- fix circle trigger [link](https://github.com/yakworks/shipkit/commit/2ce7e30e469879cc3713f48cfe1e2ae24e357a3a)
+
 ### v2.0.8
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.7...v2.0.8)
