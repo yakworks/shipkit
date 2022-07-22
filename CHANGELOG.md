@@ -1,3 +1,8 @@
+### v2.0.11
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.10...v2.0.11)
+- clean up health [link](https://github.com/yakworks/shipkit/commit/aacb09b518ab33c3f60f30331aaec4fc07ed2712)
+
 ### v2.0.10
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.9...v2.0.10)
