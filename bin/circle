@@ -15,21 +15,42 @@ core.import "git_tools"
 
 ##
 # uses curl to trigger a pipeline for a branch.
-# Expect the PROJECT_FULLNAME and CIRCLE_TOKEN to be set before calling.
+# Expect the CIRCLE_TOKEN to be set before calling. will try and setup the PROJECT_FULLNAME (slug) from current repo if not set
 # NOTE: if the branch passed in does not exist then it will still run and end up using whatever is set as master branch.
 # - $1 - the branch name. OPTIONAL, if not provided then will use git to read the current branch
-circle.trigger(){
+circle.trigger-this(){
   local branch_name=${1:-}
   # read from github if not specified
   [ ! "$branch_name" ] && branch_name=$(git rev-parse --abbrev-ref HEAD)
-  local branch_data="{\"branch\":\"${branch_name}\"}"
+
   # if no project name then get it.
   [ ! "${PROJECT_FULLNAME:-}" ] && project_fullname_from_git_remote
 
-  echo "triggering ${PROJECT_FULLNAME} branch: ${branch_data}"
+  circle.trigger "${PROJECT_FULLNAME:-}" "$branch_name"
+
+}
+
+##
+# uses curl to trigger a pipeline for a branch.
+# Expect CIRCLE_TOKEN to be set before calling.
+# NOTE: if the branch passed in does not exist then it will still run and end up using whatever is set as master branch.
+# - $1 - the project name.
+# - $2 - the branch name.
+# @see circle.trigger-this() to trigger current project
+circle.trigger(){
+  local slug=${1:-}
+  local branch_name=${2:-}
+
+  local branch_data="{\"branch\":\"${branch_name}\"}"
+  # if not branch then just blank it out and circle will use defualt
+  [[ ! "$branch_name" ]] && branch_data=""
+
+  echo "triggering slug: ${slug} branch_data: ${branch_data}"
+
+  [[ ! "${slug}" ]] && echo "bad project slug" && return 1
 
 	curl --location --request POST \
-		"https://circleci.com/api/v2/project/github/${PROJECT_FULLNAME}/pipeline" \
+		"https://circleci.com/api/v2/project/github/${slug}/pipeline" \
 		--header 'Content-Type: application/json' \
 		-u "${CIRCLE_TOKEN}:" \
 		--data "${branch_data}"

@@ -8,10 +8,17 @@ circle.sh := $(SHIPKIT_BIN)/circle
 help.circle:
 	$(MAKE) help HELP_REGEX="^circle.*"
 
-# Triggers circle to build project call. Will use PROJECT_FULLNAME and defaults to current branch.
-# pass `b=some_branch` to specify a different one.
+# Triggers circle to build project call.
+# `make circle.trigger` will use PROJECT_FULLNAME and defaults to current branch.
+# `make circle.trigger slug=yakworks/foo b=some_branch` can pass slug for different project and b for branch.
 circle.trigger: | _verify_CIRCLE_TOKEN _verify_PROJECT_FULLNAME
-	$(circle.sh) trigger $(b)
+	if [[ "$(slug)" ]]; then
+		# will blow up if branch is not passed too
+		$(circle.sh) trigger "$(slug)" "$(b)"
+	else
+		$(circle.sh) trigger-this "$(b)"
+	fi
+
 
 
 # opens the circle pipeline for this project in the default web browser. only works on mac right now.

@@ -13,7 +13,6 @@ include $(SHIPKIT_MAKEFILES)/git-tools.make
 include $(SHIPKIT_MAKEFILES)/ship-version.make
 include $(SHIPKIT_MAKEFILES)/circle.make
 include $(SHIPKIT_MAKEFILES)/bats-testing.make
-include $(SHIPKIT_MAKEFILES)/git-dev.make
 include $(SHIPKIT_MAKEFILES)/kube.make
 include $(SHIPKIT_MAKEFILES)/kubectl-config.make
 
