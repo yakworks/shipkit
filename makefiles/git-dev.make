@@ -2,10 +2,10 @@
 # helpers for git dev
 # -------------
 
-## show help for GIT and GITHUB short cut helpers, alias to help.git
+## Git or g.* help
 g.help: help.git
 
-## show help for GIT and GITHUB short cut helpers
+## Git or g.* help
 help.git:
 	$(MAKE) help HELP_REGEX="^g[\.]+.*"
 

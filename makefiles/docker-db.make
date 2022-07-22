@@ -6,7 +6,13 @@ docker_tools := $(SHIPKIT_BIN)/docker_tools
 
 #----- DB targets -------
 
-## starts the DOCK_DB_BUILD_NAME db if its not started yet
+## Database, list help for db.* targets
+help.db:
+	$(MAKE) help HELP_REGEX="^db.*"
+
+db.help: help.db
+
+# starts the DOCK_DB_BUILD_NAME db if its not started yet
 db.start: db.create-network
 	# ACCEPT_EULA is for sql server, just an env var so won't matter that its set for others
 	$(docker_tools) start "$(DOCK_DB_BUILD_NAME)" -d \
@@ -18,7 +24,7 @@ db.start: db.create-network
 		-e "$(PASS_VAR_NAME)"="$(DB_PASSWORD)" \
 		"$(DB_DOCKER_URL)"
 
-## alias for db.start
+# alias for db.start
 start.db: db.start
 
 db.create-network:
@@ -29,7 +35,7 @@ db.wait:
 	# TODO not working
 	$(DockerDbExec) $(build.sh) wait_for_$(DBMS) $(DB_HOST) $(DB_PASSWORD)
 
-## stop and remove the docker DOCK_DB_BUILD_NAME
+# stop and remove the docker DOCK_DB_BUILD_NAME
 db.down:
 	$(docker_tools) remove $(DOCK_DB_BUILD_NAME)
 
@@ -37,6 +43,6 @@ db.down:
 db.restart: db.down
 	$(MAKE) $(DBMS) "db.start"
 
-## stop and remove the docker DOCK_DB_BUILD_NAME
+# stop and remove the docker DOCK_DB_BUILD_NAME
 db.pull: db.down ## pulls latest nine-db from dock9 docker hub
 	docker pull $(DB_DOCKER_URL)

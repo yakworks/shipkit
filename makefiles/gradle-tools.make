@@ -60,7 +60,7 @@ start.jar: $(APP_JAR)
 
 .PHONY: resolve-dependencies merge-test-results
 
-## show help list for gradle targets
+## Gradle - show help list for gradle targets
 help.gradle:
 	$(MAKE) help HELP_REGEX="^gradle.*"
 
