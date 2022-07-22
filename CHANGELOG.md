@@ -1,3 +1,9 @@
+### v2.0.10
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.9...v2.0.10)
+- comment and release [link](https://github.com/yakworks/shipkit/commit/7856c836fc0825fa1118465c5a9f9caaa0b89702)
+- fix vault import [link](https://github.com/yakworks/shipkit/commit/ebfa90b95572334acd90871ba5a6480441281902)
+
 ### v2.0.9
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.8...v2.0.9)
