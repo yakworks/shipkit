@@ -45,14 +45,14 @@ ifneq ($(or $(IS_RELEASABLE),$(dry_run)),)
 
  ## If IS_RELEASABLE, bump vesion, update changelong and post tagged release on gitub.
  ## Should almost always be last ship/release target
- ship.version: update-changelog update-readme-version bump-version-file push-version-bumps
+ ship.version:: update-changelog update-readme-version bump-version-file push-version-bumps
 	# do the ship.github-release in new make so it reloads and picks up the changed PUBLISHED_VERSION
 	$(MAKE) ship.github-release
 	$(logr.done)
 
 else # not IS_RELEASABLE, so its a snapshot or its not on a releasable branch
 
- ship.version:
+ ship.version::
 	$(logr.done) " - IS_RELEASABLE=false as this is either a snapshot or its not on a releasable branch"
 
 endif # end PUBLISHABLE_BRANCH
