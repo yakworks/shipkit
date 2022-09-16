@@ -4,6 +4,10 @@ PAGES_DEPLOY_TPL ?= $(SHIPKIT_DIR)/k8s/docmark-pages-deploy.tpl.yml
 pages.delete-k8s-deployment:
 	$(kube_tools) ctl  delete deployment,ingress --selector="pages=$(PAGES_APP_KEY)" --namespace="$(PAGES_KUBE_NAMESPACE)"
 
+# apply docmark-pages-deploy.tpl kubectl to deploy site to k8s without deleting.  Requires restart of container!
+pages.apply-k8s:
+	${kube_tools} apply_tpl $(PAGES_DEPLOY_TPL)
+
 # apply docmark-pages-deploy.tpl kubectl to deploy site to k8s
 pages.deploy-k8s: pages.delete-k8s-deployment
 	${kube_tools} apply_tpl $(PAGES_DEPLOY_TPL)
