@@ -7,11 +7,13 @@ include $(SHIPKIT_DIR)/Shipkit.make
 hello:
 	echo Hello
 
+# Auto Variable Examples. see docs/Makefiles.md
 auto-vars: README.md foo.txt
 	echo '$$@ = $@' # The name/filename representing the target.
 	echo '$$% = $%' # The filename element of an archive member specification.
 	echo '$$< = $<' # The name/filename of the first prerequisite.
 	echo '$$? = $?' # The names of all prerequisites that are newer than the target, separated by spaces.
+	echo '$$^ = $^' # The filenames of all the prerequisites, separated by spaces.
 
     # 2. `$%` - The filename element of an archive member specification.
     # 3. `$<` - The name/filename of the first prerequisite.
