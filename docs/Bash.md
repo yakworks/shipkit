@@ -2,22 +2,26 @@
 
 <!-- TOC depthfrom:2 depthto:3 -->
 
-- [1. Bash Conditional Expressions](#1-bash-conditional-expressions)
-    - [1.1. If Then brackets](#11-if-then-brackets)
-    - [1.2. Check if File Exists](#12-check-if-file-exists)
-    - [1.3. Check if File does Not Exist](#13-check-if-file-does-not-exist)
-    - [1.4. Check if Multiple Files Exist](#14-check-if-multiple-files-exist)
-    - [1.5. /dev/null](#15-devnull)
-    - [1.6. Operators](#16-operators)
-- [2. Bash For Loop](#2-bash-for-loop)
-    - [2.1. Range](#21-range)
-    - [2.2. Loop over array elements](#22-loop-over-array-elements)
-    - [2.3. C-style Bash for loop](#23-c-style-bash-for-loop)
-    - [2.4. break and continue Statements](#24-break-and-continue-statements)
-    - [2.5. Real World](#25-real-world)
-- [3. Parameter Expansion](#3-parameter-expansion)
-- [4. booleans](#4-booleans)
-- [5. Paths](#5-paths)
+- [Bash Conditional Expressions](#bash-conditional-expressions)
+    - [If Then brackets](#if-then-brackets)
+    - [Check if File Exists](#check-if-file-exists)
+    - [Check if File does Not Exist](#check-if-file-does-not-exist)
+    - [Check if Multiple Files Exist](#check-if-multiple-files-exist)
+    - [/dev/null](#devnull)
+    - [the : null command](#the--null-command)
+    - [Operators](#operators)
+- [Bash For Loop](#bash-for-loop)
+    - [Range](#range)
+    - [Loop over array elements](#loop-over-array-elements)
+    - [C-style Bash for loop](#c-style-bash-for-loop)
+    - [break and continue Statements](#break-and-continue-statements)
+    - [Real World](#real-world)
+- [Parameter Expansion](#parameter-expansion)
+- [VARIABLE Defaults](#variable-defaults)
+- [Truthy checks](#truthy-checks)
+- [booleans](#booleans)
+- [Paths](#paths)
+- [sed](#sed)
 
 <!-- /TOC -->
 
@@ -107,6 +111,9 @@ you may sometimes see this and its just a dummy file that you can dump anything 
 
 often you may see `2>/dev/null` in context something like `grep -i 'abc' content 2>/dev/null`. [A Good explanation is here](https://askubuntu.com/questions/350208/what-does-2-dev-null-mean). basically it means send any errors to a blackhole and we are only concerned with successful output.
 
+### the `:` null command
+
+The Bash null command, represented by a colon :, is also known as the POSIX shell colon command. This command has no effect and does absolutely nothing, hence the null command terminology. The Bash null command : is a shell builtin defined in the POSIX standardicon mdi-open-in-new. 
 
 ### Operators
 
@@ -252,6 +259,28 @@ done
 | ${FOO:+hello} | hello       | ""          | ""           |
 | ${FOO+hello}  | hello       | hello       | ""           |
 
+## VARIABLE Defaults
+
+If the variable is same, then
+
+```bash
+: "${SOMEVAR:=someval}"
+```
+
+assigns "someval" to `SOMEVAR` if not set.
+
+To get the assigned value, or default if it's missing:
+
+```bash
+FOO="${VARIABLE:-default}"  # If variable not set or null, use default.
+# If VARIABLE was unset or null, it still is after this (no assignment done).
+
+#Or to assign default to VARIABLE at the same time:
+FOO="${VARIABLE:=default}"  # If variable not set or null, set it to default.
+```
+
+## Truthy checks
+
 To check if variable is unset or set to blank string
 
 [See this SO for good break down](https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash)
@@ -261,7 +290,7 @@ and when using double `[[` quotes are not needed for word splitting but might be
 The nutshell summary of below is you really only need to think of it 4 ways
 
 - `[ "$FOO" ]` - will be true if FOO is anything, unset and empty string will be false
-- `[ ! "$FOO" ]` - will be true if FOO is unset or and empty string, false if FOO is anything else
+- `[ ! "$FOO" ]` - will be true if FOO is unset or an empty string, false if FOO is anything else
 - `[ ${FOO+set} ]` - will be true if FOO is set to anything, including an empty string
 - `[ ! ${FOO+set} ]` - will be true if FOO is unset, variable is never setup, if FOO empty this  returns false as thats considered set.
 
@@ -402,3 +431,10 @@ Use `realpath` for getting fill path
 
 example absolute path to script `script_dir=$(realpath "$(dirname "${BASH_SOURCE[0]}")")`
 
+## sed
+
+https://riptutorial.com/sed/topic/9436/bsd-macos-sed-vs--gnu-sed-vs--the-posix-sed-specification
+
+updating file and keepit compatible using `-i`
+example updates all foos to bar and removes the bak file. 
+`sed -i.bak -e "s/^foo/bar/g" somefile.txt && rm somefile.txt.bak`
