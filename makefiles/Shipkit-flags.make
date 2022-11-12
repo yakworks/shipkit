@@ -5,11 +5,12 @@ export SHELL := $(SHIPKIT_BIN)/make_shell
 
 .DEFAULT_GOAL := help
 
-# no need for @ with this on, will keep it silent, pass something to VERBOSE to show it all
-# always make it silent. setting VERBOSE = true will tell logr to print out in make_shell wrapper
+# no need for @ with this on, will keep it silent by DEFAULT, pass something to VERBOSE to show it all
+# always make it silent. setting VERBOSE=1 will notr enable the SILENT and tell logr to print out in make_shell wrapper
 # and will turn on debug for logit bash helper in the bash scripts
+ifndef VERBOSE
 .SILENT:
-export VERBOSE ?= false
+endif
 
 # the whole target recipe is run, instead of one shell per line
 .ONESHELL:

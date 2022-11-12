@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+##
+# url - encodes and decodes strings to make them valud urls
+# =====================================
+#
+
+set -euo pipefail # strict mode https://bit.ly/36MvF0T
+source "$(dirname "${BASH_SOURCE[0]}")"/core/main
+
+##
+# encodes string
+#
+# EXAMPLE:
+#   url.encode "a b"
+#   -> a%20b
+#
+# $1 - the string to encode
+# @stdoout - the encoded string
+function url.encode {
+    # urlencode <string>
+    local length="${#1}"
+    for (( i = 0; i < length; i++ )); do
+        local c="${1:i:1}"
+        case $c in
+            [a-zA-Z0-9.~_-]) printf "$c" ;;
+            *) printf '%%%02X' "'$c" ;;
+        esac
+    done
+}
+
+##
+# dencodes string
+#
+# EXAMPLE:
+#   url.decode "a%20b"
+#   -> a b
+#
+# $1 - the string to dencode
+# @stdoout - the decoded string
+decode() {
+    local url_encoded="${1//+/ }"
+    printf '%b' "${url_encoded//%/\\x}"
+}
+
+# --- boiler plate function runner, keep at end of file ------
+# if run from shell then first arg is function name, if sourced in then does nothing here
+if [[ "${#BASH_SOURCE[@]}" == 1 ]]; then
+  export fn_namespace='url' && source "${BASHKIT_CORE}/function_runner_ns.sh"
+fi
