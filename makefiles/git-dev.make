@@ -7,8 +7,7 @@ g.help: help.git
 
 ## Git or g.* help
 help.git:
-	$(MAKE) help HELP_REGEX="^g[\.]+.*"
-
+	$(MAKE) help HELP_REGEX="^\(g[\.]+.*\|git.*\)"
 
 # git checkout branch and pull, b=<branch>
 g.switch-pull:

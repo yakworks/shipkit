@@ -17,6 +17,7 @@
     - [break and continue Statements](#break-and-continue-statements)
     - [Real World](#real-world)
 - [Parameter Expansion](#parameter-expansion)
+    - [Parse, substring, replace](#parse-substring-replace)
 - [VARIABLE Defaults](#variable-defaults)
 - [Truthy checks](#truthy-checks)
 - [booleans](#booleans)
@@ -258,6 +259,55 @@ done
 | ${FOO?hello}  | world       | ""          | error, exit  |
 | ${FOO:+hello} | hello       | ""          | ""           |
 | ${FOO+hello}  | hello       | hello       | ""           |
+
+### Parse, substring, replace
+
+```bash
+domain="sub.yak.works"
+
+echo ${domain#*.}
+-> yak.works
+
+echo ${domain%.*}
+-> sub.yak
+
+# remove last char, for last 2 chars add 2 ??
+echo ${domain%?}
+-> sub.yak.work
+
+# remove first char
+echo ${domain:1}
+-> ub.yak.works
+
+# remove first 2 chars
+echo ${domain:2}
+-> b.yak.works
+
+```
+
+From https://stackoverflow.com/a/4170409/6500859
+
+```bash
+$ a='hello:world'
+
+$ b=${a%:*}
+$ echo "$b"
+hello
+
+$ a='hello:world:of:tomorrow'
+
+$ echo "${a%:*}"
+hello:world:of
+
+$ echo "${a%%:*}"
+hello
+
+$ echo "${a#*:}"
+world:of:tomorrow
+
+$ echo "${a##*:}"
+tomorrow
+```
 
 ## VARIABLE Defaults
 

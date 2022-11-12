@@ -67,6 +67,10 @@ help: | _program_awk
 	fi
 .PHONY: help
 
+# helper show sub help for %.* targets
+help.show.%:
+	$(MAKE) help HELP_REGEX="^$*.*"
+
 ## list all the availible Make targets, including the targets hidden from core help
 help.all:
 	$(MAKE) -pRrq | awk -F':' '/^[a-zA-Z0-9][^$$#\/\t=]*:([^=]|$$)/ {split($$1,A,/ /);for(i in A)print A[i]}' | sort -u
