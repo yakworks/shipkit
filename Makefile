@@ -41,6 +41,7 @@ docker.shell:
 # docker shelk with bullseye debian image
 docker.shell.deb:
 	$(docker_tools) start shipkit-shell -it \
+	  -w /project \
 	  -v `pwd`:/project:delegated  \
 	  $(DOCK_SHELL_DEB_URL) /bin/bash
 
