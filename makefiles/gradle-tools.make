@@ -41,8 +41,7 @@ test.e2e::
 	$(gradlew) integrationTest $(testArg)
 
 ## show help list for test targets
-help.test:
-	$(MAKE) help HELP_REGEX="^test.*"
+help.test: help.show.test
 
 test.help: help.test
 
@@ -61,8 +60,7 @@ start.jar: $(APP_JAR)
 .PHONY: resolve-dependencies merge-test-results
 
 ## Gradle - show help list for gradle targets
-help.gradle:
-	$(MAKE) help HELP_REGEX="^gradle.*"
+help.gradle: help.show.gradle
 
 gradle.help: help.gradle
 

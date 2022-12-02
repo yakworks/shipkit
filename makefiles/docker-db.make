@@ -7,8 +7,7 @@ docker_tools := $(SHIPKIT_BIN)/docker_tools
 #----- DB targets -------
 
 ## Database, list help for db.* targets
-help.db:
-	$(MAKE) help HELP_REGEX="^db.*"
+help.db: help.show.db
 
 db.help: help.db
 

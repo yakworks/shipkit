@@ -2,8 +2,7 @@
 docker_tools := $(SHIPKIT_BIN)/docker_tools
 
 ## show help for GIT and GITHUB short cut helpers
-help.docker:
-	$(MAKE) help HELP_REGEX="^docker[\.]+.*"
+help.docker: help.show.docker
 
 # DOCKER_CMD verbs
 

@@ -10,8 +10,7 @@ GROOVYDOC_BUILD_DIR ?= $(BUILD_DIR)/docs/groovydoc
 # --- Dockers ---
 
 ## show help list for docmark targets
-help.docmark:
-	$(MAKE) help HELP_REGEX="^docmark.*"
+help.docmark: help.show.docmark
 
 # serves the docmark docs from docker, alias to docker.dockmark-up
 docmark.start: docker.dockmark-up

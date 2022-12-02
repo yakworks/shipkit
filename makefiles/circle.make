@@ -5,8 +5,7 @@
 circle.sh := $(SHIPKIT_BIN)/circle
 
 ## show help list for circle targets
-help.circle:
-	$(MAKE) help HELP_REGEX="^circle.*"
+help.circle: help.show.circle
 
 # Triggers circle to build project call.
 # `make circle.trigger` will use PROJECT_FULLNAME and defaults to current branch.
@@ -21,11 +20,13 @@ circle.trigger: | _verify_CIRCLE_TOKEN _verify_PROJECT_FULLNAME
 
 
 
-# opens the circle pipeline for this project in the default web browser. only works on mac right now.
+# opens the circle pipeline for this project in the default web browser.
+# only works on mac right now.
 circle.open: | _verify_CIRCLE_TOKEN _verify_PROJECT_FULLNAME
 	$(circle.sh) open
 
-# creates a file with todays date and version.properties to use circles checksum to create a daily cachekey file
+# creates a file with todays date and version.properties to
+# use circles checksum to create a daily cachekey file
 circle.day-version-cache-key-file: | _verify_PROJECT_SUBPROJECTS
 	cat version.properties > day-version-cache-key.tmp
 	date +%F  >> day-version-cache-key.tmp

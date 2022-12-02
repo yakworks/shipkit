@@ -22,8 +22,8 @@ fi
 # shellcheck disable=SC2124
 target_cmds="$@"
 
-# if verbose is set then kick the commands to the console
-if [[ ${VERBOSE:-} = "true" ]]; then
+# if VERBOSE_SHELL is set then kick the commands to the console
+if [ "${VERBOSE_SHELL:-}" ]; then
   # pretty print to console
   [ "${MAKE_TARGET:-}" ] && TARG_NAME="[${MAKE_TARGET}]"
   printf "\e[33m------ make_shell %s------ \e[0m\n" "${TARG_NAME:-} "

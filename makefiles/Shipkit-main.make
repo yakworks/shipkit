@@ -13,14 +13,14 @@ export BUILD_DIR ?= build
 export MAKE_ENV_FILE ?= $(BUILD_DIR)/make/makefile$(MAKELEVEL).env
 # $(info MAKE_ENV_FILE: $(MAKE_ENV_FILE))
 
-SHELL_VARS += VERBOSE_LOG BUILD_DIR MAKE_ENV_FILE DBMS env dry_run
+SHELL_VARS += BUILD_DIR MAKE_ENV_FILE DBMS env dry_run
 #shell doesn't get the exported vars so we need to spin the ones we want, which should be in BUILD_VARS
 SHELL_EXPORTS := $(foreach v,$(SHELL_VARS), $(v)='$($(v))')
 # if no init_env.sh var is not set then use the the init_env script directly
 # if its set then call init_env.sh and assume it sourced in /init_env and will
 # be setting up variables and/or potentially overriding make_env
 init_env.sh ?= $(SHIPKIT_BIN)/init_env
-# we do this in subshell so it forces the file to be generated before the sindlues happens
+# we do this in subshell so it forces the file to be generated before sinclude happens
 SH_RESULTS := $(shell $(SHELL_EXPORTS) $(init_env.sh) make_env $(BUILD_ENV))
 
 ifneq ($(.SHELLSTATUS),)
@@ -29,7 +29,8 @@ ifneq ($(.SHELLSTATUS),)
  endif
 endif
 
-ifeq (true,$(VERBOSE))
+# $(shell) eats the results.
+ifneq ($(VERBOSE_SHELL),)
   $(info SEE build/make/shipkit.log FOR LOGIT OUTPUT)
   $(info make_env results: $(SH_RESULTS))
 endif
@@ -58,14 +59,17 @@ help: | _program_awk
 	# if target_regex is set then help.awk will pick it up and filter targets based on that.
 	awk -v target_regex=$(HELP_REGEX) -f $(HELP_AWK) $(wordlist 2,$(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)) $(_HELP_F)
 	if [[ ! "$${HELP_REGEX:-}" ]]; then
-		printf "\n$(culine)Common Variables Options:\n$(creset)"
+		printf "$(culine)Common Variables Options:\n$(creset)"
 		printf "$(ccyanB) help.* or *.help             $(creset)| most target prefixes can list help with either git.help or help.git for ex\n"
 		printf "$(ccyanB) VERBOSE=true                 $(creset)| show logit.debug in build/make/shikit.log and shows target output on console \n"
-		printf "$(ccyanB) dry_run=true                 $(creset)| setting this to true will stop certain deployment commands from pushing, such as kubectl and docker \n"
+		printf "$(ccyanB) dry_run=true                 $(creset)| NOT the same as Make's --dry-run. set true will stop some deployments from pushing (kubectl and docker) \n"
 		printf "$(ccyanB) env=<file.env> or <file.sh>  $(creset)| loads custom variables in from .env file or source 'imports' a custom bash .sh script \n"
-		printf "\n"
 	fi
 .PHONY: help
+
+# helper show sub help for %.* targets
+help.show.%:
+	$(MAKE) help HELP_REGEX="^$*.*"
 
 ## list all the availible Make targets, including the targets hidden from core help
 help.all:
