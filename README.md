@@ -1,12 +1,14 @@
 [![CircleCI](https://img.shields.io/circleci/project/github/yakworks/shipkit/master.svg?longCache=true&style=for-the-badge&logo=circleci)](https://circleci.com/gh/yakworks/shipkit)
+![GitHub](https://img.shields.io/github/license/yakworks/shipkit?style=for-the-badge)
 <img src="docs/ship-kit.svg" height="28">
-<img src="docs/bam-bash-make.svg" height="28">
 [![9ci](https://img.shields.io/badge/BUILT%20BY-9ci%20Inc-blue.svg?longCache=true&style=for-the-badge)](http://9ci.com)
 <img src="https://forthebadge.com/images/badges/gluten-free.svg" height="28">
 
-# BAM (Bash And Make) CI/CD Tool
+# BAM (Bash & Make) CI/CD Tool
 
-BAM (Bash And Make) Bash scripts and makefiles based CI/CD tool. 
+<img src="docs/bam-bash-make.svg" height="28">
+
+- scripts and makefiles based CI/CD tool. 
 - ship every change to production without hassle. 
 - Automated versioning, generating release notes
 - Documentation builder
