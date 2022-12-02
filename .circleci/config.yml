@@ -6,6 +6,7 @@ jobs:
     steps:
       - checkout
       # - run: make install-shellcheck-alpine
+      - run: apt-get update
       - run: make debian.install-circle-deps
       - run: make check
       # test some other stuff
