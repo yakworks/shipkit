@@ -1,3 +1,9 @@
+[![CircleCI](https://img.shields.io/circleci/project/github/yakworks/shipkit/master.svg?longCache=true&style=for-the-badge&logo=circleci)](https://circleci.com/gh/yakworks/shipkit)
+<img src="docs/ship-kit.svg" height="28">
+<img src="docs/bam-bash-make.svg" height="28">
+[![9ci](https://img.shields.io/badge/BUILT%20BY-9ci%20Inc-blue.svg?longCache=true&style=for-the-badge)](http://9ci.com)
+<img src="https://forthebadge.com/images/badges/gluten-free.svg" height="28">
+
 # BAM (Bash And Make) CI/CD Tool
 
 BAM (Bash And Make) Bash scripts and makefiles based CI/CD tool. 
@@ -14,12 +20,12 @@ For a standardized way to build, test and deploy across projects that stays out 
 
 - [TOC](#toc)
 - [Bash Scripts Usage Docs](#bash-scripts-usage-docs)
-- [Why Bash & Make?](#why-bash--make)
+- [Why BAM Bash & Make?](#why-bam-bash--make)
 - [Make as a wrapper](#make-as-a-wrapper)
 - [Yggdrasil](#yggdrasil)
 - [Assumptions about the build environment](#assumptions-about-the-build-environment)
 - [Setup](#setup)
-- [style guides we endeveur to follow](#style-guides-we-endeveur-to-follow)
+- [Style Guides](#style-guides)
 - [Versions and Upgrade Notes](#versions-and-upgrade-notes)
 - [References](#references)
 
@@ -118,7 +124,7 @@ best best is to take a look at https://github.com/yakworks/gorm-tools for a spri
 WIP for a node and python links
 
 
-## style guides we endeveur to follow
+## Style Guides
 
 https://www.conventionalcommits.org/en/v1.0.0/
 https://style-guides.readthedocs.io/en/latest/makefile.html
