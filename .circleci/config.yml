@@ -5,6 +5,7 @@ jobs:
       - image: yakworks/bullseye:core
     steps:
       - checkout
+      - run: apt-get update
       # - run: make install-shellcheck-alpine
       - run: make debian.install-circle-deps
       - run: make check
