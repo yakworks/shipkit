@@ -1,3 +1,8 @@
+### v2.0.12
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.11...v2.0.12)
+- Add Examples, make help.* more reusable, fix circle(#60) [link](https://github.com/yakworks/shipkit/commit/bd2d6efef867a0a902a5e2777f0650316778fae5)
+
 ### v2.0.11
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.10...v2.0.11)
