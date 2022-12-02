@@ -62,7 +62,7 @@ help: | _program_awk
 		printf "$(culine)Common Variables Options:\n$(creset)"
 		printf "$(ccyanB) help.* or *.help             $(creset)| most target prefixes can list help with either git.help or help.git for ex\n"
 		printf "$(ccyanB) VERBOSE=true                 $(creset)| show logit.debug in build/make/shikit.log and shows target output on console \n"
-		printf "$(ccyanB) dry_run=true                 $(creset)| setting this to true will stop certain deployment commands from pushing, such as kubectl and docker \n"
+		printf "$(ccyanB) dry_run=true                 $(creset)| NOT the same as Make's --dry-run. set true will stop some deployments from pushing (kubectl and docker) \n"
 		printf "$(ccyanB) env=<file.env> or <file.sh>  $(creset)| loads custom variables in from .env file or source 'imports' a custom bash .sh script \n"
 	fi
 .PHONY: help
