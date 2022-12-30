@@ -18,18 +18,9 @@ For a standardized way to build, test and deploy across projects that stays out 
 
 ## TOC 
 
-<!-- TOC depthfrom:2 depthto:2 orderedlist:false -->
+<!-- TOC depthfrom:undefined depthto:undefined orderedlist:undefined -->
 
-- [TOC](#toc)
-- [Bash Scripts Usage Docs](#bash-scripts-usage-docs)
-- [Why BAM Bash & Make?](#why-bam-bash--make)
-- [Make as a wrapper](#make-as-a-wrapper)
-- [Yggdrasil](#yggdrasil)
-- [Assumptions about the build environment](#assumptions-about-the-build-environment)
-- [Setup](#setup)
-- [Style Guides](#style-guides)
-- [Versions and Upgrade Notes](#versions-and-upgrade-notes)
-- [References](#references)
+
 
 <!-- /TOC -->
 
@@ -139,39 +130,79 @@ we will add that if they are both, meaning they can be run or sourced in as a li
 
 ## Versions and Upgrade Notes
 
-Follow semantic verioning. 
+Follow semantic versioning. 
 
 ### 2.0 upgrade notes
 
-__terminology.__
+#### Terminology
 
-- **publishable** : publishable means it will be publish a lib to a repository, such as maven or npm. 
-  It can also mean it will deploy a docker image or push a deploment to kuberenetes. 
-  It can be a snapshot or a production release. In k8s terms it can be something that is staging, qa or production. 
-  a PUBLISHABLE_BRANCH means its a branch that will push something somewhere. 
-  PUBLISH_BRANCH_DEVREGEX can be set so it matches banch names that can ONLY publish development/snapshot versions
-  IE: release=false , snapshot=true, IS_SNAPSHOT=true. 
+**publishable**
+: One of:
+  - A library will be published to a repository, such as maven or npm. 
+  - A docker image will be published on docker hub.
+  - A deployment/cronjob/resource will be pushed to kubernetes.
+    - It can be a snapshot or a production release.
+    - In k8s terms it can be something that is staging, qa or production. 
+  
+**PUBLISHABLE_BRANCH**
+: A github branch which is publishable. A successful build here will push something somewhere.
 
-- **release** or **releasable**: A `release` or `releasable` means its a production or frozen version. Such as in maven or npm
-  its cant be overriten once it published. If is a release then its will also of course have to be publishable. 
-  Something that is released will also publish or deploy as exmplained above. but it will NOT even be a snapshot/dev version. 
-  A release goes through a full release process cycle to automatically bump version, push a v tag/release to github and 
-  roll the version number in version.properties. 
+**PUBLISH_BRANCH_DEVREGEX**
+: Can be set so it matches branch names that can ONLY publish development/snapshot versions
+  IE: release=false , snapshot=true, IS_SNAPSHOT=true.
 
-- variable names changed. 
-  - IS_RELEASABLE stays the same and means its not a snapshot version, its on a branch that can be released (a publishable branch), not on a dev branch and user has permissions to do release. 
-  - in 1.x PUBLISHABLE branches were called RELEASABLE_BRANCH
-    so RELEASABLE_BRANCH renamed to PUBLISHABLE_BRANCH, 
-    RELEASE_BRANCH_REGEX -> PUBLISH_BRANCH_REGEX,  RELEASABLE_BRANCH_OR_DRY_RUN -> PUBLISHABLE_BRANCH_OR_DRY_RUN etc.. 
-    search across app for RELEASABLE_BRANCH and change build.yml for new var name.
+**snapshot**
+: An _incremental, unversioned, mutable_ component. Used to indicate a development or bleeding edge or development release. Has a similar meaning in different contexts:
+  - __github tag__: A snapshot is a movable tag indicating the latest development on a branch.
+    - A snapshot tag does not always point to exactly the same code.
+    - It cannot be built at one time and then rebuilt at a later time and be guaranteed the same result.
+  - __repository tag__: Similar to the github tag, but for built libraries or apps which are published to _maven_, _npm_, _docker hub_, or some other repository where others can pull it and use it.
+    - A snapshot repository tag indicates an application or library which was built from snapshot/incremental code.
+    - The version number is something like `14.3.21-snapshot`
+    - Pulling a snapshot tag from a repository at a later date will get possibly different content.
+  - __build flag__: A true/false build variable specifying that the build should or should not be a snapshot.
+    - __snapshot=true__ means that the build product will be __unversioned/incremental__.
+      - The build can contain both versioned and snapshot components.
+      - The build cannot be reliably reproduced by building again at a later date.
+      - Good only for development and testing, __cannot be used in production__.
+      - The version number of the current project is not changed. If the previous version was `14.3.21-snapshot` then the current build's version will be `14.3.21-snapshot`.
+    - __snapshot=false__ means that the result will be __versioned/immutable/non-incremantal__.
+      - The build must only contain released/non-incremental (versioned) components.
+      - The version number is something like `14.3.21`
+      - The version number will be incremented. If the previous version was `14.3.21` then the current will be `14.3.22`.
+      - After a successful build/test, github is tagged.
+      - The presence of a snapshot dependency in a build using `snapshot=false` must deliberately fail.
+      - The build can be recreated at a later date with the exact same executable result.
+      - The build product may be released/published
 
-  - change version.properties snapshot=true to release=false. operates in affirmative, 
-    when release=false, then IS_SNAPSHOT will still be true. when release=true then IS_SNAPSHOT=false and 
-    if on PUBLISHABLE_BRANCH will do full release cycle.  
+**release** or **releasable**
+: A frozen or immutable version. The opposite of __snapshot__ above. Built with `snapshot=false`.
+  A successful build will push the product somewhere, as in maven or npm. It can't be overwritten once it published. If it is a release then its will also of course 
+  have to be publishable. Something that is released will also publish or deploy as explained above. but it will NOT even be a snapshot/dev version. 
 
-  - the property version_set_snapshot should be changed to release_reset_flag=, check build.yml
+  A release goes through a full release process cycle to automatically bump version, push a v tag/release to github and roll the version number in version.properties. 
 
-  - is using with gradle plugin `org.yakworks:gradle-plugins` version must be >= 2.7.3
+#### Variable names changed
+
+  - __IS_RELEASABLE__ stays the same and means its not a snapshot version, its on a branch that can be released (a publishable branch), not on a dev branch and user has permissions to do release. 
+  - in `1.x` __PUBLISHABLE__ branches were called __RELEASABLE_BRANCH__.
+    so:
+    - `RELEASABLE_BRANCH` -> `PUBLISHABLE_BRANCH`
+    - `RELEASE_BRANCH_REGEX` -> `PUBLISH_BRANCH_REGEX`
+    - `RELEASABLE_BRANCH_OR_DRY_RUN` -> `PUBLISHABLE_BRANCH_OR_DRY_RUN`
+    - etc.
+
+#### Upgrade
+
+- Search across app for `RELEASABLE_BRANCH` and change `build.yml` for new var name.
+- change `version.properties` so that `snapshot=true` -> `release=false` so it operates in affirmative.
+  - When `release=false`, then `IS_SNAPSHOT` will still be true.
+  - When `release=true` then `IS_SNAPSHOT=false`
+- if on `PUBLISHABLE_BRANCH` the build will do full release cycle.  
+
+- Change `build.yml` so that `version_set_snapshot` -> `release_reset_flag`
+
+- If using with gradle plugin `org.yakworks:gradle-plugins` version must be >= 2.7.3
 
 ## References
 
