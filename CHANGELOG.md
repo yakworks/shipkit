@@ -1,3 +1,9 @@
+### v2.0.13
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.12...v2.0.13)
+- Fixed version-suffix when not snapshot. (#62) [link](https://github.com/yakworks/shipkit/commit/2c34a17ee40ddf910602b551a2495b583036a1bb)
+- Reworked readme. (#61) [link](https://github.com/yakworks/shipkit/commit/205ece0a15420b0ee1398dca034a1fbce95fa26f)
+
 ### v2.0.12
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.11...v2.0.12)
