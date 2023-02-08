@@ -143,7 +143,6 @@ function init_defaults {
   # sets up defaults for PAGES if they are not setup already
   setVar PAGES_BUILD_DIR "$BUILD_DIR/gh-pages"
   setVar PAGES_BRANCH "gh-pages"
-
 }
 
 ## sets up defaults vars for docker ninedb and dock builders
@@ -192,6 +191,9 @@ function init_versions {
   setVar VERSIONX_DOTLESS "v${VERSIONX//./-}"
 
   putVar BUILD_VERSION "$VERSION"
+
+  # set default version_suffix
+  putVar VERSION_SUFFIX ""
 
   # if its a snapshot then append the SNAPSHOT
   if truthy "${snapshot:-}" || falsy "${release:-}"; then
