@@ -144,6 +144,10 @@ function init_defaults {
   setVar PAGES_BUILD_DIR "$BUILD_DIR/gh-pages"
   setVar PAGES_BRANCH "gh-pages"
 
+  if [ -z ${VERSION_SUFFIX+x} ]; then
+    setVar VERSION_SUFFIX ""
+  fi
+
 }
 
 ## sets up defaults vars for docker ninedb and dock builders
