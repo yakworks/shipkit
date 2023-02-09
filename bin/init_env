@@ -162,11 +162,11 @@ function init_from_build_yml {
 function make_some_vals_lowercase {
   set +u
   for k in APP_KEY APP_DOCKER_URL APP_KUBE_INGRESS_URL APP_KUBE_DB_SERVICE_NAME; do
-    [ "${!k}" ] && eval $k=$(tolower "${!k}")
+    [ "${!k}" ] && eval "$k=$(tolower "${!k}")"
   done
   if [ "$SHIPKIT_VARS_VALS_LOWERCASE" ];then
     for k in $SHIPKIT_VARS_VALS_LOWERCASE; do
-      [ "${!k}" ] && eval $k=$(tolower "${!k}")
+      [ "${!k}" ] && eval "$k=$(tolower "${!k}")"
     done
   fi
   set -u
