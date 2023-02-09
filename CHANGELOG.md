@@ -1,3 +1,8 @@
+### v2.0.14
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.13...v2.0.14)
+- Added an optional setting to make some extra variables have all-lower… (#63) [link](https://github.com/yakworks/shipkit/commit/8ba4402573310c6b5f874ee54705edec496ee499)
+
 ### v2.0.13
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.12...v2.0.13)
