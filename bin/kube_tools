@@ -29,15 +29,13 @@ function kube.process_tpl {
 #   A directory build/kustomize/$1 which has all the files from $1, but templates translated per shipkit.
 #  The directory is ready to be applied with kubectl apply -k build/kustomize/$1, but it's not applied.
 function kube.process_tpl_dir {
-  local oldwd=$(pwd)
   local hashdir=${2:-build/kustomize/$1}
-  local processedDir=$(dirname "$oldwd/$hashdir")
-  cd "$1"
-  for tfile in *; do
-    kube.process_tpl "$tfile" "$processedDir"
+  shopt -s globstar
+  for tfile in "$1"/*; do
+    kube.process_tpl "$tfile" "$hashdir"
   done
-  cd -
-  echo "$processedDir"
+  shopt -u globstar
+  echo "${hashdir}"
 }
 
 ###
@@ -56,10 +54,8 @@ function kube.apply_tpl {
 # - $1 - The directory containing raw templates
 # - $2 - (optional) The directory to put processed files
 function kube.apply_tpl_dir {
-  local processedDir="${2:-build/kustomize/$1}"
-  kube.process_tpl_dir "$1" "$processedDir"
+  local processedDir=$(kube.process_tpl_dir "$@" | tail -n 1)
   kube.ctl apply -k "$processedDir"
-  echo "$processedDir"
 }
 
 ##
