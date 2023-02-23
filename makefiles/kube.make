@@ -9,6 +9,28 @@ kube_tools := $(SHIPKIT_BIN)/kube_tools
 help.kube:
 	$(MAKE) help HELP_REGEX="^kube.+.*"
 
+# ===== SUBHELP TARGETS ==========
+# Trying to cut clutter in kube targets by categorizing them.
+# Note that the help regex for these targets is not the same as the target!
+
+## Show the available subhelp categories for help.kube
+help.kube.subhelp: 
+	$(MAKE) help HELP_REGEX="^subhelp.kube.+.*"
+
+# kube.deploy targets apply full deployments or cronjobs to k8s
+subhelp.kube.deploy:
+	$(MAKE) help HELP_REGEX="^kube.deploy.+.*"
+
+# kube.kustomize targets apply kustomization directories to the cluster.
+subhelp.kube.kustomize:
+	$(MAKE) help HELP_REGEX="^kube.kustomize.+.*"
+
+# kube.set targets apply secrets and configmaps outside of a deployment.
+subhelp.kube.set:
+	$(MAKE) help HELP_REGEX="^kube.set.+.*"
+
+# ===== END SUBHELP TARGETS ==========
+
 # removes everything with the app=$(APP_KEY) under $(APP_KUBE_NAMESPACE)
 kube.clean: | _verify_APP_KUBE_NAMESPACE
 	$(kube_tools) ctl delete deployment,svc,configmap,ingress --selector="app=$(APP_KEY)" --namespace="$(APP_KUBE_NAMESPACE)"
