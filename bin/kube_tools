@@ -13,19 +13,49 @@ core.import "dotenv"
 ##
 # runs sed on the kubernetes tpl.yml and puts in build dir
 # - $1 - the template file to apply
+# - $2 - (optional) The directory to put the processed files in
 function kube.process_tpl {
   # set the variables in BUILD_ENV so we can build the sed replacement for templates
   # dotenv.load "build/make/makefile${MAKELEVEL}.env"
-  heredoc_tpl "$1" "build/kube"
+  local processedDir="${2:-build/kube}"
+  heredoc_tpl "$1" "$processedDir"
+}
+
+##
+# Given a directory with templates and regular files in it, build a similar directory in build/kustomize which has the same structure but with templates processed.
+# - $1 - The source directory to process (containing templates)
+# - $2 - (optional) The directory to put the processed files.
+# Output:
+#   A directory build/kustomize/$1 which has all the files from $1, but templates translated per shipkit.
+#  The directory is ready to be applied with kubectl apply -k build/kustomize/$1, but it's not applied.
+function kube.process_tpl_dir {
+  local processedDir="${2:-build/kustomize/$1}"
+  for tfile in $1/*; do
+    kube.process_tpl "$tfile" "$processedDir"
+  done
+  echo "$processedDir"
 }
 
 ###
 # runs sed on the kubernetes tpl.yml template files to update and replace variables with values
 # - $1 - the file template to process and apply
+# - $2 - (optional) The directory to put the processed files in
 function kube.apply_tpl {
-  local processedTplFile=$(kube.process_tpl "$1" "build/kube")
+  local processedDir="${2:-build/kube}"
+  local processedTplFile=$(kube.process_tpl "$1" "$processedDir")
   echo "processed tpl -> $processedTplFile"
   kube.ctl apply -f "$processedTplFile"
+}
+
+##
+# Applies everything in the given directory
+# - $1 - The directory containing raw templates
+# - $2 - (optional) The directory to put processed files
+function kube.apply_tpl_dir {
+  local processedDir="${2:-build/kustomize/$1}"
+  kube.process_tpl_dir "$1" "$processedDir"
+  kube.ctl apply -k "$processedDir"
+  echo "$processedDir"
 }
 
 ##
