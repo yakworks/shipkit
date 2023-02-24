@@ -1,3 +1,8 @@
+### v2.0.15
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.14...v2.0.15)
+- Kube.process tpl dir and kube.apply tpl dir (#65) [link](https://github.com/yakworks/shipkit/commit/f766d1a6ee6b14fcce5e68269b6280500752e7f2)
+
 ### v2.0.14
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.13...v2.0.14)
