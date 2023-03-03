@@ -66,6 +66,7 @@ vault.decrypt: $(VAULT_DIR)
 $(VAULT_DIR): | $(SOP_SH) vault.gpg.import-private-key vault.clone
 	cd $(VAULT_DIR)
 	for vfile in $(VAULT_FILES); do
+		# Remove any .enc or .encrypted limited by literal dot and word boundary at end
 		outFile="$$(sed -E s/\.\(encrypted\|enc\)\\b//g <<< $$vfile )"
 		$(logr) "$$vfile > $$outFile"
 		$(SOP_SH) -d $$vfile > $$outFile
