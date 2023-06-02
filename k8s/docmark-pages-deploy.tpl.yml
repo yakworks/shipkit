@@ -34,8 +34,8 @@ spec:
             value: '${PAGES_AUTH_PASSWORD}'
           - name: GITHUB_PROJECT
             value: '${PROJECT_FULLNAME}'
-          # - name: GITHUB_BRANCH
-          #   value: '${PAGES_GITHUB_BRANCH}'
+          - name: GITHUB_BRANCH
+            value: ${PAGES_GITHUB_BRANCH}
           - name: GITHUB_TOKEN
             value: '${GITHUB_TOKEN}'
           # custom make target to use to build the docs
