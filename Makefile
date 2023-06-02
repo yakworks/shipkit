@@ -16,6 +16,8 @@ include $(SHIPKIT_MAKEFILES)/bats-testing.make
 include $(SHIPKIT_MAKEFILES)/kube.make
 include $(SHIPKIT_MAKEFILES)/kubectl-config.make
 
+include scratch/sandbox.make
+
 # -- Variables ---
 export BOT_EMAIL ?= 9cibot@9ci.com
 export BOT_SIGN_COMMITS = true
@@ -79,3 +81,4 @@ build/usage/is.md: bin/is.sh
 docs.generate:
 	shopt -s globstar
 	awk -v MULTI_FILE=1 -v SHOW_SRC=1 -f ./bin/shdoc/shdoc.awk -f ./bin/shdoc/shdoc_fns.awk bin/* > docs/USAGE.md
+

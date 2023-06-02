@@ -39,5 +39,12 @@ if [[ ${LOGIT_DEBUG_ENABLED:-} = "true" ]]; then
   logit.debug "$target_cmds"
 fi
 
-# strace -f -o `mktemp $RESULTZ/result_XXXXXXX` -e trace=open,stat64,execve,exit_group,chdir /bin/sh -c "$@"  | awk '{if (match("Process PID=\d+ runs in (64|32) bit",$0) == 0) {print $0}}'
-eval "$target_cmds"
+# if it starts with "#!py" then execute as python
+if [[ "$target_cmds" = \#!py* ]]; then
+  # if it
+  # echo "$target_cmds"
+  python -c "$target_cmds"
+else
+  # strace -f -o `mktemp $RESULTZ/result_XXXXXXX` -e trace=open,stat64,execve,exit_group,chdir /bin/sh -c "$@"  | awk '{if (match("Process PID=\d+ runs in (64|32) bit",$0) == 0) {print $0}}'
+  eval "$target_cmds"
+fi
