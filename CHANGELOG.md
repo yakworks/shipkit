@@ -1,3 +1,8 @@
+### v2.0.16
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.15...v2.0.16)
+- mode to allow PAGES_GITHUB_BRANCH for docmark pages.deploy-k8 [link](https://github.com/yakworks/shipkit/commit/9d39c796d865a0839311272f0657379e378260c1)
+
 ### v2.0.15
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.14...v2.0.15)
