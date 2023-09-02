@@ -1,3 +1,10 @@
+### v2.0.17
+
+[Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.16...v2.0.17)
+- release [link](https://github.com/yakworks/shipkit/commit/795565bbd8f3f9b166ca463caa32f70fada8635f)
+- Merge branch 'release/2.x' of https://github.com/yakworks/shipkit into release/2.x [link](https://github.com/yakworks/shipkit/commit/a3efd6a6471487558ee1875cfad21d29ad3a015c)
+- vault.decrypt will also strip .enc suffix when in VAULT_FILES, god for ssh keys, etc that dont normally have a suffix. [link](https://github.com/yakworks/shipkit/commit/b8ec37335c39d51dbecbc50721d48dd155bcd340)
+
 ### v2.0.16
 
 [Full Changelog](https://github.com/yakworks/shipkit/compare/v2.0.15...v2.0.16)
