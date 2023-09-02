@@ -66,8 +66,9 @@ vault.decrypt: $(VAULT_DIR)
 $(VAULT_DIR): | $(SOP_SH) vault.gpg.import-private-key vault.clone
 	cd $(VAULT_DIR)
 	for vfile in $(VAULT_FILES); do
-		outFile="$${vfile/.enc./.}" # remove .enc.
-		outFile="$${outFile/.encrypted./.}" # remove .encrypted.
+		outFile="$${vfile/.enc./.}" # remove .enc. in middle, if its "foo.enc.txt" remove middle enc, leaving "foo.txt"
+		outFile="$${vfile/.enc/}" # if its foo.enc this removes the .enc suffix and just leaves "foo"
+		outFile="$${outFile/.encrypted./.}" # remove .encrypted. same a .enc. above.
 		$(logr) "$$vfile > $$outFile"
 		$(SOP_SH) -d $$vfile > $$outFile
 	done
